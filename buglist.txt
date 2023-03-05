@@ -1,0 +1,4 @@
+NOTE: https://kurser.dtu.dk/course/2022-2023/42500?menulanguage=en
+
+Course 34153 - two prerequisites
+Homepage should not crash if missing course
