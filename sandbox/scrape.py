@@ -7,19 +7,27 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 
-class LoadWebpage:
+class Scrape:
 
-    def launch_selenium_webdriver():
+    def run_webdriver(urls):
+        driver = Scrape._launch_webdriver()
+        list_of_page_sources = []
+        for url in urls:
+            page_source = Scrape._get_page_source(url, driver)
+            list_of_page_sources.append(page_source)
+        Scrape._terminate_webdriver(driver)
+        return list_of_page_sources
+
+    def _launch_webdriver():
         """Initialize selenium webdriver and return driver"""
         options = Options()
         options.add_argument("--log-level=3")
         options.add_argument('--disable-logging')
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-        #driver = webdriver.Chrome(PATH, options=options)
         return driver
 
-    def access_url_via_selenium(url, driver):
-        """Return page source from url. Return an empty string if 10-second timeout"""
+    def _get_page_source(url, driver):
+        """Return page source from url. Return None if 10-second timeout"""
         driver.get(url)
         try:
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "viewport")))
@@ -27,16 +35,8 @@ class LoadWebpage:
             return page_source
         except TimeoutException:
             message = f"{''}, Timeout exception at url: {url}"
-            LoadWebpage.log(message, 'Error', '')
-            empty_string = ''
             return None
 
-    def access_url_with_selenium_webdriver():
-        pass
-
-    def return_page_source_as_string():
-        pass
-
-    def log(a, b, c):
-        pass
-
+    def _terminate_webdriver(driver):
+        """Terminate an existing selenium webdriver"""
+        driver.quit
