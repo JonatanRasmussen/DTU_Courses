@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class Scrape:
 
+    @staticmethod
     def run_webdriver(urls):
         driver = Scrape._launch_webdriver()
         list_of_page_sources = []
@@ -18,6 +19,7 @@ class Scrape:
         Scrape._terminate_webdriver(driver)
         return list_of_page_sources
 
+    @staticmethod
     def _launch_webdriver():
         """Initialize selenium webdriver and return driver"""
         options = Options()
@@ -26,6 +28,7 @@ class Scrape:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         return driver
 
+    @staticmethod
     def _get_page_source(url, driver):
         """Return page source from url. Return None if 10-second timeout"""
         driver.get(url)
@@ -37,6 +40,7 @@ class Scrape:
             message = f"{''}, Timeout exception at url: {url}"
             return None
 
+    @staticmethod
     def _terminate_webdriver(driver):
         """Terminate an existing selenium webdriver"""
         driver.quit
