@@ -7,16 +7,18 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 
-class Scrape:
+class Webdriver:
 
     @staticmethod
     def run_webdriver(urls):
-        driver = Scrape._launch_webdriver()
+        """ Initialize selenium webdriver, access each url in 'urls'
+            and return a list of page sources, then exit webdriver"""
+        driver = Webdriver._launch_webdriver()
         list_of_page_sources = []
         for url in urls:
-            page_source = Scrape._get_page_source(url, driver)
+            page_source = Webdriver._get_page_source(url, driver)
             list_of_page_sources.append(page_source)
-        Scrape._terminate_webdriver(driver)
+        Webdriver._terminate_webdriver(driver)
         return list_of_page_sources
 
     @staticmethod
