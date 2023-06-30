@@ -46,6 +46,7 @@ class Scrapes:
         """Create list of urls to be scraped"""
         pass
         pass
+        pass
 
     @staticmethod
     def _scrape_hrefs_needed_for_evals(page_source):
