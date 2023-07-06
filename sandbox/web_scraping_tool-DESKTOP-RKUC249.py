@@ -36,7 +36,7 @@ class WebScrapingTool:
         driver: type[WebDriver] = self._driver
         driver.get(url)
         try:
-            WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.NAME, "viewport")))
+            WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.NAME, "viewport")))
             page_source: str = driver.page_source
             return page_source
         except TimeoutException as exc:
