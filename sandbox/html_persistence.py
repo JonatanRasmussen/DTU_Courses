@@ -2,7 +2,7 @@ import os
 import json
 
 
-class Persistence:
+class HtmlPersistence:
     """ Save and retrieve data to and from storage """
     HTML_FOLDERNAME = "html_persistence"
 
@@ -10,19 +10,19 @@ class Persistence:
     def store_evaluation_html(dct: dict[str:str], term: str) -> None:
         """Save dictionary as JSON file in location specified by file_name"""
         filename_prefix: str = f'{term}_evaluations'
-        Persistence._save_json(dct, filename_prefix, Persistence.HTML_FOLDERNAME)
+        HtmlPersistence._save_json(dct, filename_prefix, HtmlPersistence.HTML_FOLDERNAME)
 
     @staticmethod
     def store_grade_html(dct: dict[str:str], term: str) -> None:
         """Save dictionary as JSON file in location specified by file_name"""
         filename_prefix: str = f'{term}_grades'
-        Persistence._save_json(dct, filename_prefix, Persistence.HTML_FOLDERNAME)
+        HtmlPersistence._save_json(dct, filename_prefix, HtmlPersistence.HTML_FOLDERNAME)
 
     @staticmethod
     def store_information_html(dct: dict[str:str], term: str) -> None:
         """Save dictionary as JSON file in location specified by file_name"""
         filename_prefix: str = f'{term}_information'
-        Persistence._save_json(dct, filename_prefix, Persistence.HTML_FOLDERNAME)
+        HtmlPersistence._save_json(dct, filename_prefix, HtmlPersistence.HTML_FOLDERNAME)
 
     @staticmethod
     def _save_json(dct: dict[str:str], filename_prefix: str, foldername: str) -> None:

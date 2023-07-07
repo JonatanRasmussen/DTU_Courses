@@ -31,19 +31,17 @@ class HtmlLocator:
         return urls
 
     @staticmethod
-    def locate_evaluations(course_id: str, page_source: 'str') -> dict[str:str]:
-        """ Uniquely, the evaluation urls are undeterministic; they must
-            be scraped instead. Each scrape returns multiple urls, so this
-            method returns a dict of urls to avoid duplicate scrapes. 
-            The input, 'page_source', contains the unparsed urls """
-        URL_HOSTNAME: str = "https://evaluering.dtu.dk"
-        href_digits_dct: dict[str:str]
-        href_digits_dct = HtmlParser.parse_evaluation_url_searchpage(page_source)
-        urls: dict[str:str] = {}
-        for semester, href_digits in href_digits_dct.items():
+    def locate_evaluations(course_id: str, term: str, search_result: str) -> dict[str:str]:
+        """ The evaluation urls are undeterministic and are obtained
+            via scraping. The input, 'search_result', is a html-string
+            that contains 'href_digits' needed to generate the url """
+        href_digits: str = HtmlParser.parse_href_digits(search_result, term)
+        url: str = ""
+        if len(href_digits) != 0:
+            URL_HOSTNAME: str = "https://evaluering.dtu.dk"
             url_path: str = f'/kursus/{course_id}/{href_digits}'
-            urls[semester] = URL_HOSTNAME + url_path
-        return urls
+            url = URL_HOSTNAME + url_path
+        return url
 
     @staticmethod
     def locate_grades(course_id: str, term: str) -> str:
@@ -51,7 +49,8 @@ class HtmlLocator:
         exam_period: str = Term.get_exam_period_from_str(term)
         URL_HOSTNAME: str = "https://karakterer.dtu.dk"
         url_path: str = f'/Histogram/1/{course_id}/{exam_period}'
-        return URL_HOSTNAME + url_path
+        url: str = URL_HOSTNAME + url_path
+        return url
 
     @staticmethod
     def locate_information(course_id: str, term: str) -> str:
@@ -59,4 +58,5 @@ class HtmlLocator:
         academic_year: str = Term.get_academic_year_from_str(term)
         URL_HOSTNAME: str = "https://kurser.dtu.dk"
         url_path: str = f'/course/{academic_year}/{course_id}'
-        return URL_HOSTNAME + url_path
+        url: str = URL_HOSTNAME + url_path
+        return url

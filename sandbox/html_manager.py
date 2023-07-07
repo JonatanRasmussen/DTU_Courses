@@ -1,70 +1,116 @@
-from persistence import Persistence
-from html_scraper import HtmlScraper
+from web_scraping_tool import WebScrapingTool
+from html_locator import HtmlLocator
+from html_parser import HtmlParser
+from html_slicer import HtmlSlicer
+from html_persistence import HtmlPersistence
 
 class HtmlManager:
-    """ A high-level class that orchestrate the scraping operation
-        by managing the html-scraper class that carries out the
-        actual scraping. This class organizes the scraped page sources
-        into dicts and stores them locally via the persistence class """
+    """ A top-level class for scraping and storing all data
+        associated with a given term. It instantiates the
+        html-scraper class and organizes its output into dicts. 
+        The dicts contain raw html strings (page source), and the
+        dicts can be saved as files or passed on to other classes """
 
     def __init__(self: 'HtmlManager', term: str) -> None:
-        """ The HtmlManager is meant to only be instantiated from
-            within the class. Instantiate one manager per term """
-        self._scraper: 'HtmlScraper' = HtmlScraper()
-        self._course_list: list[str] = []
+        """ Instantiate a single manager per term, as a single
+            HtmlManager can't manage data from multiple terms """
+        self._term: str = term
+        #self._scraper: 'HtmlScraper' = HtmlScraper()
+        self._scrape_tool: 'WebScrapingTool' = WebScrapingTool()
+        self._course_dct: dict[str:str] = {}
         self._evaluation_dct: dict[str:str] = {}
         self._grades_dct: dict[str:str] = {}
         self._information_dct: dict[str:str] = {}
-        self._term: str = term
+        self._study_line_dct: dict[str:str] = {}
 
-    @staticmethod
-    def scrape_all_term_data(terms: list[str]) -> None:
-        """ Iterate over each term and scrape all data related to the
-            term. The 'manager' must be reset between each term """
-        for term in terms:
-            manager: 'HtmlManager' = HtmlManager(term)
-            manager.scrape_course_data_for_term()
-            manager.store_html()
+    @classmethod
+    def custom_courses(cls: 'HtmlManager', term: str, course_dct: dict[str:str]) -> 'HtmlManager':
+        manager: 'HtmlManager' = cls(term)
+        manager._course_dct = course_dct
+        return manager
 
-    def scrape_course_data_for_term(self: 'HtmlManager') -> None:
+    def scrape_study_lines(self: 'HtmlManager') -> None:
+        """ todo """
+
+    def scrape_course_data(self: 'HtmlManager') -> None:
         """ Iterate over each course for a given term and scrape all
             course-related data (evaluations, grades and information) """
-        self._course_list = self._scraper.obtain_course_list(self._term)
-        for course in self._course_list:
-            self.add_scraped_evaluations_to_dict(course)
-            self.add_scraped_grades_to_dict(course)
-            self.add_scraped_information_to_dict(course)
+        course_list: list[str] = self.get_course_list()
+        for course in course_list:
+            self.scrape_evaluations(course)
+            self.scrape_grades(course)
+            self.scrape_information(course)
 
-    def add_scraped_evaluations_to_dict(self: 'HtmlManager', course: str) -> None:
-        """ Obtain page source via href-scraper and add it to dict """
-        for course in self._course_list:
-            page_source: str = self._scraper.scrape_evaluations(course, self._term)
-            self._evaluation_dct[course] = page_source
+    def get_course_list(self) -> list[str]:
+        """ Convert _course_dct to a list of the term's course IDs """
+        if len(self._course_dct) == 0:
+            self._scrape_course_archive()
+        course_list: list[str] = list(self._course_dct.keys())
+        return course_list
 
-    def add_scraped_grades_to_dict(self: 'HtmlManager', course: str) -> None:
-        """ Obtain page source via href-scraper and add it to dict """
-        for course in self._course_list:
-            page_source: str = self._scraper.scrape_grades(course, self._term)
-            self._evaluation_dct[course] = page_source
+    def scrape_evaluations(self: 'HtmlManager', course: str) -> None:
+        """ Scrape page source and store part of it in _evaluations_dct """
+        search_result: str = self._scrape_tool.search_for_evaluation_hrefs(course)
+        url: str = HtmlLocator.locate_evaluations(course, self._term, search_result)
+        page_source = self._scrape_tool.get_page_source(url)
+        sliced_html: str = HtmlSlicer.slice_evaluation_html(page_source, course, self._term)
+        self._evaluation_dct[course] = sliced_html
 
-    def add_scraped_information_to_dict(self: 'HtmlManager', course: str) -> None:
-        """ Obtain page source via href-scraper and add it to dict """
-        for course in self._course_list:
-            page_source: str = self._scraper.scrape_information(course, self._term)
-            self._evaluation_dct[course] = page_source
+    def scrape_grades(self: 'HtmlManager', course: str) -> None:
+        """ Scrape page source and store part of it in _grades_dct """
+        url: str = HtmlLocator.locate_grades(course, self._term)
+        page_source: str = self._scrape_tool.get_page_source(url)
+        sliced_html: str = HtmlSlicer.slice_grade_html(page_source, course, self._term)
+        self._grades_dct[course] = sliced_html
+
+    def scrape_information(self: 'HtmlManager', course: str) -> None:
+        """ Scrape page source and store part of it in _information_dct """
+        url: str = HtmlLocator.locate_information(course, self._term)
+        page_source: str = self._scrape_tool.get_page_source(url)
+        sliced_html: str = HtmlSlicer.slice_information_html(page_source, course, self._term)
+        self._information_dct[course] = sliced_html
 
     def store_html(self: 'HtmlManager') -> None:
         """ Store the scraped html via the persistence class """
-        Persistence.store_evaluation_html(self._evaluation_dct, self._term)
-        Persistence.store_grade_html(self._evaluation_dct, self._term)
-        Persistence.store_information_html(self._evaluation_dct, self._term)
+        HtmlPersistence.store_evaluation_html(self._evaluation_dct, self._term)
+        HtmlPersistence.store_grade_html(self._evaluation_dct, self._term)
+        HtmlPersistence.store_information_html(self._evaluation_dct, self._term)
 
-if __name__ == "__main__":
-    term_list: list[str] = ['F17', 'E17',
-                            'F18', 'E18',
-                            'F19', 'E19',
-                            'F20', 'E20',
-                            'F21', 'E21',
-                            'F22', 'E22',
-                            'F23']
-    HtmlManager.scrape_all_term_data(term_list)
+    def _scrape_course_archive(self) -> None:
+        """ Scrape page source and store it in _course_dct """
+        raw_html_list: list[str] = []
+        urls: list[str] = HtmlLocator.locate_course_archive(self._term)
+        for url in urls:
+            page_source: str = self._scrape_tool.get_page_source(url)
+            raw_html_list.append(page_source)
+        self._course_dct = HtmlParser.parse_course_archive(raw_html_list)
+
+# DELETE???
+'''
+
+    def scrape_evaluation_locations(self: 'HtmlManager', course_id: str)        
+        unparsed_urls: str = self._scrape_tool.search_for_evaluation_hrefs(course_id)
+        url: str = HtmlLocator.locate_evaluations(course_id, unparsed_urls)
+        self._evaluation_urls[course_id] = urls
+        return urls
+
+    def extract_course_list(self: 'HtmlManager') -> list[str]:
+        """ Obtain and return the term's course list via href-scraper """
+        course_list: list[str] = self._scraper.get_course_list(self._term)
+        return course_list
+
+    def extract_evaluations(self: 'HtmlManager', course: str) -> None:
+        """ Obtain page source via href-scraper and add it to dict """
+        page_source: str = self._scraper.scrape_evaluations(course, self._term)
+        self._evaluation_dct[course] = page_source
+
+    def extract_grades(self: 'HtmlManager', course: str) -> None:
+        """ Obtain page source via href-scraper and add it to dict """
+        page_source: str = self._scraper.scrape_grades(course, self._term)
+        self._evaluation_dct[course] = page_source
+
+    def extract_information(self: 'HtmlManager', course: str) -> None:
+        """ Obtain page source via href-scraper and add it to dict """
+        page_source: str = self._scraper.scrape_information(course, self._term)
+        self._evaluation_dct[course] = page_source
+'''
