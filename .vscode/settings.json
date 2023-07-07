@@ -1,3 +1,69 @@
 {
-    "python.linting.enabled": true
+    "pylint.args": [
+        "--disable=C0114",
+        "--disable=C0103",
+        "--disable=C0303",
+        "--disable=C0304",
+        "--disable=C0413",
+        "--disable=C0115",
+        "--disable=C0116",
+        "--disable=W0105",
+    ],
+    "workbench.colorTheme": "Monokai",
+    "workbench.colorCustomizations": {},
+    "launch": {
+
+        "configurations": [],
+        "compounds": []
+    },
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": [
+                    "punctuation.separator.element.python",
+                    "punctuation.section.function.begin.python",
+                    "punctuation.section.class.begin.python",
+                    "punctuation.section.method.begin.python",
+                ],
+                "settings": {
+                    "foreground": "#F92672"
+                },
+            },
+            {
+                "scope": [
+                    "punctuation.separator.annotation.result.python",
+                    "keyword.operator.assignment.python",
+                    "punctuation.separator.dict.python",
+                    "punctuation.separator.colon.python",
+                    "punctuation.separator.period.python",
+                    "punctuation.separator.arguments.python",
+                    "punctuation.separator.annotation.python",
+                ],
+                "settings": {
+                    "foreground": "#66D9EF"
+                },
+            },
+            {
+                "scope": [
+                    "meta.function-call.generic.python",
+                    "meta.attribute.python",
+                ],
+                "settings": {
+                    "foreground": "#00a86b"
+                },
+            },
+        ]
+    },
+    "editor.semanticHighlighting.enabled": true,
+    "editor.semanticTokenColorCustomizations": {
+
+        "rules": {
+            "class.builtin": "#DEAA88",
+            "function.builtin": "#DEAA88",//#DA70D6
+            "*.readonly": "#AE81FF",
+            "property": "#DA70D6",
+            "module": "#00a86b",
+            "method": "#00a86b",            
+        }
+    },
 }

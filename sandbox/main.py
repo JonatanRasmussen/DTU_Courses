@@ -1,6 +1,6 @@
 from html_manager import HtmlManager
 
-
+#test
 class StartScript:
     """ Parse raw page source html to a variety of desired formats """
 
