@@ -60,13 +60,11 @@ class HtmlManager:
         Persistence.store_information_html(self._evaluation_dct, self._term)
 
 if __name__ == "__main__":
-    term_list: list[str] = ['F17', 'E17', 'F23']
-    """
+    term_list: list[str] = ['F17', 'E17',
                             'F18', 'E18',
                             'F19', 'E19',
                             'F20', 'E20',
                             'F21', 'E21',
                             'F22', 'E22',
                             'F23']
-    """
     HtmlManager.scrape_all_term_data(term_list)
