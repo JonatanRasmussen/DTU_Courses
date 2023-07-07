@@ -4,13 +4,16 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 
+#https://sdb.dtu.dk/2023
 class WebScrapingTool:
-    """ Return page_source from target url via Selenium Webdriver """
+    """ Get page source from target url via Selenium Webdriver.
+        This class is meant to be instantiated by the html-scraper
+        class, which will carry out the scraping operation """
 
     def __init__(self: 'WebScrapingTool'):
         """ temp """
@@ -39,9 +42,12 @@ class WebScrapingTool:
             WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.NAME, "viewport")))
             page_source: str = driver.page_source
             return page_source
-        except TimeoutException as exc:
+        except TimeoutException as e:
+            #print(f'CustomWarning: Timeout occurred at {url}: {e}')
             return ""
-            #raise TimeoutError(f"Timeout exception at url: {url}") from exc
+        except WebDriverException as e:
+            #print(f'CustomWarning: WebDriverException occurred at {url}: {e}')
+            return ""
 
 
     def paginate_to_evaluation_hrefs(self, course_id: str) -> str:

@@ -1,17 +1,20 @@
+""" External modules """
 from bs4 import BeautifulSoup
+import pandas as pd
+import urllib
 
 
 class HtmlParser:
-    """ temp """
+    """ Parse raw page source html to a variety of desired formats """
 
     @staticmethod
     def parse_course_archive(page_source: str) -> dict[str,str]:
         """ Extract pairs of course IDs and Names from page source and return them as a dict """
         soup = BeautifulSoup(page_source, 'html.parser')
-        table = soup.find('table', {'class': 'table'})
+        table: any = soup.find('table', {'class': 'table'})
         dct: dict[str,str] = {}
         if table is not None:
-            rows = table.find_all('tr')[1:]
+            rows: any = table.find_all('tr')[1:]
             for row in rows:
                 course_id: str = row.find('td').text
                 course_name: str = row.find_all('td')[1].text
@@ -21,24 +24,43 @@ class HtmlParser:
 
 
     @staticmethod
-    def parse_evaluations(page_source: str):
+    def parse_evaluations(page_source: str) -> str:
         """ temp """
-        a = page_source
+        a: str = page_source
         b = "ø"
         return a+b
 
     @staticmethod
     def parse_grades(page_source: str) -> dict[str,int]:
-        """ temp """
-        a = page_source
-        b = "ø"
-        return a+b
+        """ Pandas grabs the raw html of the specified url and attempts to extract any tables it can find. If the url links to
+            a valid exam period for the course, 3 tables will be found (the 3rd table contains the grades), and the grades are
+            formatted into a dict. If the url contains 0 tables, the exam period is invalid and an empty dict is returned instead."""
+        df_found = False
+        try:
+            # We assunme that if pd.read_html finds a table, the url contain grades
+            df = pd.read_html(page_source, header=0)
+            # These grades are loaded into a dictionary based on the following code
+            table_containing_grades = df[2]
+            df_found = True
+            table_containing_grades = table_containing_grades.set_index('Karakter')
+            table_containing_grades = table_containing_grades.iloc[:,0]
+            scraped_dict = table_containing_grades.to_dict()
+            scraped_dict = {str(k): v for k, v in scraped_dict.items()}
+            scraped_dict = {k.capitalize(): v for k, v in scraped_dict.items()}
+        # If url is invalid (no table found), then return an empty dict
+        except (urllib.error.HTTPError, IndexError):
+            scraped_dict = {}
+        # If the following ever happens it probably means that DTU has updated their website and I have to re-write my code
+        if scraped_dict == {} and df_found is True:
+            raise ValueError("Grades found on url but dict is empty. DTU might have updated their site")
+        return scraped_dict
+
 
     @staticmethod
-    def parse_search_for_evaluation_urls(page_source: str):
+    def parse_evaluation_url_searchpage(page_source: str) -> dict[str, str]:
         """ Extract and return a dict of each semester and the url pointing to its evaluations """
         soup = BeautifulSoup(page_source, 'html.parser')
-        div_elements = soup.find_all('div', class_='Term')
+        div_elements: any = soup.find_all('div', class_='Term')
         dct: dict[str,str] = {}
         for div_element in div_elements:
             term: str = div_element.text.strip()
@@ -49,7 +71,7 @@ class HtmlParser:
         return formatted_dct
 
     @staticmethod
-    def _format_evaluation_urls(dct: dict[str,str]):
+    def _format_evaluation_urls(dct: dict[str,str]) -> dict[str, str]:
         """ SHOULD ONLY BE USED BY parse_pagination_to_evaluations() 
             Performs the following formatting:
             'E-18-13': '/kursus/01005/168580'

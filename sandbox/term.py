@@ -1,82 +1,86 @@
-
-
 class Term:
-    """ A class to handles the relation between DTU's semesters, academic years and exam periods """
+    """ A class to handle the relation between DTU's semesters,
+        academic years and exam periods. It was initially designed
+        as a data type to be used in other scripts, but I ended
+        up representing terms via strings throughout the project.
+        Only within this class is Term used as a data type """
 
-    def __init__(self: 'Term', calender_year: int, dtu_semester: str):
-        """ Calender year is a 4-digit int and semester must be 'E' or 'F' (Efterår / Forår) """
-        self._YEAR: int = calender_year
-        self._SEMESTER: str = dtu_semester
-        self._validate_term()
+    def __init__(self: 'Term', calender_year: int, semester: str) -> 'Term':
+        self._YEAR: int = calender_year # 2014, 2019, 2023, etc.
+        self._SEMESTER: str = semester # E (Efterår) or F (Forår)
+        self._validate_year()
+        self._validate_semester()
 
     @classmethod
-    def in_autumn(cls: 'Term', calender_year: int) -> 'Term':
-        """ Instantiate class as a term of semester type 'E' (Efterår) """
-        return cls(calender_year, 'E')
+    def from_string(cls: 'Term', term_as_string: str) -> 'Term':
+        if len(term_as_string) == 3 and term_as_string[1:3].isdigit():
+            dtu_semester: str = term_as_string[0]
+            calender_year: int = 2000 + int(term_as_string[1:3])
+            return cls(calender_year, dtu_semester)
+        else:
+            raise ValueError(f"Invalid term: {term_as_string}")
 
-    @classmethod
-    def in_spring(cls: 'Term', calender_year: int) -> 'Term':
-        """ Instantiate class as a term of semester type 'F' (Forår) """
-        return cls(calender_year, 'F')
+    @staticmethod
+    def validate_string(term_as_string: str) -> str:
+        term: 'Term' = Term.from_string(term_as_string)
+        return term.get_term_name()
+
+    @staticmethod
+    def get_exam_period_from_str(term_as_string: str) -> str:
+        term: 'Term' = Term.from_string(term_as_string)
+        return term.get_exam_period()
+
+    @staticmethod
+    def get_academic_year_from_str(term_as_string: str) -> str:
+        term: 'Term' = Term.from_string(term_as_string)
+        return term.get_academic_year()
+
+    @staticmethod
+    def convert_term_names_to_academic_years(terms: list[str]) -> list[str]:
+        academic_years_set: set[str] = set()
+        for term_as_string in terms:
+            term: 'Term' = Term.from_string(term_as_string)
+            academic_years_set.add(term.get_academic_year())
+        academic_years_list: list[str] = list(academic_years_set)
+        return academic_years_list
 
     def get_term_name(self: 'Term'):
-        """ Return the term in the format 'EXX' or 'FXX', commonly used at DTU.
-            If _year is 2018, then 'E' becomes 'E18' and 'F' becomes 'F18' """
         YEAR_LOWER_BOUND: int = 2000
         if self._YEAR > YEAR_LOWER_BOUND:
             return f'{self._SEMESTER}{self._YEAR-2000}'
         else:
-            raise ValueError(f"Error: Invalid year, {self._YEAR} is older than {YEAR_LOWER_BOUND}")
+            assert False, f"Invalid term: {self._YEAR-2000}{self._SEMESTER}"
 
     def get_exam_period(self: 'Term'):
-        """ Return the terms corresponding exam period.
-            If _year is 2018, then 'E' becomes 'Winter-2018' and 'F' becomes 'Summer-2018' """
         if self._SEMESTER == 'E':
             return f'Winter-{self._YEAR}'
         elif self._SEMESTER == 'F':
             return f'Summer-{self._YEAR}'
-        else:  # This should never happen
-            raise ValueError("Error: Invalid semester")
+        else:
+            assert False, f"Invalid term: {self._YEAR-2000}{self._SEMESTER}"
 
-    def get_academic_year(self: 'Term'):
-        """ Return the academic year that the term belongs to.
-            If _year is 2018, then 'E' becomes '2018-2019' and 'F' becomes '2017-2018' """
+    def get_academic_year(self: 'Term') -> str:
         if self._SEMESTER == 'E':
             return f'{self._YEAR}-{1 + self._YEAR}'
         elif self._SEMESTER == 'F':
             return f'{self._YEAR - 1}-{self._YEAR}'
-        else:  # This should never happen
-            raise ValueError("Error: Invalid semester")
-
-    @staticmethod
-    def convert_term_names_to_academic_years(terms: set['Term']) -> set[str]:
-        """ Apply get_academic_year() on an entire set of Term objects """
-        academic_years: set[str] = set()
-        for term in terms:
-            academic_years.add(term.get_academic_year())
-        return academic_years
-
-    def _validate_term(self: 'Term'):
-        """ Ensure that the term is instantiated with a valid year and semester """
-        self._validate_year()
-        self._validate_semester()
+        else:
+            assert False, f"Invalid term: {self._YEAR-2000}{self._SEMESTER}"
 
     def _validate_year(self: 'Term'):
-        """ Ensure that the term is instantiated with a supported year """
+        """ The term year should be in-between 2000 and 2059 """
         LOWER_BOUND: int = 2000 # Years 19XX break the shortened names E16 / F18 / E21 / F23 / etc.
         UPPER_BOUND: int = 2059 # 2060 and 1960 might collide when shortened to F60 or E60
         if (self._YEAR < LOWER_BOUND) or (self._YEAR > UPPER_BOUND):
-            raise ValueError(f"Error: Invalid year, {self._YEAR} is not supported. "+
-                              "Please choose a year within the following bounds: "+
-                             f"{LOWER_BOUND} - {UPPER_BOUND}")
+            raise ValueError("CustomError: Invalid year, outside of "+
+                            f"bounds:{LOWER_BOUND} - {UPPER_BOUND}")
 
     def _validate_semester(self: 'Term'):
-        """ Ensure that the term is instantiated with a supported semester """
+        """ The term semester should be E (Efterår) or F (Forår) """
         SUPPORTED_SEMESTERS: set[str] = {'E', 'F'}
         if self._SEMESTER not in SUPPORTED_SEMESTERS:
-            raise ValueError(f"Error: Invalid value, {self._SEMESTER} is not supported. "+
-                              "Please set the semester as one of the following values: "+
-                             f"{SUPPORTED_SEMESTERS}")
+            raise ValueError("CustomError: Invalid semester, "+ 
+                            f"not supported: {SUPPORTED_SEMESTERS}")
 
 
 if __name__ == "__main__":

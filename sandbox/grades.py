@@ -1,23 +1,24 @@
-from term import Term
-
-
 class Grades:
-    """ A class to handles the relation between DTU's semesters, academic years and exam periods """
+    """ A class for handling DTU grades """
 
-    def __init__(self: 'Grades', course_id: str, term: 'Term'):
-        """ Calender year is a 4-digit int and semester must be 'E' or 'F' (Efterår / Forår) """
-        self._COURSE_ID: str = course_id
-        self._TERM: 'Term' = term
+    def __init__(self: 'Grades'):
+        """ temp """
+        self._grade_dct: dict[str:int] = {}
 
     @classmethod
-    def in_spring(cls: 'Grades', course_id: str, term: 'Term') -> 'Grades':
-        """ Instantiate class as a term of semester type 'F' (Forår) """
-        return cls(course_id, term)
+    def in_spring(cls: 'Grades') -> 'Grades':
+        """ temp """
+        return cls()
 
-    def get_term_name(self: 'Term'):
-        """ Return the term in the format 'EXX' or 'FXX', commonly used at DTU.
-            If _year is 2018, then 'E' becomes 'E18' and 'F' becomes 'F18' """
+    def my_method(self: 'Grades'):
+        """ temp """
 
+    def add_new_grade(self: 'Grades', grade_name: str, amount: int) -> None:
+        """ temp """
+        if grade_name not in self._grade_dct:
+            self._grade_dct[grade_name] = amount
+        else:
+            raise ValueError(f"CustomError: {grade_name} already exists in dict: {self._grade_dct}")
 
 
 if __name__ == "__main__":
