@@ -34,4 +34,5 @@ if __name__ == "__main__":
     course_list: list[str] = {'01005': 'A', '02402': 'B',
                               '10020': 'C', '10022': 'D',
                               '34333': 'E', '41011': 'F'}
-    StartScript.scrape_specific_courses(term_list, course_list)
+    #StartScript.scrape_specific_courses(term_list, course_list)
+    StartScript.scrape_all_data(term_list)
