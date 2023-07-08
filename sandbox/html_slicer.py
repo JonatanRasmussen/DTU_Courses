@@ -11,7 +11,7 @@ class HtmlSlicer:
         """ Slice out the irrelevant parts of evaluation html """
         START: str = '<div class="grid_6 clearright">'
         END: str = '<div id="mobile-container-bottom" class="hide-desktop">'
-        PAGE_404: str = "<span><H1>Server Error in '/' Application.<hr width=100"
+        PAGE_404: str = '' #"<span><H1>Server Error in '/' Application.<hr width=100"
         sliced_html: str = HtmlSlicer.slice_on_markers(page_source, START, END)
         slice_is_valid: bool = HtmlSlicer.is_slice_valid(page_source, sliced_html, PAGE_404)
         if not slice_is_valid:
@@ -33,7 +33,7 @@ class HtmlSlicer:
     @staticmethod
     def slice_information_html(page_source: str, course: str, term: str) -> str:
         """ Slice out the irrelevant parts of information html """
-        START: str = 'permalink clickable" style="padding-left:3px;font-size:16px"></span>'
+        START: str = '<span class="glyphicon glyphicon-link pull-right permalink clickable" style="padding-left:3px;font-size:16px"'
         END: str = '<div style="display:none" id="permalinkBox">'
         PAGE_404: str = '' # is left blank on purpose, as there are no 404 page; 
         sliced_html: str = HtmlSlicer.slice_on_markers(page_source, START, END)
@@ -46,7 +46,7 @@ class HtmlSlicer:
     def slice_on_markers(page_source: str, start: str, end: str) -> str:
         """ Return the page source in-betwen 'start' and 'end'. 
             Each marker should appear only once in page_source """
-        sliced_at_front: list[str] = page_source.split(start)
+        sliced_at_front: list[str] = page_source.split(start)        
         if len(sliced_at_front) == 2:
             sliced_at_end: list[str] = sliced_at_front[1].split(end)
             if len(sliced_at_end) == 2:
@@ -64,6 +64,7 @@ class HtmlSlicer:
         if (has_been_sliced) or (is_a_404_page) or (it_empty_string):
             return True
         else:
+            print(f'len: {len(unsliced)}, {unsliced}')
             return False
             
     @staticmethod

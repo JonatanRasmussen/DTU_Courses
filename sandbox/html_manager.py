@@ -36,6 +36,7 @@ class HtmlManager:
         """ Iterate over each course for a given term and scrape all
             course-related data (evaluations, grades and information) """
         course_list: list[str] = self.get_course_list()
+        self.scrape_information(course_list[0]) # Duplicating the first information scrape fixes a weird timeout bug 
         for course in course_list:
             self.scrape_evaluations(course)
             self.scrape_grades(course)
@@ -54,6 +55,7 @@ class HtmlManager:
         url: str = HtmlLocator.locate_evaluations(course, self._term, search_result)
         page_source = self._scrape_tool.get_page_source(url)
         sliced_html: str = HtmlSlicer.slice_evaluation_html(page_source, course, self._term)
+        print(len(sliced_html))
         self._evaluation_dct[course] = sliced_html
 
     def scrape_grades(self: 'HtmlManager', course: str) -> None:
@@ -61,6 +63,7 @@ class HtmlManager:
         url: str = HtmlLocator.locate_grades(course, self._term)
         page_source: str = self._scrape_tool.get_page_source(url)
         sliced_html: str = HtmlSlicer.slice_grade_html(page_source, course, self._term)
+        print(len(sliced_html))
         self._grades_dct[course] = sliced_html
 
     def scrape_information(self: 'HtmlManager', course: str) -> None:
@@ -68,13 +71,14 @@ class HtmlManager:
         url: str = HtmlLocator.locate_information(course, self._term)
         page_source: str = self._scrape_tool.get_page_source(url)
         sliced_html: str = HtmlSlicer.slice_information_html(page_source, course, self._term)
+        print(len(sliced_html))
         self._information_dct[course] = sliced_html
 
     def store_html(self: 'HtmlManager') -> None:
         """ Store the scraped html via the persistence class """
         HtmlPersistence.store_evaluation_html(self._evaluation_dct, self._term)
-        HtmlPersistence.store_grade_html(self._evaluation_dct, self._term)
-        HtmlPersistence.store_information_html(self._evaluation_dct, self._term)
+        HtmlPersistence.store_grade_html(self._grades_dct, self._term)
+        HtmlPersistence.store_information_html(self._information_dct, self._term)
 
     def _scrape_course_archive(self) -> None:
         """ Scrape page source and store it in _course_dct """
