@@ -6,19 +6,15 @@ class Grade:
         - Int: The numerical weight of the grade (can also be None) 
         - Bool: The 'attended' value ('True' if it counts as exam attendance)
         - Bool: The 'passed' value ('True' if it counts as passing the exam) """
-    
+
+    #CONSTRUCTOR    
     def __init__(self, name: str, weight: int | None, attended: bool, passed: bool) -> 'Grade':
         """ NOTE: Use one of the classmethods to instantiate """
-        self._grade_name: bool = name
-        self._quantity: int = 0
+        self._name: bool = name
         self._numeric_weight: int | None = weight
-        self._attended: bool = attended
-        self._passed: bool = passed
-        if self._numeric_weight is not None:
-            self._numeric: bool = True
-        else:
-            self._numeric = False
-
+        self._counts_as_exam_attendance: bool = attended
+        self._passes_exam: bool = passed
+        self._quantity: int = 0
 
     @classmethod
     def create_passed(cls: 'Grade', name: str, weight: int) -> 'Grade':
@@ -26,7 +22,6 @@ class Grade:
         attended = True
         passed = True
         return Grade(name, weight, attended, passed)
-
 
     @classmethod
     def create_absent(cls: 'Grade', name: str) -> 'Grade':
@@ -42,58 +37,45 @@ class Grade:
         attended = True
         passed = False
         return Grade(name, weight, attended, passed)
-
-    @staticmethod
-    def instantiate_dtu_grades() -> list['Grade']:
-        """ Instantiate a list containing each grade used at DTU """
-        dtu_grades: list['Grade'] = []
-        # Numeric grades (seven-step scale)
-        dtu_grades.append(Grade.create_passed('12', 12))
-        dtu_grades.append(Grade.create_passed('10', 10))
-        dtu_grades.append(Grade.create_passed('7', 7))
-        dtu_grades.append(Grade.create_passed('4', 4))
-        dtu_grades.append(Grade.create_passed('02', 2))
-        dtu_grades.append(Grade.create_attended_but_failed('00', 0))
-        dtu_grades.append(Grade.create_attended_but_failed('minus_3', -3))
-        # Non-numeric grades (Custom grades used at DTU)
-        dtu_grades.append(Grade.create_passed('pass', None))
-        dtu_grades.append(Grade.create_attended_but_failed('fail', None))
-        dtu_grades.append(Grade.create_absent('absent'))
-        dtu_grades.append(Grade.create_absent('ill'))
-        dtu_grades.append(Grade.create_absent('not_approved'))
-        return dtu_grades
-
-    def set_quantity(self: 'Grade', quantity: int) -> None:
-        """ Set the amount of students that have received the grade """
-        self._quantity = quantity
-
-    def get_quantity(self: 'Grade') -> int:
-        """ Get the amount of students that have received the grade """
-        return self._quantity
-
+    
+    #GETTER
     def passes_exam(self: 'Grade') -> bool:
         """ Returns 'True' if the grade passes the exam
             Returns 'False' if the grade does not pass the exam """
-        return self._passed
-    
-    def attended_exam(self: 'Grade') -> bool:
+        return self._passes_exam
+
+    #GETTER    
+    def counts_as_exam_attendance(self: 'Grade') -> bool:
         """ Returns 'True' if the grade counts as attending the exam
             Returns 'False' if the grade counts as absence from the exam """
-        return self._attended
+        return self._counts_as_exam_attendance
 
+    #GETTER    
     def is_numeric(self: 'Grade') -> bool:
         """ Returns 'True' if the grade has a numeric representation
             Returns 'False' if the grade isn't a number """
-        return self._numeric
+        if self._numeric_weight is not None:
+            return True
+        else:
+            return False
 
+    #GETTER
+    def get_quantity(self: 'Grade') -> int:
+        """ GET the amount of students that have received the grade """
+        return self._quantity
+
+    #SETTER    
+    def set_quantity(self: 'Grade', new_quantity: int) -> None:
+        """ SET the amount of students that have received the grade """
+        self._quantity = new_quantity
+
+    #GETTER    
     def get_name(self: 'Grade') -> bool:
         """ Return the name of the grade """
-        return self._grade_name
+        return self._name
 
-    def get_weight(self: 'Grade') -> int | None:
+    #GETTER
+    def get_numeric_weight(self: 'Grade') -> int | None:
         """ If the grade is numeric, return its numeric weight
             If the grade is not numeric, return 'None' """
-        if self.is_numeric():
-            return self._numeric_weight
-        else:
-            return None
+        return self._numeric_weight
