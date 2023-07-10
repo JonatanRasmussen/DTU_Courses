@@ -1,24 +1,48 @@
 class GradeSheet:
     """ Grade distribution across DTU's different types of grades """
 
-    def __init__(self):
-        # Numeric grade types
-        self._grade_12: int = 0
-        self._grade_10: int = 0
-        self._grade_7: int = 0
-        self._grade_4: int = 0
-        self._grade_02: int = 0
-        self._grade_00: int = 0
-        self._grade_minus_3: int = 0
-        # Binary grade types
-        self._grade_pass: int = 0
-        self._grade_fail: int = 0
-        # Absent from exam
-        self._grade_not_met: int = 0
-        self._grade_ill: int = 0
-        self._grade_not_approved: int = 0
+    def __init__(self: 'GradeSheet', course: str, term: str) -> 'GradeSheet':
+        """ Instantiate each grade used at DTU """
+        self._course: str = course
+        self._term: str = term
+        self._grades: list['Grade'] = GradeSheet.instantiate_dtu_grades()
+        # Numeric grades (seven-step scale)
+        self._grade_12: 'Grade' = Grade.create_passed('12', 12)
+        self._grade_10: 'Grade' = Grade.create_passed('10', 10)
+        self._grade_7: 'Grade' = Grade.create_passed('7', 7)
+        self._grade_4: 'Grade' = Grade.create_passed('4', 4)
+        self._grade_02: 'Grade' = Grade.create_passed('02', 2)
+        self._grade_00: 'Grade' = Grade.create_failed('00', 0)
+        self._grade_minus_3: 'Grade' = Grade.create_failed('minus_3', -3)
+        # Non-numeric grades (Custom grades used at DTU)
+        self._grade_pass: 'Grade' = Grade.create_passed('pass', None)
+        self._grade_fail: 'Grade' = Grade.create_failed('fail', None)
+        self._grade_absent: 'Grade' = Grade.create_not_attended('absent')
+        self._grade_ill: 'Grade' = Grade.create_not_attended('ill')
+        self._grade_unqualified: 'Grade' = Grade.create_not_attended('unqualified')
 
         self.grade_types: dict[str:str] = {}
+
+    @staticmethod
+    def instantiate_dtu_grades() -> list['Grade']:
+        """ Instantiate a list containing each grade used at DTU """
+        dtu_grades: list['Grade'] = []
+        # Numeric grades (seven-step scale)
+        dtu_grades.append(Grade.create_passed('12', 12))
+        dtu_grades.append(Grade.create_passed('10', 10))
+        dtu_grades.append(Grade.create_passed('7', 7))
+        dtu_grades.append(Grade.create_passed('4', 4))
+        dtu_grades.append(Grade.create_passed('02', 2))
+        dtu_grades.append(Grade.create_failed('00', 0))
+        dtu_grades.append(Grade.create_failed('minus_3', -3))
+        # Non-numeric grades (Custom grades used at DTU)
+        dtu_grades.append(Grade.create_passed('pass', None))
+        dtu_grades.append(Grade.create_failed('fail', None))
+        dtu_grades.append(Grade.create_not_attended('absent'))
+        dtu_grades.append(Grade.create_not_attended('ill'))
+        dtu_grades.append(Grade.create_not_attended('not_approved'))
+        return dtu_grades
+
 
     def calculate_average(self: 'GradeSheet')-> float | None:
         """ Sum each grade on the seven-step scale and calculate the average """
@@ -66,13 +90,13 @@ class GradeSheet:
         return self._grade_fail
 
     def get_not_met(self: 'GradeSheet') -> int:
-        return self._grade_not_met
+        return self._grade_absent
 
     def get_ill(self: 'GradeSheet') -> int:
         return self._grade_ill
 
     def get_unqualified(self: 'GradeSheet') -> int:
-        return self._grade_not_approved
+        return self._grade_unqualified
 
     def count_passed(self: 'GradeSheet') -> int:
         count: int = 0
