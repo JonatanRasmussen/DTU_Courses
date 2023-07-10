@@ -12,10 +12,10 @@ class HtmlSlicer:
         START: str = '<div class="grid_6 clearright">'
         END: str = '<div id="mobile-container-bottom" class="hide-desktop">'
         PAGE_404: str = '' #"<span><H1>Server Error in '/' Application.<hr width=100"
-        sliced_html: str = HtmlSlicer.slice_on_markers(page_source, START, END)
-        slice_is_valid: bool = HtmlSlicer.is_slice_valid(page_source, sliced_html, PAGE_404)
+        sliced_html: str = HtmlSlicer._slice_on_markers(page_source, START, END)
+        slice_is_valid: bool = HtmlSlicer._is_slice_valid(page_source, sliced_html, PAGE_404)
         if not slice_is_valid:
-            HtmlSlicer.report_missing_marker('evaluation html', course, term)
+            HtmlSlicer._report_validation_fail('evaluation html', course, term)
         return sliced_html
 
     @staticmethod
@@ -24,10 +24,10 @@ class HtmlSlicer:
         START: str = '<form id="karsumForm" runat="server">'
         END: str = '<div id="mobile-container-bottom" class="hide-desktop">'
         PAGE_404: str = '<h2>404 - File or directory not found.</h2>'
-        sliced_html: str = HtmlSlicer.slice_on_markers(page_source, START, END)
-        slice_is_valid: bool = HtmlSlicer.is_slice_valid(page_source, sliced_html, PAGE_404)
+        sliced_html: str = HtmlSlicer._slice_on_markers(page_source, START, END)
+        slice_is_valid: bool = HtmlSlicer._is_slice_valid(page_source, sliced_html, PAGE_404)
         if not slice_is_valid:
-            HtmlSlicer.report_missing_marker('grade html', course, term)
+            HtmlSlicer._report_validation_fail('grade html', course, term)
         return sliced_html
 
     @staticmethod
@@ -35,18 +35,18 @@ class HtmlSlicer:
         """ Slice out the irrelevant parts of information html """
         START: str = '<span class="glyphicon glyphicon-link pull-right permalink clickable" style="padding-left:3px;font-size:16px"'
         END: str = '<div style="display:none" id="permalinkBox">'
-        PAGE_404: str = '' # is left blank on purpose, as there are no 404 page; 
-        sliced_html: str = HtmlSlicer.slice_on_markers(page_source, START, END)
-        slice_is_valid: bool = HtmlSlicer.is_slice_valid(page_source, sliced_html, PAGE_404)
+        PAGE_404: str = '' # is left blank on purpose, as there are no 404 page;
+        sliced_html: str = HtmlSlicer._slice_on_markers(page_source, START, END)
+        slice_is_valid: bool = HtmlSlicer._is_slice_valid(page_source, sliced_html, PAGE_404)
         if not slice_is_valid:
-            HtmlSlicer.report_missing_marker('information html', course, term)
+            HtmlSlicer._report_validation_fail('information html', course, term)
         return sliced_html
 
     @staticmethod
-    def slice_on_markers(page_source: str, start: str, end: str) -> str:
-        """ Return the page source in-betwen 'start' and 'end'. 
+    def _slice_on_markers(page_source: str, start: str, end: str) -> str:
+        """ Return the page source in-betwen 'start' and 'end'.
             Each marker should appear only once in page_source """
-        sliced_at_front: list[str] = page_source.split(start)        
+        sliced_at_front: list[str] = page_source.split(start)
         if len(sliced_at_front) == 2:
             sliced_at_end: list[str] = sliced_at_front[1].split(end)
             if len(sliced_at_end) == 2:
@@ -54,7 +54,7 @@ class HtmlSlicer:
         return page_source
 
     @staticmethod
-    def is_slice_valid(unsliced: str, sliced: str, page_404_marker: str) -> bool:
+    def _is_slice_valid(unsliced: str, sliced: str, page_404_marker: str) -> bool:
         """ Lazy attempt at data validation. If slice doesn't
             pass as valid, the DTU website has been changed
             or the scraper is accessing it incorrectly """
@@ -66,7 +66,9 @@ class HtmlSlicer:
         else:
             print(f'len: {len(unsliced)}, {unsliced}')
             return False
-            
+
     @staticmethod
-    def report_missing_marker(data_type: str, course: str, term: str) -> None:
+    def _report_validation_fail(data_type: str, course: str, term: str) -> None:
+        """ If the slicing couldn't be carried out in the expected
+            manner, output a notification in the console """
         print(f'Custom Report: Undocumented html in {data_type} for {course}, {term}')

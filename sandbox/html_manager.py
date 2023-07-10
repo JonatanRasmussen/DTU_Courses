@@ -7,7 +7,7 @@ from html_persistence import HtmlPersistence
 class HtmlManager:
     """ A top-level class for scraping and storing all data
         associated with a given term. It instantiates the
-        html-scraper class and organizes its output into dicts. 
+        html-scraper class and organizes its output into dicts.
         The dicts contain raw html strings (page source), and the
         dicts can be saved as files or passed on to other classes """
 
@@ -15,7 +15,6 @@ class HtmlManager:
         """ Instantiate a single manager per term, as a single
             HtmlManager can't manage data from multiple terms """
         self._term: str = term
-        #self._scraper: 'HtmlScraper' = HtmlScraper()
         self._scrape_tool: 'WebScrapingTool' = WebScrapingTool()
         self._course_dct: dict[str:str] = {}
         self._evaluation_dct: dict[str:str] = {}
@@ -36,7 +35,7 @@ class HtmlManager:
         """ Iterate over each course for a given term and scrape all
             course-related data (evaluations, grades and information) """
         course_list: list[str] = self.get_course_list()
-        self.scrape_information(course_list[0]) # Duplicating the first information scrape fixes a weird timeout bug 
+        self._fix_weird_timeout_bug(course_list)
         for course in course_list:
             self.scrape_evaluations(course)
             self.scrape_grades(course)
@@ -55,7 +54,6 @@ class HtmlManager:
         url: str = HtmlLocator.locate_evaluations(course, self._term, search_result)
         page_source = self._scrape_tool.get_page_source(url)
         sliced_html: str = HtmlSlicer.slice_evaluation_html(page_source, course, self._term)
-        print(len(sliced_html))
         self._evaluation_dct[course] = sliced_html
 
     def scrape_grades(self: 'HtmlManager', course: str) -> None:
@@ -63,7 +61,6 @@ class HtmlManager:
         url: str = HtmlLocator.locate_grades(course, self._term)
         page_source: str = self._scrape_tool.get_page_source(url)
         sliced_html: str = HtmlSlicer.slice_grade_html(page_source, course, self._term)
-        print(len(sliced_html))
         self._grades_dct[course] = sliced_html
 
     def scrape_information(self: 'HtmlManager', course: str) -> None:
@@ -71,7 +68,6 @@ class HtmlManager:
         url: str = HtmlLocator.locate_information(course, self._term)
         page_source: str = self._scrape_tool.get_page_source(url)
         sliced_html: str = HtmlSlicer.slice_information_html(page_source, course, self._term)
-        print(len(sliced_html))
         self._information_dct[course] = sliced_html
 
     def store_html(self: 'HtmlManager') -> None:
@@ -80,7 +76,7 @@ class HtmlManager:
         HtmlPersistence.store_grade_html(self._grades_dct, self._term)
         HtmlPersistence.store_information_html(self._information_dct, self._term)
 
-    def _scrape_course_archive(self) -> None:
+    def _scrape_course_archive(self: 'HtmlManager') -> None:
         """ Scrape page source and store it in _course_dct """
         raw_html_list: list[str] = []
         urls: list[str] = HtmlLocator.locate_course_archive(self._term)
@@ -89,32 +85,10 @@ class HtmlManager:
             raw_html_list.append(page_source)
         self._course_dct = HtmlParser.parse_course_archive(raw_html_list)
 
-# DELETE???
-'''
-
-    def scrape_evaluation_locations(self: 'HtmlManager', course_id: str)        
-        unparsed_urls: str = self._scrape_tool.search_for_evaluation_hrefs(course_id)
-        url: str = HtmlLocator.locate_evaluations(course_id, unparsed_urls)
-        self._evaluation_urls[course_id] = urls
-        return urls
-
-    def extract_course_list(self: 'HtmlManager') -> list[str]:
-        """ Obtain and return the term's course list via href-scraper """
-        course_list: list[str] = self._scraper.get_course_list(self._term)
-        return course_list
-
-    def extract_evaluations(self: 'HtmlManager', course: str) -> None:
-        """ Obtain page source via href-scraper and add it to dict """
-        page_source: str = self._scraper.scrape_evaluations(course, self._term)
-        self._evaluation_dct[course] = page_source
-
-    def extract_grades(self: 'HtmlManager', course: str) -> None:
-        """ Obtain page source via href-scraper and add it to dict """
-        page_source: str = self._scraper.scrape_grades(course, self._term)
-        self._evaluation_dct[course] = page_source
-
-    def extract_information(self: 'HtmlManager', course: str) -> None:
-        """ Obtain page source via href-scraper and add it to dict """
-        page_source: str = self._scraper.scrape_information(course, self._term)
-        self._evaluation_dct[course] = page_source
-'''
+    def _fix_weird_timeout_bug(self: 'HtmlManager', course_list):
+        """ The first information scrape will for some reason return
+            a useless timeout page. My lazy attempt at a bugfix is to
+            'flush out' the timeout page with a redundant scrape """
+        if len(course_list) > 0:
+            url: str = HtmlLocator.locate_information(course_list[0], self._term)
+            _: str = self._scrape_tool.get_page_source(url)
