@@ -4,99 +4,170 @@ from abc import ABC, abstractmethod
 
 #https://refactoring.guru/design-patterns/bridge
 
-class DataDomain(ABC):
+class Persistence:
 
+    def data_exists():
+        pass
+    def cached_data_exists():
+        pass
+
+    def read_data():
+        pass
+    def write_data():
+        pass
+
+    def read_cache():
+        pass
+    def write_cache():
+        pass
+
+class DataRetrieval(ABC):
     def __init__(self) -> None:
         self.custom_object: any = None
-        self.url: Dict[str:str] = ""
-        self.course_page: Dict[str:str] = ""
-        self.unparsed_html: Dict[str:str] = ""
-        self.parsed_data: any = ""
-        self.scrape_tool: None = "scrape_tool"
+        self.unparsed_data: any = None
+        self.parsed_data: any = None
 
-    def generate_url(self, custom_object: any):
-        if isinstance(custom_object, 'Course'):
-            pass
-        elif isinstance(custom_object, 'Evaluation'):
-            pass
-
-    def scrape_page_source(self, custom_object: any):
+    @abstractmethod
+    @staticmethod
+    def scrape_data() -> any:
         pass
 
-    def compress_html(self, custom_object: any):
+    @abstractmethod
+    @staticmethod
+    def parse_data() -> any:
         pass
 
-    def parse_html(self, custom_object: any):
-        pass
+    def set_unparsed_data(self, unparsed_data: any) -> None:
+        self.unparsed_data = unparsed_data
 
-    def unparsed_html_exists(self):
-        pass
-    def save_unparsed_html(self):
-        Persistence.save_unparsed_html(self.custom_object, self.unparsed_html)
+    def scrape_and_store_data(self, custom_object: any) -> any:
+        self.unparsed_data = self.scrape_data(custom_object)
+        Persistence.write_cache(custom_object, self.unparsed_data)
 
-    def parsed_data_exists(self):
-        pass
-    def save_parsed_data(self):
-        Persistence.save_parsed_data(self.custom_object, self.parsed_data)
+    def parse_and_store_data(self, custom_object: any) -> any:
+        self.parsed_data = self.parse_data(self.unparsed_data)
+        Persistence.write_data(custom_object, self.parsed_data)
 
-    def load_data(self, custom_object: any):
-        self.custom_object = custom_object
-        if self.parsed_data_exists():
-            return self.load_parsed_data()
-        elif self.unparsed_html_exists():
-            self.unparsed_html = self.load_unparsed_html()
-        else:
-            self.url = self.generate_url()
-            self.unparsed_html = self.scrape_page_source()
-        self.parsed_data = self.parse_html()
-        self.save_data()
+    def get_parsed_data(self) -> any:
         return self.parsed_data
 
+    def get_retrieval_strategy_name(self) -> str:
+        return self.__class__.__name__
 
+class DtuCourses(DataRetrieval):
+
+    @staticmethod
+    def scrape_data() -> any:
+        pass
+
+    @staticmethod
+    def parse_data() -> any:
+        pass
+
+class DtuEvaluation(DataRetrieval):
+
+    @staticmethod
+    def scrape_data() -> any:
+        pass
+
+    @staticmethod
+    def parse_data() -> any:
+        pass
+
+class DtuGradeSheet(DataRetrieval):
+
+    @staticmethod
+    def scrape_data() -> any:
+        pass
+
+    @staticmethod
+    def parse_data() -> any:
+        pass
+
+class DtuInfoPage(DataRetrieval):
+
+    @staticmethod
+    def scrape_data() -> any:
+        pass
+
+    @staticmethod
+    def parse_data() -> any:
+        pass
+
+class DtuStudyLine(DataRetrieval):
+
+    @staticmethod
+    def scrape_data() -> any:
+        pass
+
+    @staticmethod
+    def parse_data() -> any:
+        pass
+
+class DtuTeacher(DataRetrieval):
+
+    @staticmethod
+    def scrape_data() -> any:
+        pass
+
+    @staticmethod
+    def parse_data() -> any:
+        pass
+
+class DataDomain(ABC):
+
+    @abstractmethod
+    @staticmethod
+    def get_data_retrieval_strategy(self, custom_object: any) -> None:
+        pass
+
+    @staticmethod
+    def get_domain_name(cls) -> str:
+        return cls.__name__
 
 class DtuData(DataDomain):
 
-    def scrape_study_lines(self) -> None:
-        pass
+    @staticmethod
+    def get_data_retrieval_strategy(custom_object: any) -> DataRetrieval:
+        if isinstance(custom_object, 'Course'):
+            return DtuCourses
+        elif isinstance(custom_object, 'Evaluation'):
+            return DtuEvaluation
+        elif isinstance(custom_object, 'GradeSheet'):
+            return DtuGradeSheet
+        elif isinstance(custom_object, 'InfoPage'):
+            return DtuInfoPage
+        elif isinstance(custom_object, 'StudyLine'):
+            return DtuStudyLine
+        elif isinstance(custom_object, 'Teacher'):
+            return DtuTeacher
+        else:
+            raise ValueError("Custom_object is of an unsupported type")
 
-    def scrape_course_list(self) -> list[str]:
-        """ Convert _course_dct to a list of the term's course IDs """
-        course_dict: dict[str,str] = self._scrape_course_archive()
-        course_list: list[str] = list(course_dict.keys())
-        return course_list
+class DataAccess:
+    def __init__(self, custom_object) -> None:
+        self.custom_object: any = custom_object
+        self.retrieval_strategy: DataRetrieval = self._get_retrieval_strategy()
 
-    def _scrape_course_archive(self) -> None:
-        """ Scrape page source and store it in _course_dct """
-        for letter in alphabet:
-            html = Html()
-            page_source = html.get_page_source()
-        parsed_data = html.parse_courses(page_source)
-        return parsed_data()
+    def access_data(self):
+        if Persistence.data_exists(self.custom_object):
+            return Persistence.read_data(self.custom_object)
+        elif Persistence.cached_data_exists(self.custom_object):
+            self.retrieval_strategy.set_unparsed_data(Persistence.read_cache(self.custom_object))
+        else:
+            self.retrieval_strategy.scrape_and_store_data(self.custom_object)
+        self.retrieval_strategy.parse_and_store_data(self.custom_object)
+        return self.retrieval_strategy.get_parsed_data()
 
-    def scrape_evaluations(self) -> None:
-        """ Scrape page source and store part of it in _evaluations_dct """
-        html = Html()
-        url = html.generate_evaluation_url()
-        page_source = html.scrape_url()
-        parsed_data = html.parse_html()
-        return parsed_data()
-
-    def scrape_grade_sheets(self, course: str) -> None:
-        """ Scrape page source and store part of it in _grades_dct """
-        html = Html()
-        parsed_data = html.get_data()
-        return parsed_data()
-
-    def scrape_info_pages(self, course: str) -> None:
-        """ Scrape page source and store part of it in _information_dct """
-        html = Html()
-        parsed_data = html.get_data()
-        return parsed_data()
+    def _get_retrieval_strategy(self) -> DataRetrieval:
+        data_domain: DataDomain = self.custom_object.get_data_domain()
+        return data_domain.get_data_retrieval_strategy(self.custom_object)
 
 class BaseDataType(ABC):
     def __init__(self) -> None:
         self.name: str = ""
         self.parent: any = None
+        self.data_domain: DataDomain = None
 
     def get_name(self) -> str:
         return self.name
@@ -108,11 +179,10 @@ class BaseDataType(ABC):
     def set_parent(self, parent: any) -> None:
         self.parent = parent
 
-    def get_root_domain(self) -> DataDomain:
-        parent_object: BaseDataType = self.get_parent()
-        while not isinstance(parent_object, DataDomain):
-            parent_object.get_parent()
-        return parent_object
+    def get_data_domain(self) -> DataDomain:
+        return self.data_domain
+    def set_data_domain(self, data_domain: DataDomain) -> None:
+        self.data_domain = data_domain
 
 class School(BaseDataType):
     def __init__(self) -> None:
@@ -267,7 +337,7 @@ class Dtu(SchoolBuilder):
 class Year(BaseDataType):
     def __init__(self) -> None:
         self.name: str = ""
-        self.studylines: Dict[str, 'Studyline'] = {}
+        self.studylines: Dict[str, 'StudyLine'] = {}
         self.courses: Dict[str, 'Course'] = {}
 
     def get_school(self) -> School:
@@ -278,11 +348,11 @@ class Year(BaseDataType):
     def set_name(self, name: str) -> None:
         self.name = name
 
-    def get_all_studylines(self) -> Dict[str, 'Studyline']:
+    def get_all_studylines(self) -> Dict[str, 'StudyLine']:
         return self.studylines
-    def get_studyline(self, name: str) -> 'Studyline':
+    def get_studyline(self, name: str) -> 'StudyLine':
         return self.studylines[name]
-    def set_studyline(self, name: str, studyline: 'Studyline') -> None:
+    def set_studyline(self, name: str, studyline: 'StudyLine') -> None:
         self.studylines[name] = studyline
 
     def get_all_courses(self) -> Dict[str, 'Course']:
@@ -342,7 +412,7 @@ class CourseTerm(BaseDataType):
 class Teacher(BaseDataType):
     pass
 
-class Studyline(BaseDataType):
+class StudyLine(BaseDataType):
     pass
 
 class Evaluation(BaseDataType):
