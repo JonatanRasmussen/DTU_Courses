@@ -1,10 +1,121 @@
 from typing import Dict, List
 from abc import ABC, abstractmethod
+#from web_scraping_tool import WebScrapingTool
+
+#https://refactoring.guru/design-patterns/bridge
+
+class DataDomain(ABC):
+
+    def __init__(self) -> None:
+        self.custom_object: any = None
+        self.url: Dict[str:str] = ""
+        self.course_page: Dict[str:str] = ""
+        self.unparsed_html: Dict[str:str] = ""
+        self.parsed_data: any = ""
+        self.scrape_tool: None = "scrape_tool"
+
+    def generate_url(self, custom_object: any):
+        if isinstance(custom_object, 'Course'):
+            pass
+        elif isinstance(custom_object, 'Evaluation'):
+            pass
+
+    def scrape_page_source(self, custom_object: any):
+        pass
+
+    def compress_html(self, custom_object: any):
+        pass
+
+    def parse_html(self, custom_object: any):
+        pass
+
+    def unparsed_html_exists(self):
+        pass
+    def save_unparsed_html(self):
+        Persistence.save_unparsed_html(self.custom_object, self.unparsed_html)
+
+    def parsed_data_exists(self):
+        pass
+    def save_parsed_data(self):
+        Persistence.save_parsed_data(self.custom_object, self.parsed_data)
+
+    def load_data(self, custom_object: any):
+        self.custom_object = custom_object
+        if self.parsed_data_exists():
+            return self.load_parsed_data()
+        elif self.unparsed_html_exists():
+            self.unparsed_html = self.load_unparsed_html()
+        else:
+            self.url = self.generate_url()
+            self.unparsed_html = self.scrape_page_source()
+        self.parsed_data = self.parse_html()
+        self.save_data()
+        return self.parsed_data
 
 
-class School:
+
+class DtuData(DataDomain):
+
+    def scrape_study_lines(self) -> None:
+        pass
+
+    def scrape_course_list(self) -> list[str]:
+        """ Convert _course_dct to a list of the term's course IDs """
+        course_dict: dict[str,str] = self._scrape_course_archive()
+        course_list: list[str] = list(course_dict.keys())
+        return course_list
+
+    def _scrape_course_archive(self) -> None:
+        """ Scrape page source and store it in _course_dct """
+        for letter in alphabet:
+            html = Html()
+            page_source = html.get_page_source()
+        parsed_data = html.parse_courses(page_source)
+        return parsed_data()
+
+    def scrape_evaluations(self) -> None:
+        """ Scrape page source and store part of it in _evaluations_dct """
+        html = Html()
+        url = html.generate_evaluation_url()
+        page_source = html.scrape_url()
+        parsed_data = html.parse_html()
+        return parsed_data()
+
+    def scrape_grade_sheets(self, course: str) -> None:
+        """ Scrape page source and store part of it in _grades_dct """
+        html = Html()
+        parsed_data = html.get_data()
+        return parsed_data()
+
+    def scrape_info_pages(self, course: str) -> None:
+        """ Scrape page source and store part of it in _information_dct """
+        html = Html()
+        parsed_data = html.get_data()
+        return parsed_data()
+
+class BaseDataType(ABC):
     def __init__(self) -> None:
         self.name: str = ""
+        self.parent: any = None
+
+    def get_name(self) -> str:
+        return self.name
+    def set_name(self, name: str) -> None:
+        self.name = name
+
+    def get_parent(self) -> any:
+        return self.parent
+    def set_parent(self, parent: any) -> None:
+        self.parent = parent
+
+    def get_root_domain(self) -> DataDomain:
+        parent_object: BaseDataType = self.get_parent()
+        while not isinstance(parent_object, DataDomain):
+            parent_object.get_parent()
+        return parent_object
+
+class School(BaseDataType):
+    def __init__(self) -> None:
         self.teachers: Dict[str, 'Teacher'] = {}
         self.years: Dict[str, 'Year'] = {}
 
@@ -25,12 +136,12 @@ class School:
     def set_year(self, name: str, year: 'Year') -> None:
         self.years[name] = year
 
-    def get_all_courses(self,) -> Dict[str, 'Year']:
+    def get_all_courses(self,) -> Dict[str, 'Course']:
         return self.years
-    def get_year(self, name: str) -> 'Year':
+    def get_course(self, name: str) -> 'Course':
         return self.years[name]
-    def set_year(self, name: str, year: 'Year') -> None:
-        self.years[name] = year
+    def set_course(self, name: str, course: 'Course') -> None:
+        self.years[name] = course
 
 
 class SchoolBuilder(ABC):
@@ -153,11 +264,14 @@ class Dtu(SchoolBuilder):
 
 
 
-class Year:
+class Year(BaseDataType):
     def __init__(self) -> None:
         self.name: str = ""
         self.studylines: Dict[str, 'Studyline'] = {}
         self.courses: Dict[str, 'Course'] = {}
+
+    def get_school(self) -> School:
+        return self.name
 
     def get_name(self) -> str:
         return self.name
@@ -179,7 +293,7 @@ class Year:
         self.courses[name] = course
 
 
-class Course:
+class Course(BaseDataType):
     def __init__(self) -> None:
         self.name: str = ""
         self.info_page: Dict[str, 'InfoPage'] = {}
@@ -203,7 +317,7 @@ class Course:
         self.info_page = info_page
 
 
-class CourseTerm:
+class CourseTerm(BaseDataType):
     def __init__(self) -> None:
         self.name: str = ""
         self.evaluation:'Evaluation' = None
@@ -225,17 +339,17 @@ class CourseTerm:
         self.evaluation = evaluation
 
 
-class Teacher:
+class Teacher(BaseDataType):
     pass
 
-class Studyline:
+class Studyline(BaseDataType):
     pass
 
-class Evaluation:
+class Evaluation(BaseDataType):
     pass
 
-class GradeSheet:
+class GradeSheet(BaseDataType):
     pass
 
-class InfoPage:
+class InfoPage(BaseDataType):
     pass
