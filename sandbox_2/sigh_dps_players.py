@@ -28,9 +28,8 @@ class Persistence:
 
 
 class DataAccess:
-    def __init__(self, custom_object) -> None:
-        self.custom_object: BaseDataType = custom_object
-        self.retrieval_strategy: DataRetrieval = self._get_retrieval_strategy()
+    def __init__(self, custom_object: 'DataContainer') -> None:
+        self.retrieval_strategy: DataStrategy = custom_object.get_data_strategy()
 
     def access_data(self):
         if self.retrieval_strategy.data_exists(self.custom_object):
@@ -40,25 +39,20 @@ class DataAccess:
         else:
             self.retrieval_strategy.scrape_and_store_raw_data(self.custom_object)
         self.retrieval_strategy.parse_and_store_data_map(self.custom_object)
-
         return self.retrieval_strategy.get_parsed_data()
 
-    def _get_retrieval_strategy(self) -> 'DataRetrieval':
-        data_domain: DataDomain = self.custom_object.get_data_domain()
-        return data_domain.get_data_retrieval_strategy(self.custom_object)
 
-
-class DataRetrieval(ABC):
+class DataStrategy(ABC):
 
     WEBDRIVER = WebScrapingTool()
 
     def __init__(self) -> None:
         self.scraped_data: str = ""
         self.parsed_data: dict[str:str] = {}
-        self.deserialized_data: BaseDataType = None
-        self.scrape_key: str = self.generate_scrape_key()
-        self.parse_key: str = self.generate_parse_key()
-        self.deserialize_key: str = self.generate_deserialize_key()
+        self.deserialized_data: DataContainer = None
+        self.scrape_key: str = self._generate_scrape_key()
+        self.parse_key: str = self._generate_parse_key()
+        self.deserialize_key: str = self._generate_deserialize_key()
 
     @abstractmethod
     def scrape_data(self) -> str:
@@ -69,20 +63,15 @@ class DataRetrieval(ABC):
         pass
 
     @abstractmethod
-    def serialize_data(self) -> 'BaseDataType':
+    def deserialize_data(self) -> 'DataContainer':
         pass
 
     @abstractmethod
-    def deserialize_data(self) -> 'BaseDataType':
+    def generate_data_key(self) -> 'str':
         pass
 
-    @abstractmethod
-    def generate_scrape_key(self) -> str:
-        pass
-
-    @abstractmethod
-    def generate_parse_key(self) -> str:
-        pass
+    def retrieve_data(self) -> 'DataContainer':
+        return self.deserialized_data
 
     def scraped_data_exists(self) -> bool:
         return Persistence.exists_in_cache(self.scrape_key)
@@ -105,16 +94,25 @@ class DataRetrieval(ABC):
     def store_deserialized_data(self) -> None:
         Persistence.write_to_memory(self.deserialized_data, self.deserialize_key)
 
-    def get_deserialized_data(self) -> 'BaseDataType':
-        return self.deserialized_data
+    def _generate_scrape_key(self) -> str:
+        SCRAPE_IDENTIFIER: str = "raw"
+        return f"{self.generate_data_key()}_{SCRAPE_IDENTIFIER}"
 
-class EvaluationRetrieval(DataRetrieval):
+    def _generate_parse_key(self) -> str:
+        PARSE_IDENTIFIER: str = "map"
+        return f"{self.generate_data_key()}_{PARSE_IDENTIFIER}"
+
+    def _generate_deserialize_key(self) -> str:
+        DESERIALIZE_IDENTIFIER: str = "obj"
+        return f"{self.generate_data_key()}_{DESERIALIZE_IDENTIFIER}"
+
+class EvaluationStrategy(DataStrategy):
 
     @staticmethod
     def scrape_data(evaluation_object: 'Evaluation') -> str:
         course: str = evaluation_object.get_course().name()
         term: str = evaluation_object.get_term().name()
-        return EvaluationRetrieval.scrape_evaluation(course, term)
+        return EvaluationStrategy.scrape_evaluation(course, term)
 
     @staticmethod
     def parse_data(unparsed_evaluation_str: str) -> dict[str:str]:
@@ -131,7 +129,7 @@ class EvaluationRetrieval(DataRetrieval):
     def parse_evaluation() -> str:
         pass
 
-class DtuCourses(DataRetrieval):
+class DtuCourses(DataStrategy):
 
     @staticmethod
     def scrape_data(academic_year) -> str:
@@ -170,7 +168,7 @@ class DtuCourses(DataRetrieval):
         sorted_dct: dict[str,str] = {key: dct[key] for key in sorted(dct)}
         return sorted_dct
 
-class DtuEvaluation(DataRetrieval):
+class DtuEvaluation(DataStrategy):
 
     @staticmethod
     def scrape_data() -> any:
@@ -180,7 +178,7 @@ class DtuEvaluation(DataRetrieval):
     def parse_data() -> any:
         pass
 
-class DtuGradeSheet(DataRetrieval):
+class DtuGradeSheet(DataStrategy):
 
     @staticmethod
     def scrape_data() -> any:
@@ -190,7 +188,7 @@ class DtuGradeSheet(DataRetrieval):
     def parse_data() -> any:
         pass
 
-class DtuInfoPage(DataRetrieval):
+class DtuInfoPage(DataStrategy):
 
     @staticmethod
     def scrape_data() -> any:
@@ -200,7 +198,7 @@ class DtuInfoPage(DataRetrieval):
     def parse_data() -> any:
         pass
 
-class DtuStudyLine(DataRetrieval):
+class DtuStudyLine(DataStrategy):
 
     @staticmethod
     def scrape_data() -> any:
@@ -210,7 +208,7 @@ class DtuStudyLine(DataRetrieval):
     def parse_data() -> any:
         pass
 
-class DtuTeacher(DataRetrieval):
+class DtuTeacher(DataStrategy):
 
     @staticmethod
     def scrape_data() -> any:
@@ -223,7 +221,7 @@ class DtuTeacher(DataRetrieval):
 class DataDomain(ABC):
 
     @staticmethod
-    def get_data_retrieval_strategy(custom_object: any) -> DataRetrieval:
+    def get_data_retrieval_strategy(custom_object: any) -> DataStrategy:
         if isinstance(custom_object, 'Course'):
             return DataDomain.course_strategy()
         elif isinstance(custom_object, 'Evaluation'):
@@ -301,11 +299,25 @@ class DtuData(DataDomain):
     def teacher_strategy():
         return DtuTeacher
 
-class BaseDataType(ABC):
+class DataContainer(ABC):
     def __init__(self) -> None:
+        self.data_strategy: DataStrategy = self.initialize_data_strategy()
+        self.data_domain: DataDomain = None
         self.name: str = ""
         self.parent: any = None
-        self.data_domain: DataDomain = None
+
+    @abstractmethod
+    def initialize_data_strategy(self) -> str:
+        pass
+    def get_data_strategy(self) -> str:
+        self.data_strategy
+    def set_data_strategy(self, data_strategy: DataStrategy) -> str:
+        self.data_strategy = data_strategy
+
+    def get_data_domain(self) -> DataDomain:
+        return self.data_domain
+    def set_data_domain(self, data_domain: DataDomain) -> None:
+        self.data_domain = data_domain
 
     def get_name(self) -> str:
         return self.name
@@ -317,12 +329,17 @@ class BaseDataType(ABC):
     def set_parent(self, parent: any) -> None:
         self.parent = parent
 
-    def get_data_domain(self) -> DataDomain:
-        return self.data_domain
-    def set_data_domain(self, data_domain: DataDomain) -> None:
-        self.data_domain = data_domain
+    def retrieve_data(self):
+        if self.data_strategy.data_exists(self):
+            return self.data_strategy.read_data(self)
+        elif self.data_strategy.cached_data_exists(self):
+            self.data_strategy.set_unparsed_data(Persistence.read_cache(self))
+        else:
+            self.data_strategy.scrape_and_store_raw_data(self)
+        self.data_strategy.parse_and_store_data_map(self)
+        return self.data_strategy.get_parsed_data()
 
-class School(BaseDataType):
+class School(DataContainer):
     def __init__(self) -> None:
         self.teachers: Dict[str, 'Teacher'] = {}
         self.years: Dict[str, 'Year'] = {}
@@ -464,7 +481,7 @@ class Dtu(SchoolBuilder):
 
 
 
-class Year(BaseDataType):
+class Year(DataContainer):
     def __init__(self) -> None:
         self.name: str = ""
         self.studylines: Dict[str, 'StudyLine'] = {}
@@ -493,7 +510,7 @@ class Year(BaseDataType):
         self.courses[name] = course
 
 
-class Course(BaseDataType):
+class Course(DataContainer):
     def __init__(self) -> None:
         self.name: str = ""
         self.info_page: Dict[str, 'InfoPage'] = {}
@@ -517,7 +534,7 @@ class Course(BaseDataType):
         self.info_page = info_page
 
 
-class CourseTerm(BaseDataType):
+class CourseTerm(DataContainer):
     def __init__(self) -> None:
         self.name: str = ""
         self.evaluation:'Evaluation' = None
@@ -539,17 +556,17 @@ class CourseTerm(BaseDataType):
         self.evaluation = evaluation
 
 
-class Teacher(BaseDataType):
+class Teacher(DataContainer):
     pass
 
-class StudyLine(BaseDataType):
+class StudyLine(DataContainer):
     pass
 
-class Evaluation(BaseDataType):
+class Evaluation(DataContainer):
     pass
 
-class GradeSheet(BaseDataType):
+class GradeSheet(DataContainer):
     pass
 
-class InfoPage(BaseDataType):
+class InfoPage(DataContainer):
     pass
