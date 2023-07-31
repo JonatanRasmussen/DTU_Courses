@@ -1,4 +1,4 @@
-from web_scraping_tool import WebScrapingTool
+from web_scraping_tool_legacy import WebScrapingTool
 from html_locator import HtmlLocator
 from html_parser import HtmlParser
 from html_slicer import HtmlSlicer
