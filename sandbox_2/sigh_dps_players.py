@@ -405,7 +405,7 @@ class BaseDataObject(ABC):
 
     def add_new_dictionary(self, dct_key: str) -> None:
         self.data_container[dct_key] = {}
-    def add_dictionary_element(self, outer_key: str, inner_key: str, element: BaseDataObject) -> None:
+    def add_dictionary_element(self, outer_key: str, inner_key: str, element: 'BaseDataObject') -> None:
         self.data_container[outer_key][inner_key] = element
 
     def cascade_build(self):
@@ -437,105 +437,6 @@ class BaseDataObject(ABC):
     @abstractmethod
     def get_child_classes() -> list[type['BaseDataObject']]:
         pass
-
-
-class DataContainer(BaseDataObject):
-    def __init__(self) -> None:
-        super().__init__()
-        self.data_object: BaseDataObject
-
-    def cascade_build(self):
-        strategy: DataStrategy = self.data_domain.get_data_strategy()
-        data_object: BaseDataObject = strategy.access_data(self)
-        key: str = self.get_class_name()
-        item = strategy._generate_data_name(self)
-        self.add_dictionary_element(key, item, data_object)
-
-
-    @classmethod
-    def cascade_build(cls, data_domain) -> 'School':
-        school: School = cls()
-        school.set_data_domain(data_domain)
-        year_strategy: DataStrategy = school.data_domain.year_strategy()
-        for year_name in year_strategy.access_data():
-            year: Year = Year.cascade_build(year_name, school)
-            school.set_year(year_name, year)
-        for teacher_name in year_strategy.access_data():
-            year: Year = Year.cascade_build(teacher_name, school)
-            school.set_teacher(teacher_name, year)
-        return school
-
-    def get_class_name(self) -> str:
-        return self.__class__.__name__
-
-    def get_name(self) -> str:
-        return self.name
-    def set_name(self, name: str) -> None:
-        self.name = name
-
-    def get_parent(self) -> 'BaseDataObject':
-        return self.parent
-    def set_parent(self, parent: 'BaseDataObject') -> None:
-        self.parent = parent
-
-    def get_data_domain(self) -> DataDomain:
-        return self.data_domain
-    def set_data_domain(self, data_domain: DataDomain) -> None:
-        self.data_domain = data_domain
-
-class DataContainer:
-
-    def __init__(self, parent_object: BaseDataObject, class_type: type['BaseDataObject']) -> None:
-        self.parent_object: BaseDataObject = parent_object
-        self.class_type: str = class_type
-        self.container: Dict[str, BaseDataObject] = {}
-
-    def get_full_dictionary(self, dct_key: str) -> Dict[str, BaseDataObject]:
-        return self.container[dct_key]
-    def get_dictionary_element(self, outer_key: str, inner_key: str) -> any:
-        return self.container[outer_key][inner_key]
-
-    def add_new_dictionary(self, dct_key: str) -> None:
-        self.container[dct_key] = {}
-    def add_dictionary_element(self, outer_key: str, inner_key: str, element: BaseDataObject) -> None:
-        self.container[outer_key][inner_key] = element
-
-class ContainerContainer:
-    def __init__(self) -> None:
-        self.unique_data: bool = False
-        self.dictionaries: Dict[str, Dict[str, BaseDataObject]] = {}
-
-    def get_full_dictionary(self, dct_key: str) -> Dict[str, BaseDataObject]:
-        return self.dictionaries[dct_key]
-    def get_dictionary_element(self, outer_key: str, inner_key: str) -> any:
-        return self.dictionaries[outer_key][inner_key]
-
-    def add_new_dictionary(self, dct_key: str) -> None:
-        self.dictionaries[dct_key] = {}
-    def add_dictionary_element(self, outer_key: str, inner_key: str, element: BaseDataObject) -> None:
-        self.dictionaries[outer_key][inner_key] = element
-
-    def build_container(self):
-        strategy.get_child_containers()
-        for child_strategy in strategy.get_child_data():
-            for key in strategy.access_data():
-                child_container = child_strategy.cascade_build(key, self)
-                self.add_element(key, child_container)
-        return
-
-    def fill_dictionaries(self, data_domain) -> 'School':
-        for dct in self.dictionaries:
-
-        school: School = 12
-        school.set_data_domain(data_domain)
-        year_strategy: DataStrategy = school.data_domain.year_strategy()
-        for year_name in year_strategy.access_data():
-            year: Year = Year.cascade_build(year_name, school)
-            school.set_year(year_name, year)
-        for teacher_name in year_strategy.access_data():
-            year: Year = Year.cascade_build(teacher_name, school)
-            school.set_teacher(teacher_name, year)
-        return school
 
 class School(BaseDataObject):
 
