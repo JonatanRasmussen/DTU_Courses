@@ -21,13 +21,13 @@ class Persistence:
         pass
 
 
-    def read_from_cache(scrape_key: str) -> str:
+    def read_from_cache(scrape_key: str) -> str | dict[str:str]:
         pass
 
-    def read_from_database(parse_key: str) -> dict[str:str]:
+    def read_from_database(parse_key: str | dict[str:str]) -> dict[str:str]:
         pass
 
-    def read_from_memory(deserialize_key: str) -> 'DataObject':
+    def read_from_memory(deserialize_key: str) -> 'BaseDataObject':
         pass
 
 
@@ -46,91 +46,106 @@ class DataStrategy(ABC):
     WEBDRIVER = WebScrapingTool()
 
     def __init__(self) -> None:
-        self.scraped_data: str = ""
-        self.parsed_data: dict[str:str] = {}
-        self.deserialized_data: DataObject = None
-        self.scrape_key: str = self._generate_scrape_key()
-        self.parse_key: str = self._generate_parse_key()
-        self.deserialize_key: str = self._generate_deserialize_key()
+        self._scraped_data: str = ""
+        self._parsed_data: str | dict[str:str] = {}
+        self._deserialized_data: BaseDataObject | None = None
+        self._scrape_key: str = self._generate_scrape_name()
+        self._parse_key: str = self._generate_parse_name()
+        self._deserialize_key: str = self._generate_deserialize_name()
 
-    @abstractmethod
-    def scrape_data(self) -> str:
-        pass
-
-    @abstractmethod
-    def parse_data(self) -> dict[str:str]:
-        pass
-
-    @abstractmethod
-    def deserialize_data(self) -> 'DataObject':
-        pass
-
-    @abstractmethod
-    def generate_data_key(self) -> 'str':
-        pass
+    def get_deserialized_data(self) -> 'BaseDataObject':
+        return self._deserialized_data
+    def set_deserialized_data(self, data_object: 'BaseDataObject') -> None:
+        self._deserialized_data = data_object
 
     def access_data(self):
-        if self.deserialized_data_exists():
-            self.deserialized_data = self.load_deserialized_data()
-        elif self.parsed_data_exists():
-            self.parsed_data = self.load_parsed_data()
-            self.deserialized_data = self.deserialize_data()
-        elif self.scraped_data_exists():
-            self.scraped_data = self.load_scraped_data()
-            self.parsed_data = self.parse_data()
-            self.deserialized_data = self.deserialize_data()
+        if self._deserialized_data_exists():
+            self._deserialized_data = self._load_deserialized_data()
+        elif self._parsed_data_exists():
+            self._parsed_data = self._load_parsed_data()
+            self._deserialized_data = self._deserialize_data()
+        elif self._scraped_data_exists():
+            self._scraped_data = self._load_scraped_data()
+            self._parsed_data = self._parse_data()
+            self._deserialized_data = self._deserialize_data()
         else:
-            self.scraped_data = self.scrape_data()
-            self.parsed_data = self.parse_data()
-            self.deserialized_data = self.deserialize_data()
-        return self.retrieve_data()
+            self._scraped_data = self._scrape_data()
+            self._parsed_data = self._parse_data()
+            self._deserialized_data = self._deserialize_data()
+        self._store_data()
+        return self.get_deserialized_data()
 
-    def retrieve_data(self) -> 'DataObject':
-        return self.deserialized_data
+    def _store_data(self):
+        if len(self._scraped_data) != 0:
+            self._store_scraped_data()
+        if len(self._parsed_data) != 0:
+            self._store_parsed_data()
+        if self._deserialized_data is not None:
+            self._store_deserialized_data()
 
-    def scraped_data_exists(self) -> bool:
-        return Persistence.exists_in_cache(self.scrape_key)
-    def parsed_data_exists(self) -> bool:
-        return Persistence.exists_in_database(self.parse_key)
-    def deserialized_data_exists(self) -> bool:
-        return Persistence.exists_in_memory(self.deserialize_key)
+    def _scraped_data_exists(self) -> bool:
+        return Persistence.exists_in_cache(self._scrape_key)
+    def _parsed_data_exists(self) -> bool:
+        return Persistence.exists_in_database(self._parse_key)
+    def _deserialized_data_exists(self) -> bool:
+        return Persistence.exists_in_memory(self._deserialize_key)
 
-    def load_scraped_data(self) -> None:
-        self.scraped_data = Persistence.read_from_cache(self.scrape_key)
-    def load_parsed_data(self) -> None:
-        self.parsed_data = Persistence.read_from_database(self.parse_key)
-    def load_deserialized_data(self) -> None:
-        self.deserialized_data = Persistence.read_from_memory(self.deserialize_key)
+    def _load_scraped_data(self) -> str:
+        return Persistence.read_from_cache(self._scrape_key)
+    def _load_parsed_data(self) -> str | dict[str:str]:
+        return Persistence.read_from_database(self._parse_key)
+    def _load_deserialized_data(self) -> 'BaseDataObject' | None:
+        return Persistence.read_from_memory(self._deserialize_key)
 
-    def store_scraped_data(self) -> 'None':
-        Persistence.write_to_cache(self.scraped_data, self.scrape_key)
-    def store_parsed_data(self) -> None:
-        Persistence.write_to_database(self.parsed_data, self.parse_key)
-    def store_deserialized_data(self) -> None:
-        Persistence.write_to_memory(self.deserialized_data, self.deserialize_key)
+    def _store_scraped_data(self) -> None:
+        Persistence.write_to_cache(self._scraped_data, self._scrape_key)
+    def _store_parsed_data(self) -> None:
+        Persistence.write_to_database(self._parsed_data, self._parse_key)
+    def _store_deserialized_data(self) -> None:
+        Persistence.write_to_memory(self._deserialized_data, self._deserialize_key)
 
-    def _generate_scrape_key(self) -> str:
+    def _generate_scrape_name(self) -> str:
         SCRAPE_IDENTIFIER: str = "raw"
-        return f"{self.generate_data_key()}_{SCRAPE_IDENTIFIER}"
+        return f"{self._generate_data_name()}_{SCRAPE_IDENTIFIER}"
 
-    def _generate_parse_key(self) -> str:
+    def _generate_parse_name(self) -> str:
         PARSE_IDENTIFIER: str = "map"
-        return f"{self.generate_data_key()}_{PARSE_IDENTIFIER}"
+        return f"{self._generate_data_name()}_{PARSE_IDENTIFIER}"
 
-    def _generate_deserialize_key(self) -> str:
+    def _generate_deserialize_name(self) -> str:
         DESERIALIZE_IDENTIFIER: str = "obj"
-        return f"{self.generate_data_key()}_{DESERIALIZE_IDENTIFIER}"
+        return f"{self._generate_data_name()}_{DESERIALIZE_IDENTIFIER}"
+
+    @abstractmethod
+    def _scrape_data(self) -> str | dict[str:str]:
+        pass
+
+    @abstractmethod
+    def _parse_data(self) -> dict[str:str]:
+        pass
+
+    @abstractmethod
+    def _deserialize_data(self) -> 'BaseDataObject':
+        pass
+
+    @abstractmethod
+    def _generate_data_name(self) -> str:
+        pass
+
+    @abstractmethod
+    def _returns_list(self) -> bool:
+        pass
 
 class EvaluationStrategy(DataStrategy):
 
     @staticmethod
-    def scrape_data(evaluation_object: 'Evaluation') -> str:
+    def _scrape_data(evaluation_object: 'Evaluation') -> str:
         course: str = evaluation_object.get_course().name()
         term: str = evaluation_object.get_term().name()
         return EvaluationStrategy.scrape_evaluation(course, term)
 
     @staticmethod
-    def parse_data(unparsed_evaluation_str: str) -> dict[str:str]:
+    def _parse_data(unparsed_evaluation_str: str) -> dict[str:str]:
         pass
 
     @staticmethod
@@ -146,7 +161,7 @@ class EvaluationStrategy(DataStrategy):
 class DtuCourses(DataStrategy):
 
     @staticmethod
-    def scrape_data(academic_year) -> str:
+    def _scrape_data(academic_year) -> str:
         """ Deterministically generate a list of urls that covers the
             full course archive for a given academic year. The course
             list is split across several urls, one per starting letter
@@ -167,7 +182,7 @@ class DtuCourses(DataStrategy):
         return concatenated_html
 
     @staticmethod
-    def parse_data(page_source) -> any:
+    def _parse_data(page_source) -> any:
         soup = BeautifulSoup(page_source, 'html.parser')
         all_tables: any = soup.find_all('table', {'class': 'table'})
         dct: dict[str,str] = {}
@@ -185,51 +200,72 @@ class DtuCourses(DataStrategy):
 class DtuEvaluation(DataStrategy):
 
     @staticmethod
-    def scrape_data() -> any:
+    def _scrape_data() -> any:
         pass
 
     @staticmethod
-    def parse_data() -> any:
+    def _parse_data() -> any:
         pass
 
 class DtuGradeSheet(DataStrategy):
 
     @staticmethod
-    def scrape_data() -> any:
+    def _scrape_data() -> any:
         pass
 
     @staticmethod
-    def parse_data() -> any:
+    def _parse_data() -> any:
         pass
 
 class DtuInfoPage(DataStrategy):
 
     @staticmethod
-    def scrape_data() -> any:
+    def _scrape_data() -> any:
         pass
 
     @staticmethod
-    def parse_data() -> any:
+    def _parse_data() -> any:
         pass
+
 
 class DtuStudyLine(DataStrategy):
 
     @staticmethod
-    def scrape_data() -> any:
+    def _scrape_data() -> any:
         pass
 
     @staticmethod
-    def parse_data() -> any:
+    def _parse_data() -> any:
         pass
 
 class DtuTeacher(DataStrategy):
 
     @staticmethod
-    def scrape_data() -> any:
+    def _scrape_data() -> any:
         pass
 
     @staticmethod
-    def parse_data() -> any:
+    def _parse_data() -> any:
+        pass
+
+class DtuTerm(DataStrategy):
+
+    @staticmethod
+    def _scrape_data() -> any:
+        pass
+
+    @staticmethod
+    def _parse_data() -> any:
+        pass
+
+class DtuYear(DataStrategy):
+
+    @staticmethod
+    def _scrape_data() -> any:
+        pass
+
+    @staticmethod
+    def _parse_data() -> any:
         pass
 
 class DataDomain(ABC):
@@ -286,6 +322,11 @@ class DataDomain(ABC):
     def teacher_strategy():
         pass
 
+    @staticmethod
+    @abstractmethod
+    def year_strategy():
+        pass
+
 
 class DtuData(DataDomain):
 
@@ -313,64 +354,223 @@ class DtuData(DataDomain):
     def teacher_strategy():
         return DtuTeacher
 
-class DataObject(ABC):
-    def __init__(self, name: str, parent: 'DataObject') -> None:
-        self.name: str = name
-        self.parent: DataObject | None = parent
-        self.data_domain: DataDomain = parent.get_data_domain()
-        self.data_strategy: DataStrategy = self.initialize_data_strategy()
-        self.children: Dict[str:DataObject] = self.initialize_child_objects()
+    @staticmethod
+    def term_strategy():
+        return DtuTerm
 
-    @abstractmethod
-    def initialize_data_strategy(self) -> str:
-        pass
+    @staticmethod
+    def year_strategy():
+        return DtuYear
 
-    @abstractmethod
-    def initialize_child_objects(self) -> Dict[str:'DataObject']:
-        pass
 
-    def get_data_strategy(self) -> str:
-        self.data_strategy
-    def set_data_strategy(self, data_strategy: DataStrategy) -> str:
-        self.data_strategy = data_strategy
+class BaseDataObject(ABC):
+
+    def __init__(self) -> None:
+        self.name: str = ""
+        self.parent: BaseDataObject | None = None
+        self.data_domain: DataDomain | None = None
+        self.data_container: Dict[str, Dict[str, BaseDataObject]] = {}
+        self.data_object: BaseDataObject
+
+    @staticmethod
+    def get_child_classes() -> list[type['BaseDataObject']]:
+        return []
+
+    @staticmethod
+    def get_data_strategy() -> DataStrategy | None:
+        return None
+
+    def get_class_name(self) -> str:
+        return self.__class__.__name__
+
+    def get_name(self) -> str:
+        return self.name
+    def set_name(self, name: str) -> None:
+        self.name = name
+
+    def get_parent(self) -> 'BaseDataObject':
+        return self.parent
+    def set_parent(self, parent: 'BaseDataObject') -> None:
+        self.parent = parent
 
     def get_data_domain(self) -> DataDomain:
         return self.data_domain
     def set_data_domain(self, data_domain: DataDomain) -> None:
         self.data_domain = data_domain
 
+    def get_full_dictionary(self, dct_key: str) -> Dict[str, 'BaseDataObject']:
+        return self.data_container[dct_key]
+    def get_dictionary_element(self, outer_key: str, inner_key: str) -> any:
+        return self.data_container[outer_key][inner_key]
+
+    def add_new_dictionary(self, dct_key: str) -> None:
+        self.data_container[dct_key] = {}
+    def add_dictionary_element(self, outer_key: str, inner_key: str, element: BaseDataObject) -> None:
+        self.data_container[outer_key][inner_key] = element
+
+    def cascade_build(self):
+        if not self._has_children():
+            strategy: DataStrategy = self.data_domain.get_data_strategy()
+            data_object: BaseDataObject = strategy.access_data(self)
+            key: str = self.get_class_name()
+            item = strategy._generate_data_name(self)
+            self.add_dictionary_element(key, item, data_object)
+        else:
+            for child_class in self.get_child_classes():
+                key: str = child_class.get_class_name()
+                self.add_new_dictionary(key)
+                strategy: DataStrategy = child_class.data_domain.get_data_strategy()
+                for item in strategy.access_data(self):
+                    child_object = child_class()
+                    child_object.name = item
+                    child_object.parent = self
+                    child_object.data_domain = self.data_domain
+                    child_object.cascade_build()
+                    self.add_dictionary_element(key, item, child_object)
+
+    def _has_children(self) -> bool:
+        if len(self.get_child_classes()) is not 0:
+            return True
+        return False
+
+    @staticmethod
+    @abstractmethod
+    def get_child_classes() -> list[type['BaseDataObject']]:
+        pass
+
+
+class DataContainer(BaseDataObject):
+    def __init__(self) -> None:
+        super().__init__()
+        self.data_object: BaseDataObject
+
+    def cascade_build(self):
+        strategy: DataStrategy = self.data_domain.get_data_strategy()
+        data_object: BaseDataObject = strategy.access_data(self)
+        key: str = self.get_class_name()
+        item = strategy._generate_data_name(self)
+        self.add_dictionary_element(key, item, data_object)
+
+
+    @classmethod
+    def cascade_build(cls, data_domain) -> 'School':
+        school: School = cls()
+        school.set_data_domain(data_domain)
+        year_strategy: DataStrategy = school.data_domain.year_strategy()
+        for year_name in year_strategy.access_data():
+            year: Year = Year.cascade_build(year_name, school)
+            school.set_year(year_name, year)
+        for teacher_name in year_strategy.access_data():
+            year: Year = Year.cascade_build(teacher_name, school)
+            school.set_teacher(teacher_name, year)
+        return school
+
+    def get_class_name(self) -> str:
+        return self.__class__.__name__
+
     def get_name(self) -> str:
         return self.name
     def set_name(self, name: str) -> None:
         self.name = name
 
-    def get_parent(self) -> any:
+    def get_parent(self) -> 'BaseDataObject':
         return self.parent
-    def set_parent(self, parent: any) -> None:
+    def set_parent(self, parent: 'BaseDataObject') -> None:
         self.parent = parent
 
-    def _retrieve_data(self):
-        if self.data_strategy.data_exists(self):
-            return self.data_strategy.read_data(self)
-        elif self.data_strategy.cached_data_exists(self):
-            self.data_strategy.set_unparsed_data(Persistence.read_cache(self))
-        else:
-            self.data_strategy.scrape_and_store_raw_data(self)
-        self.data_strategy.parse_and_store_data_map(self)
-        return self.data_strategy.get_parsed_data()
+    def get_data_domain(self) -> DataDomain:
+        return self.data_domain
+    def set_data_domain(self, data_domain: DataDomain) -> None:
+        self.data_domain = data_domain
 
-class School(DataObject):
+class DataContainer:
+
+    def __init__(self, parent_object: BaseDataObject, class_type: type['BaseDataObject']) -> None:
+        self.parent_object: BaseDataObject = parent_object
+        self.class_type: str = class_type
+        self.container: Dict[str, BaseDataObject] = {}
+
+    def get_full_dictionary(self, dct_key: str) -> Dict[str, BaseDataObject]:
+        return self.container[dct_key]
+    def get_dictionary_element(self, outer_key: str, inner_key: str) -> any:
+        return self.container[outer_key][inner_key]
+
+    def add_new_dictionary(self, dct_key: str) -> None:
+        self.container[dct_key] = {}
+    def add_dictionary_element(self, outer_key: str, inner_key: str, element: BaseDataObject) -> None:
+        self.container[outer_key][inner_key] = element
+
+class ContainerContainer:
     def __init__(self) -> None:
-        self.teachers: Dict[str, 'Teacher'] = {}
+        self.unique_data: bool = False
+        self.dictionaries: Dict[str, Dict[str, BaseDataObject]] = {}
+
+    def get_full_dictionary(self, dct_key: str) -> Dict[str, BaseDataObject]:
+        return self.dictionaries[dct_key]
+    def get_dictionary_element(self, outer_key: str, inner_key: str) -> any:
+        return self.dictionaries[outer_key][inner_key]
+
+    def add_new_dictionary(self, dct_key: str) -> None:
+        self.dictionaries[dct_key] = {}
+    def add_dictionary_element(self, outer_key: str, inner_key: str, element: BaseDataObject) -> None:
+        self.dictionaries[outer_key][inner_key] = element
+
+    def build_container(self):
+        strategy.get_child_containers()
+        for child_strategy in strategy.get_child_data():
+            for key in strategy.access_data():
+                child_container = child_strategy.cascade_build(key, self)
+                self.add_element(key, child_container)
+        return
+
+    def fill_dictionaries(self, data_domain) -> 'School':
+        for dct in self.dictionaries:
+
+        school: School = 12
+        school.set_data_domain(data_domain)
+        year_strategy: DataStrategy = school.data_domain.year_strategy()
+        for year_name in year_strategy.access_data():
+            year: Year = Year.cascade_build(year_name, school)
+            school.set_year(year_name, year)
+        for teacher_name in year_strategy.access_data():
+            year: Year = Year.cascade_build(teacher_name, school)
+            school.set_teacher(teacher_name, year)
+        return school
+
+class School(BaseDataObject):
+
+    def __init__(self) -> None:
+        super().__init__()
         self.years: Dict[str, 'Year'] = {}
+        self.teachers: Dict[str, 'Teacher'] = {}
 
-    def get_name(self) -> str:
-        return self.name
-    def set_name(self, name: str) -> None:
-        self.name = name
+    @classmethod
+    def cascade_build(cls, data_domain) -> 'School':
+        school: School = cls()
+        school.set_data_domain(data_domain)
+        year_strategy: DataStrategy = school.data_domain.year_strategy()
+        for year_name in year_strategy.access_data():
+            year: Year = Year.cascade_build(year_name, school)
+            school.set_year(year_name, year)
+        for teacher_name in year_strategy.access_data():
+            year: Year = Year.cascade_build(teacher_name, school)
+            school.set_teacher(teacher_name, year)
+        return school
 
-    def get_teachers(self) -> Dict[str, 'Teacher']:
+    @staticmethod
+    def get_child_classes() -> list[type['BaseDataObject']]:
+        return [Year, Teacher]
+
+    def initialize_data_strategy(self) -> DataStrategy:
+        return None
+
+    def get_contained_courses(self) -> any:
+        pass
+
+    def get_all_teachers(self) -> Dict[str, 'Teacher']:
         return self.teachers
+    def get_teacher(self, name: str) -> 'Teacher':
+        return self.teachers[name]
     def set_teacher(self, name: str, teacher: 'Teacher') -> None:
         self.teachers[name] = teacher
 
@@ -381,104 +581,74 @@ class School(DataObject):
     def set_year(self, name: str, year: 'Year') -> None:
         self.years[name] = year
 
-    def get_all_courses(self,) -> Dict[str, 'Course']:
-        return self.years
-    def get_course(self, name: str) -> 'Course':
-        return self.years[name]
-    def set_course(self, name: str, course: 'Course') -> None:
-        self.years[name] = course
-
 
 class SchoolBuilder:
-    def __init__(self):
-        self.school: School = School()
+    def __init__(self, school: School):
+        self.school: School = school
+        self.data_domain: DataDomain = self.school.get_data_domain()
         self.most_recent_built_year: Year = None
         self.most_recent_built_course: Course = None
-        self.most_recent_built_term: CourseTerm = None
+        self.most_recent_built_term: Term = None
         self.build()
 
-    def build(self) -> None:
+    def build(self) -> School:
         self.build_years()
         self.build_teachers()
-
-    def generate_year_names() -> List[str]:
-        pass
+        return self.school
 
     def build_years(self) -> None:
-        for name in self.generate_year_names():
+        year_strategy: DataStrategy = self.data_domain.year_strategy()
+        for name in year_strategy.access_data():
             self.school.set_year(Year(name))
             self.most_recent_built_year = self.school.get_year(name)
             self.build_courses()
             self.build_study_lines()
 
-    def fetch_course_names(year_name: str) -> List[str]:
-        pass
-
     def build_courses(self) -> None:
         year: Year = self.most_recent_built_year
-        for name in self.fetch_course_names(year):
+        course_strategy: DataStrategy = self.data_domain.course_strategy()
+        for name in course_strategy.access_data(year):
             year.set_course(name, Course(name))
             self.most_recent_built_course = year.get_course(name)
             self.build_terms()
             self.build_info_page()
 
-    def fetch_term_names() -> List[str]:
-        pass
-
     def build_terms(self) -> None:
         course: Course = self.most_recent_built_course
-        for name in self.course_term_names(course):
-            course.set_term(name, CourseTerm(name))
+        for name in self.data_domain.term_strategy(course):
+            course.set_term(name, Term(name))
             self.most_recent_built_term = course.get_term(name)
             self.build_evaluation()
             self.build_grade_sheet()
 
-    def fetch_teachers():
-        pass
-
     def build_teachers(self):
-        for teacher in self.fetch_teachers():
+        for teacher in self.data_domain.teacher_strategy():
             self.school.set_teacher(teacher.get_name(), teacher)
-
-    def fetch_study_lines(year):
-        pass
 
     def build_study_lines(self):
         year: Year = self.most_recent_built_year
-        for study_line in self.fetch_study_lines():
+        for study_line in self.data_domain.study_line_strategy():
             year.set_study_line(study_line.get_name(), study_line)
-
-    def fetch_info_page(year, course):
-        pass
 
     def build_info_page(self):
         year: Year = self.most_recent_built_year
         course: Course = self.most_recent_built_course
-        info_page: InfoPage = self.fetch_info_page(year, course)
+        info_page: InfoPage = self.data_domain.info_page_strategy(year, course)
         course.set_info_page(info_page)
-        pass
-
-    def fetch_evaluation(year, course, term):
-        pass
 
     def build_evaluation(self):
         year: Year = self.most_recent_built_year
         course: Course = self.most_recent_built_course
-        term: CourseTerm = self.most_recent_built_term
-        evaluation: Evaluation = self.fetch_evaluation(year, course, term)
+        term: Term = self.most_recent_built_term
+        evaluation: Evaluation = self.data_domain.evaluation_strategy(year, course, term)
         term.set_evaluation(evaluation)
-        pass
-
-    def fetch_grade_sheet(year, course, term):
-        pass
 
     def build_grade_sheet(self):
         year: Year = self.most_recent_built_year
         course: Course = self.most_recent_built_course
-        term: CourseTerm = self.most_recent_built_term
-        grade_sheet: GradeSheet = self.fetch_grade_sheet(year, course, term)
+        term: Term = self.most_recent_built_term
+        grade_sheet: GradeSheet = self.data_domain.grade_sheet_strategy(year, course, term)
         term.set_grade_sheet(grade_sheet)
-        pass
 
 
 
@@ -499,21 +669,16 @@ class Dtu(SchoolBuilder):
             year_names.append(f"{str(year)}'-'{str(1+year)}")
         return year_names
 
+class Year(BaseDataObject):
 
-
-class Year(DataObject):
     def __init__(self) -> None:
-        self.name: str = ""
+        super().__init__()
         self.studylines: Dict[str, 'StudyLine'] = {}
         self.courses: Dict[str, 'Course'] = {}
 
-    def get_school(self) -> School:
-        return self.name
-
-    def get_name(self) -> str:
-        return self.name
-    def set_name(self, name: str) -> None:
-        self.name = name
+    @staticmethod
+    def get_child_classes() -> list[type['BaseDataObject']]:
+        return [Course, StudyLine]
 
     def get_all_studylines(self) -> Dict[str, 'StudyLine']:
         return self.studylines
@@ -530,22 +695,21 @@ class Year(DataObject):
         self.courses[name] = course
 
 
-class Course(DataObject):
+class Course(BaseDataObject):
     def __init__(self) -> None:
-        self.name: str = ""
+        super().__init__()
         self.info_page: Dict[str, 'InfoPage'] = {}
-        self.course_terms: Dict[str, 'CourseTerm'] = {}
+        self.course_terms: Dict[str, 'Term'] = {}
 
-    def get_name(self) -> str:
-        return self.name
-    def set_name(self, name: str) -> None:
-        self.name = name
+    @staticmethod
+    def get_child_classes() -> list[type['BaseDataObject']]:
+        return [Term, InfoPage]
 
-    def get_all_terms(self) -> Dict[str, 'CourseTerm']:
+    def get_all_terms(self) -> Dict[str, 'Term']:
         return self.course_terms
-    def get_term(self, name: str) -> 'CourseTerm':
+    def get_term(self, name: str) -> 'Term':
         return self.course_terms[name]
-    def set_term(self, name: str, course_term: 'CourseTerm') -> None:
+    def set_term(self, name: str, course_term: 'Term') -> None:
         self.course_terms[name] = course_term
 
     def get_info_page(self) -> 'InfoPage':
@@ -554,16 +718,15 @@ class Course(DataObject):
         self.info_page = info_page
 
 
-class CourseTerm(DataObject):
+class Term(BaseDataObject):
     def __init__(self) -> None:
-        self.name: str = ""
+        super().__init__()
         self.evaluation:'Evaluation' = None
         self.grade_sheet: 'GradeSheet' = None
 
-    def get_name(self) -> str:
-        return self.name
-    def set_name(self, name: str) -> None:
-        self.name = name
+    @staticmethod
+    def get_child_classes() -> list[type['BaseDataObject']]:
+        return [Evaluation, GradeSheet]
 
     def get_grade_sheet(self) -> 'GradeSheet':
         return self.grade_sheet
@@ -576,17 +739,17 @@ class CourseTerm(DataObject):
         self.evaluation = evaluation
 
 
-class Teacher(DataObject):
+class Teacher(BaseDataObject):
     pass
 
-class StudyLine(DataObject):
+class StudyLine(BaseDataObject):
     pass
 
-class Evaluation(DataObject):
+class Evaluation(BaseDataObject):
     pass
 
-class GradeSheet(DataObject):
+class GradeSheet(BaseDataObject):
     pass
 
-class InfoPage(DataObject):
+class InfoPage(BaseDataObject):
     pass
