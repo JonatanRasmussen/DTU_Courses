@@ -268,6 +268,23 @@ class DtuYear(DataStrategy):
     def _parse_data() -> any:
         pass
 
+class DtuYears:
+    def __init__(self, oldest_year: int, newest_year: int) -> None:
+        self.oldest_year: int = oldest_year
+        self.newest_year: int = newest_year
+
+    @classmethod
+    def predefined_year_interval(cls) -> None:
+        oldest_year: int = 2017
+        newest_year: int = 2023
+        return cls(oldest_year, newest_year)
+
+    def generate_year_names(self) -> List[str]:
+        year_names: List[str] = []
+        for year in range(self.oldest_year, self.newest_year):
+            year_names.append(f"{str(year)}'-'{str(1+year)}")
+        return year_names
+
 class DataDomain(ABC):
 
     @staticmethod
@@ -369,8 +386,7 @@ class BaseDataObject(ABC):
         self.name: str = ""
         self.parent: BaseDataObject | None = None
         self.data_domain: DataDomain | None = None
-        self.data_container: Dict[str, Dict[str, BaseDataObject]] = {}
-        self.data_object: BaseDataObject
+        self.nested_dct: Dict[str, Dict[str, BaseDataObject]] = {}
 
     @staticmethod
     def get_child_classes() -> list[type['BaseDataObject']]:
@@ -399,39 +415,45 @@ class BaseDataObject(ABC):
         self.data_domain = data_domain
 
     def get_full_dictionary(self, dct_key: str) -> Dict[str, 'BaseDataObject']:
-        return self.data_container[dct_key]
+        return self.nested_dct[dct_key]
     def get_dictionary_element(self, outer_key: str, inner_key: str) -> any:
-        return self.data_container[outer_key][inner_key]
+        return self.nested_dct[outer_key][inner_key]
 
     def add_new_dictionary(self, dct_key: str) -> None:
-        self.data_container[dct_key] = {}
+        self.nested_dct[dct_key] = {}
     def add_dictionary_element(self, outer_key: str, inner_key: str, element: 'BaseDataObject') -> None:
-        self.data_container[outer_key][inner_key] = element
+        self.nested_dct[outer_key][inner_key] = element
 
     def cascade_build(self):
-        if not self._has_children():
-            strategy: DataStrategy = self.data_domain.get_data_strategy()
-            data_object: BaseDataObject = strategy.access_data(self)
-            key: str = self.get_class_name()
-            item = strategy._generate_data_name(self)
-            self.add_dictionary_element(key, item, data_object)
+        if self._has_children():
+            self._build_children()
         else:
-            for child_class in self.get_child_classes():
-                key: str = child_class.get_class_name()
-                self.add_new_dictionary(key)
-                strategy: DataStrategy = child_class.data_domain.get_data_strategy()
-                for item in strategy.access_data(self):
-                    child_object = child_class()
-                    child_object.name = item
-                    child_object.parent = self
-                    child_object.data_domain = self.data_domain
-                    child_object.cascade_build()
-                    self.add_dictionary_element(key, item, child_object)
+            self._build_self()
 
     def _has_children(self) -> bool:
         if len(self.get_child_classes()) is not 0:
             return True
         return False
+
+    def _build_children(self) -> None:
+        for child_class in self.get_child_classes():
+            key: str = child_class.get_class_name()
+            self.add_new_dictionary(key)
+            strategy: DataStrategy = child_class.data_domain.get_data_strategy()
+            for item in strategy.access_data(self):
+                child_object = child_class()
+                child_object.name = item
+                child_object.parent = self
+                child_object.data_domain = self.data_domain
+                child_object.cascade_build()
+                self.add_dictionary_element(key, item, child_object)
+
+    def _build_self(self) -> None:
+        strategy: DataStrategy = self.data_domain.get_data_strategy()
+        data_object: BaseDataObject = strategy.access_data(self)
+        key: str = self.get_class_name()
+        item = strategy._generate_data_name(self)
+        self.add_dictionary_element(key, item, data_object)
 
     @staticmethod
     @abstractmethod
@@ -440,24 +462,6 @@ class BaseDataObject(ABC):
 
 class School(BaseDataObject):
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.years: Dict[str, 'Year'] = {}
-        self.teachers: Dict[str, 'Teacher'] = {}
-
-    @classmethod
-    def cascade_build(cls, data_domain) -> 'School':
-        school: School = cls()
-        school.set_data_domain(data_domain)
-        year_strategy: DataStrategy = school.data_domain.year_strategy()
-        for year_name in year_strategy.access_data():
-            year: Year = Year.cascade_build(year_name, school)
-            school.set_year(year_name, year)
-        for teacher_name in year_strategy.access_data():
-            year: Year = Year.cascade_build(teacher_name, school)
-            school.set_teacher(teacher_name, year)
-        return school
-
     @staticmethod
     def get_child_classes() -> list[type['BaseDataObject']]:
         return [Year, Teacher]
@@ -465,192 +469,62 @@ class School(BaseDataObject):
     def initialize_data_strategy(self) -> DataStrategy:
         return None
 
-    def get_contained_courses(self) -> any:
-        pass
-
-    def get_all_teachers(self) -> Dict[str, 'Teacher']:
-        return self.teachers
-    def get_teacher(self, name: str) -> 'Teacher':
-        return self.teachers[name]
-    def set_teacher(self, name: str, teacher: 'Teacher') -> None:
-        self.teachers[name] = teacher
-
-    def get_all_years(self) -> Dict[str, 'Year']:
-        return self.years
-    def get_year(self, name: str) -> 'Year':
-        return self.years[name]
-    def set_year(self, name: str, year: 'Year') -> None:
-        self.years[name] = year
-
-
-class SchoolBuilder:
-    def __init__(self, school: School):
-        self.school: School = school
-        self.data_domain: DataDomain = self.school.get_data_domain()
-        self.most_recent_built_year: Year = None
-        self.most_recent_built_course: Course = None
-        self.most_recent_built_term: Term = None
-        self.build()
-
-    def build(self) -> School:
-        self.build_years()
-        self.build_teachers()
-        return self.school
-
-    def build_years(self) -> None:
-        year_strategy: DataStrategy = self.data_domain.year_strategy()
-        for name in year_strategy.access_data():
-            self.school.set_year(Year(name))
-            self.most_recent_built_year = self.school.get_year(name)
-            self.build_courses()
-            self.build_study_lines()
-
-    def build_courses(self) -> None:
-        year: Year = self.most_recent_built_year
-        course_strategy: DataStrategy = self.data_domain.course_strategy()
-        for name in course_strategy.access_data(year):
-            year.set_course(name, Course(name))
-            self.most_recent_built_course = year.get_course(name)
-            self.build_terms()
-            self.build_info_page()
-
-    def build_terms(self) -> None:
-        course: Course = self.most_recent_built_course
-        for name in self.data_domain.term_strategy(course):
-            course.set_term(name, Term(name))
-            self.most_recent_built_term = course.get_term(name)
-            self.build_evaluation()
-            self.build_grade_sheet()
-
-    def build_teachers(self):
-        for teacher in self.data_domain.teacher_strategy():
-            self.school.set_teacher(teacher.get_name(), teacher)
-
-    def build_study_lines(self):
-        year: Year = self.most_recent_built_year
-        for study_line in self.data_domain.study_line_strategy():
-            year.set_study_line(study_line.get_name(), study_line)
-
-    def build_info_page(self):
-        year: Year = self.most_recent_built_year
-        course: Course = self.most_recent_built_course
-        info_page: InfoPage = self.data_domain.info_page_strategy(year, course)
-        course.set_info_page(info_page)
-
-    def build_evaluation(self):
-        year: Year = self.most_recent_built_year
-        course: Course = self.most_recent_built_course
-        term: Term = self.most_recent_built_term
-        evaluation: Evaluation = self.data_domain.evaluation_strategy(year, course, term)
-        term.set_evaluation(evaluation)
-
-    def build_grade_sheet(self):
-        year: Year = self.most_recent_built_year
-        course: Course = self.most_recent_built_course
-        term: Term = self.most_recent_built_term
-        grade_sheet: GradeSheet = self.data_domain.grade_sheet_strategy(year, course, term)
-        term.set_grade_sheet(grade_sheet)
-
-
-
-class Dtu(SchoolBuilder):
-    def __init__(self, oldest_year: int, newest_year: int) -> None:
-        self.oldest_year: int = oldest_year
-        self.newest_year: int = newest_year
-
-    @classmethod
-    def predefined_year_interval(cls) -> None:
-        oldest_year: int = 2017
-        newest_year: int = 2023
-        return cls(oldest_year, newest_year)
-
-    def generate_year_names(self) -> List[str]:
-        year_names: List[str] = []
-        for year in range(self.oldest_year, self.newest_year):
-            year_names.append(f"{str(year)}'-'{str(1+year)}")
-        return year_names
-
 class Year(BaseDataObject):
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.studylines: Dict[str, 'StudyLine'] = {}
-        self.courses: Dict[str, 'Course'] = {}
 
     @staticmethod
     def get_child_classes() -> list[type['BaseDataObject']]:
         return [Course, StudyLine]
 
-    def get_all_studylines(self) -> Dict[str, 'StudyLine']:
-        return self.studylines
-    def get_studyline(self, name: str) -> 'StudyLine':
-        return self.studylines[name]
-    def set_studyline(self, name: str, studyline: 'StudyLine') -> None:
-        self.studylines[name] = studyline
-
-    def get_all_courses(self) -> Dict[str, 'Course']:
-        return self.courses
-    def get_course(self, name: str) -> 'Course':
-        return self.courses[name]
-    def set_course(self, name: str, course: 'Course') -> None:
-        self.courses[name] = course
-
+    def initialize_data_strategy(self) -> DataStrategy:
+        #TODO
+        return "TODO"
 
 class Course(BaseDataObject):
-    def __init__(self) -> None:
-        super().__init__()
-        self.info_page: Dict[str, 'InfoPage'] = {}
-        self.course_terms: Dict[str, 'Term'] = {}
 
     @staticmethod
     def get_child_classes() -> list[type['BaseDataObject']]:
         return [Term, InfoPage]
 
-    def get_all_terms(self) -> Dict[str, 'Term']:
-        return self.course_terms
-    def get_term(self, name: str) -> 'Term':
-        return self.course_terms[name]
-    def set_term(self, name: str, course_term: 'Term') -> None:
-        self.course_terms[name] = course_term
-
-    def get_info_page(self) -> 'InfoPage':
-        return self.info_page
-    def set_info_page(self, info_page: 'InfoPage') -> None:
-        self.info_page = info_page
-
+    def initialize_data_strategy(self) -> DataStrategy:
+        #TODO
+        return "TODO"
 
 class Term(BaseDataObject):
-    def __init__(self) -> None:
-        super().__init__()
-        self.evaluation:'Evaluation' = None
-        self.grade_sheet: 'GradeSheet' = None
 
     @staticmethod
     def get_child_classes() -> list[type['BaseDataObject']]:
         return [Evaluation, GradeSheet]
 
-    def get_grade_sheet(self) -> 'GradeSheet':
-        return self.grade_sheet
-    def set_grade_sheet(self, grade_sheet: 'GradeSheet') -> None:
-        self.grade_sheet = grade_sheet
-
-    def get_evaluation(self) -> 'Evaluation':
-        return self.evaluation
-    def set_evaluation(self, evaluation: 'Evaluation') -> None:
-        self.evaluation = evaluation
+    def initialize_data_strategy(self) -> DataStrategy:
+        #TODO
+        return "TODO"
 
 
 class Teacher(BaseDataObject):
-    pass
+
+    def initialize_data_strategy(self) -> DataStrategy:
+        #TODO
+        return "TODO"
 
 class StudyLine(BaseDataObject):
-    pass
 
+    def initialize_data_strategy(self) -> DataStrategy:
+        #TODO
+        return "TODO"
 class Evaluation(BaseDataObject):
-    pass
+
+    def initialize_data_strategy(self) -> DataStrategy:
+        #TODO
+        return "TODO"
 
 class GradeSheet(BaseDataObject):
-    pass
+
+    def initialize_data_strategy(self) -> DataStrategy:
+        #TODO
+        return "TODO"
 
 class InfoPage(BaseDataObject):
-    pass
+
+    def initialize_data_strategy(self) -> DataStrategy:
+        #TODO
+        return "TODO"
