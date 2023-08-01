@@ -11,35 +11,34 @@ from web_scraping_tool import WebScrapingTool
 
 class Persistence:
 
-    def data_exists():
-        pass
-    def cached_data_exists():
+    def exists_in_cache(scrape_key: str) -> bool:
         pass
 
-    def read_data():
-        pass
-    def write_data():
+    def exists_in_database(parse_key: str) -> bool:
         pass
 
-    def read_cache():
-        pass
-    def write_cache():
+    def exists_in_memory(deserialize_key: str) -> bool:
         pass
 
 
-class DataAccess:
-    def __init__(self, custom_object: 'DataContainer') -> None:
-        self.retrieval_strategy: DataStrategy = custom_object.get_data_strategy()
+    def read_from_cache(scrape_key: str) -> str:
+        pass
 
-    def access_data(self):
-        if self.retrieval_strategy.data_exists(self.custom_object):
-            return self.retrieval_strategy.read_data(self.custom_object)
-        elif self.retrieval_strategy.cached_data_exists(self.custom_object):
-            self.retrieval_strategy.set_unparsed_data(Persistence.read_cache(self.custom_object))
-        else:
-            self.retrieval_strategy.scrape_and_store_raw_data(self.custom_object)
-        self.retrieval_strategy.parse_and_store_data_map(self.custom_object)
-        return self.retrieval_strategy.get_parsed_data()
+    def read_from_database(parse_key: str) -> dict[str:str]:
+        pass
+
+    def read_from_memory(deserialize_key: str) -> 'DataObject':
+        pass
+
+
+    def write_to_cache(scraped_data, scrape_key: str) -> None:
+        pass
+
+    def write_to_database(parsed_data, parse_key: str) -> None:
+        pass
+
+    def write_to_memory(deserialized_data, deserialize_key: str) -> None:
+        pass
 
 
 class DataStrategy(ABC):
@@ -49,7 +48,7 @@ class DataStrategy(ABC):
     def __init__(self) -> None:
         self.scraped_data: str = ""
         self.parsed_data: dict[str:str] = {}
-        self.deserialized_data: DataContainer = None
+        self.deserialized_data: DataObject = None
         self.scrape_key: str = self._generate_scrape_key()
         self.parse_key: str = self._generate_parse_key()
         self.deserialize_key: str = self._generate_deserialize_key()
@@ -63,14 +62,30 @@ class DataStrategy(ABC):
         pass
 
     @abstractmethod
-    def deserialize_data(self) -> 'DataContainer':
+    def deserialize_data(self) -> 'DataObject':
         pass
 
     @abstractmethod
     def generate_data_key(self) -> 'str':
         pass
 
-    def retrieve_data(self) -> 'DataContainer':
+    def access_data(self):
+        if self.deserialized_data_exists():
+            self.deserialized_data = self.load_deserialized_data()
+        elif self.parsed_data_exists():
+            self.parsed_data = self.load_parsed_data()
+            self.deserialized_data = self.deserialize_data()
+        elif self.scraped_data_exists():
+            self.scraped_data = self.load_scraped_data()
+            self.parsed_data = self.parse_data()
+            self.deserialized_data = self.deserialize_data()
+        else:
+            self.scraped_data = self.scrape_data()
+            self.parsed_data = self.parse_data()
+            self.deserialized_data = self.deserialize_data()
+        return self.retrieve_data()
+
+    def retrieve_data(self) -> 'DataObject':
         return self.deserialized_data
 
     def scraped_data_exists(self) -> bool:
@@ -121,7 +136,6 @@ class EvaluationStrategy(DataStrategy):
     @staticmethod
     @abstractmethod
     def scrape_evaluation() -> str:
-
         pass
 
     @staticmethod
@@ -299,16 +313,22 @@ class DtuData(DataDomain):
     def teacher_strategy():
         return DtuTeacher
 
-class DataContainer(ABC):
-    def __init__(self) -> None:
+class DataObject(ABC):
+    def __init__(self, name: str, parent: 'DataObject') -> None:
+        self.name: str = name
+        self.parent: DataObject | None = parent
+        self.data_domain: DataDomain = parent.get_data_domain()
         self.data_strategy: DataStrategy = self.initialize_data_strategy()
-        self.data_domain: DataDomain = None
-        self.name: str = ""
-        self.parent: any = None
+        self.children: Dict[str:DataObject] = self.initialize_child_objects()
 
     @abstractmethod
     def initialize_data_strategy(self) -> str:
         pass
+
+    @abstractmethod
+    def initialize_child_objects(self) -> Dict[str:'DataObject']:
+        pass
+
     def get_data_strategy(self) -> str:
         self.data_strategy
     def set_data_strategy(self, data_strategy: DataStrategy) -> str:
@@ -329,7 +349,7 @@ class DataContainer(ABC):
     def set_parent(self, parent: any) -> None:
         self.parent = parent
 
-    def retrieve_data(self):
+    def _retrieve_data(self):
         if self.data_strategy.data_exists(self):
             return self.data_strategy.read_data(self)
         elif self.data_strategy.cached_data_exists(self):
@@ -339,7 +359,7 @@ class DataContainer(ABC):
         self.data_strategy.parse_and_store_data_map(self)
         return self.data_strategy.get_parsed_data()
 
-class School(DataContainer):
+class School(DataObject):
     def __init__(self) -> None:
         self.teachers: Dict[str, 'Teacher'] = {}
         self.years: Dict[str, 'Year'] = {}
@@ -481,7 +501,7 @@ class Dtu(SchoolBuilder):
 
 
 
-class Year(DataContainer):
+class Year(DataObject):
     def __init__(self) -> None:
         self.name: str = ""
         self.studylines: Dict[str, 'StudyLine'] = {}
@@ -510,7 +530,7 @@ class Year(DataContainer):
         self.courses[name] = course
 
 
-class Course(DataContainer):
+class Course(DataObject):
     def __init__(self) -> None:
         self.name: str = ""
         self.info_page: Dict[str, 'InfoPage'] = {}
@@ -534,7 +554,7 @@ class Course(DataContainer):
         self.info_page = info_page
 
 
-class CourseTerm(DataContainer):
+class CourseTerm(DataObject):
     def __init__(self) -> None:
         self.name: str = ""
         self.evaluation:'Evaluation' = None
@@ -556,17 +576,17 @@ class CourseTerm(DataContainer):
         self.evaluation = evaluation
 
 
-class Teacher(DataContainer):
+class Teacher(DataObject):
     pass
 
-class StudyLine(DataContainer):
+class StudyLine(DataObject):
     pass
 
-class Evaluation(DataContainer):
+class Evaluation(DataObject):
     pass
 
-class GradeSheet(DataContainer):
+class GradeSheet(DataObject):
     pass
 
-class InfoPage(DataContainer):
+class InfoPage(DataObject):
     pass
