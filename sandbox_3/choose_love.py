@@ -5,9 +5,9 @@ class AbstractDataClass(ABC):
     def __init__(self, name: str) -> None:
         self.name = name
 
-class AbstractRegistry(ABC):
-    def __init__(self) -> None:
-        self.registry_class: Type[AbstractDataClass] = self._get_class()
+class Registry:
+    def __init__(self, registry_class: Type[AbstractDataClass]) -> None:
+        self.registry_class: Type[AbstractDataClass] = registry_class
         self.registry_dictionary: Dict[str, AbstractDataClass] = {}
 
     def exists(self, key: str) -> bool:
@@ -47,6 +47,16 @@ class AbstractRegistry(ABC):
     def _get_class_name(self) -> str:
         return self.__class__.__name__
 
-    @abstractmethod
-    def _get_class(self) -> Type[AbstractDataClass]:
-        pass
+class CourseContainer(ABC):
+    pass
+
+
+#School
+#Year
+#Course
+#Term
+#Teacher
+#StudyLine
+#Evaluation
+#GradeSheet
+#InfoPage

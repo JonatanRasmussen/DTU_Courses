@@ -11,32 +11,39 @@ from web_scraping_tool import WebScrapingTool
 
 class Persistence:
 
+    @staticmethod
     def exists_in_cache(scrape_key: str) -> bool:
         pass
 
+    @staticmethod
     def exists_in_database(parse_key: str) -> bool:
         pass
 
+    @staticmethod
     def exists_in_memory(deserialize_key: str) -> bool:
         pass
 
-
+    @staticmethod
     def read_from_cache(scrape_key: str) -> str:
         pass
 
+    @staticmethod
     def read_from_database(parse_key: str) -> dict[str:str]:
         pass
 
+    @staticmethod
     def read_from_memory(deserialize_key: str) -> 'BaseDataObject':
         pass
 
-
+    @staticmethod
     def write_to_cache(scrape_key: str, scraped_data: str) -> None:
         pass
 
+    @staticmethod
     def write_to_database(parse_key: str, parsed_data: dict[str:str]) -> None:
         pass
 
+    @staticmethod
     def write_to_memory(deserialize_key: str, deserialized_data: 'BaseDataObject') -> None:
         pass
 
@@ -68,11 +75,11 @@ class DataStrategy(ABC):
             self._deserialized_data = self._deserialize_data()
         elif self._scraped_data_exists():
             self._scraped_data = self._load_scraped_data()
-            self._parsed_data = self._parse_data()
+            self._parsed_data = self._parse_data(self._scraped_data)
             self._deserialized_data = self._deserialize_data()
         else:
-            self._scraped_data = self._scrape_data()
-            self._parsed_data = self._parse_data()
+            self._scraped_data = self._scrape_data(custom_object)
+            self._parsed_data = self._parse_data(self._scraped_data)
             self._deserialized_data = self._deserialize_data()
         self._store_data()
         return self.get_deserialized_data()
@@ -118,12 +125,14 @@ class DataStrategy(ABC):
         DESERIALIZE_IDENTIFIER: str = "obj"
         return f"{self._generate_data_name()}_{DESERIALIZE_IDENTIFIER}"
 
+    @staticmethod
     @abstractmethod
-    def _scrape_data(self) -> str:
+    def _scrape_data(data_object: 'BaseDataObject') -> str:
         pass
 
+    @staticmethod
     @abstractmethod
-    def _parse_data(self) -> dict[str:str]:
+    def _parse_data(scraped_data: str) -> dict[str:str]:
         pass
 
     @abstractmethod
@@ -142,6 +151,7 @@ class CourseStrategy(DataStrategy):
 
     @staticmethod
     def _scrape_data(course_object: 'Course') -> str:
+
         year: str = course_object.get_year().name()
         return CourseStrategy.scrape_course(year)
 
@@ -151,12 +161,12 @@ class CourseStrategy(DataStrategy):
 
     @staticmethod
     @abstractmethod
-    def scrape_course() -> str:
+    def scrape_course(course_object) -> str:
         pass
 
     @staticmethod
     @abstractmethod
-    def parse_course() -> dict[str:str]:
+    def parse_course(scraped_data) -> dict[str:str]:
         pass
 
 class DtuCourses(DataStrategy):
@@ -183,8 +193,8 @@ class DtuCourses(DataStrategy):
         return concatenated_html
 
     @staticmethod
-    def _parse_data(page_source) -> any:
-        soup = BeautifulSoup(page_source, 'html.parser')
+    def _parse_data(scraped_data) -> any:
+        soup = BeautifulSoup(scraped_data, 'html.parser')
         all_tables: any = soup.find_all('table', {'class': 'table'})
         dct: dict[str,str] = {}
         for table in all_tables:
@@ -213,22 +223,22 @@ class EvaluationStrategy(DataStrategy):
 
     @staticmethod
     @abstractmethod
-    def scrape_evaluation() -> str:
+    def scrape_evaluation(year: str, course: str, term: str) -> str:
         pass
 
     @staticmethod
     @abstractmethod
-    def parse_evaluation() -> dict[str:str]:
+    def parse_evaluation(scraped_data: str) -> dict[str:str]:
         pass
 
 class DtuEvaluation(DataStrategy):
 
     @staticmethod
-    def _scrape_data() -> any:
+    def scrape_evaluation(year: str, course: str, term: str) -> str:
         pass
 
     @staticmethod
-    def _parse_data() -> any:
+    def parse_evaluation(scraped_data: str) -> dict[str:str]:
         pass
 
 class GradeSheetStrategy(DataStrategy):
@@ -246,22 +256,22 @@ class GradeSheetStrategy(DataStrategy):
 
     @staticmethod
     @abstractmethod
-    def scrape_grade_sheet() -> str:
+    def scrape_grade_sheet(year: str, course: str, term: str) -> str:
         pass
 
     @staticmethod
     @abstractmethod
-    def parse_grade_sheet() -> dict[str:str]:
+    def parse_grade_sheet(scraped_data: str) -> dict[str:str]:
         pass
 
 class DtuGradeSheet(DataStrategy):
 
     @staticmethod
-    def _scrape_data() -> any:
+    def scrape_grade_sheet(year: str, course: str, term: str) -> str:
         pass
 
     @staticmethod
-    def _parse_data() -> any:
+    def parse_grade_sheet(scraped_data: str) -> dict[str:str]:
         pass
 
 class InfoPageStrategy(DataStrategy):
@@ -278,22 +288,22 @@ class InfoPageStrategy(DataStrategy):
 
     @staticmethod
     @abstractmethod
-    def scrape_info_page() -> str:
+    def scrape_info_page(year: str, course: str) -> str:
         pass
 
     @staticmethod
     @abstractmethod
-    def parse_info_page() -> dict[str:str]:
+    def parse_info_page(scraped_data: str) -> dict[str:str]:
         pass
 
 class DtuInfoPage(DataStrategy):
 
     @staticmethod
-    def _scrape_data() -> any:
+    def scrape_info_page(year: str, course: str) -> str:
         pass
 
     @staticmethod
-    def _parse_data() -> any:
+    def parse_info_page(scraped_data: str) -> dict[str:str]:
         pass
 
 class StudyLineStrategy(DataStrategy):
@@ -310,22 +320,22 @@ class StudyLineStrategy(DataStrategy):
 
     @staticmethod
     @abstractmethod
-    def scrape_study_line() -> str:
+    def scrape_study_line(year: str, course: str) -> str:
         pass
 
     @staticmethod
     @abstractmethod
-    def parse_study_line() -> dict[str:str]:
+    def parse_study_line(scraped_data: str) -> dict[str:str]:
         pass
 
 class DtuStudyLine(DataStrategy):
 
     @staticmethod
-    def _scrape_data() -> any:
+    def scrape_study_line(year: str, course: str) -> str:
         pass
 
     @staticmethod
-    def _parse_data() -> any:
+    def parse_study_line(scraped_data: str) -> dict[str:str]:
         pass
 
 class TeacherStrategy(DataStrategy):
@@ -341,22 +351,22 @@ class TeacherStrategy(DataStrategy):
 
     @staticmethod
     @abstractmethod
-    def scrape_teacher() -> str:
+    def scrape_teacher(year: str) -> str:
         pass
 
     @staticmethod
     @abstractmethod
-    def parse_teacher() -> dict[str:str]:
+    def parse_teacher(scraped_data: str) -> dict[str:str]:
         pass
 
 class DtuTeacher(DataStrategy):
 
     @staticmethod
-    def _scrape_data() -> any:
+    def scrape_teacher(year: str) -> str:
         pass
 
     @staticmethod
-    def _parse_data() -> any:
+    def parse_teacher(scraped_data: str) -> dict[str:str]:
         pass
 
 class TermStrategy(DataStrategy):
@@ -373,29 +383,30 @@ class TermStrategy(DataStrategy):
 
     @staticmethod
     @abstractmethod
-    def scrape_term() -> str:
+    def scrape_term(year: str, course: str) -> str:
         pass
 
     @staticmethod
     @abstractmethod
-    def parse_term() -> dict[str:str]:
+    def parse_term(scraped_data: str) -> dict[str:str]:
         pass
 
 class DtuTerm(DataStrategy):
 
     @staticmethod
-    def _scrape_data() -> any:
+    def scrape_term(year: str, course: str) -> str:
         pass
 
     @staticmethod
-    def _parse_data() -> any:
+    def parse_term(scraped_data: str) -> dict[str:str]:
         pass
 
 class YearStrategy(DataStrategy):
 
     @staticmethod
     def _scrape_data(year_object: 'Year') -> str:
-        return YearStrategy.scrape_year()
+        year: str = year_object.get_year().name()
+        return YearStrategy.scrape_year(year)
 
     @staticmethod
     def _parse_data(scraped_data: str) -> dict[str:str]:
@@ -403,64 +414,47 @@ class YearStrategy(DataStrategy):
 
     @staticmethod
     @abstractmethod
-    def scrape_year() -> str:
+    def scrape_year(year: str) -> str:
         pass
 
     @staticmethod
     @abstractmethod
-    def parse_year() -> dict[str:str]:
+    def parse_year(scraped_data: str) -> dict[str:str]:
         pass
 
 class DtuYear(DataStrategy):
 
     @staticmethod
-    def _scrape_data() -> any:
+    def scrape_year() -> str:
         pass
 
     @staticmethod
-    def _parse_data() -> any:
+    def parse_year(scraped_data: str) -> dict[str:str]:
         pass
-
-class DtuYears:
-    def __init__(self, oldest_year: int, newest_year: int) -> None:
-        self.oldest_year: int = oldest_year
-        self.newest_year: int = newest_year
-
-    @classmethod
-    def predefined_year_interval(cls) -> None:
-        oldest_year: int = 2017
-        newest_year: int = 2023
-        return cls(oldest_year, newest_year)
-
-    def generate_year_names(self) -> List[str]:
-        year_names: List[str] = []
-        for year in range(self.oldest_year, self.newest_year):
-            year_names.append(f"{str(year)}'-'{str(1+year)}")
-        return year_names
 
 class DataOrigin(ABC):
 
     @staticmethod
     def get_data_retrieval_strategy(custom_object: any) -> DataStrategy:
-        if isinstance(custom_object, 'Course'):
+        if isinstance(custom_object, Course):
             return DataOrigin.course_strategy()
-        elif isinstance(custom_object, 'Evaluation'):
+        elif isinstance(custom_object, Evaluation):
             return DataOrigin.evaluation_strategy()
-        elif isinstance(custom_object, 'GradeSheet'):
+        elif isinstance(custom_object, GradeSheet):
             return DataOrigin.grade_sheet_strategy()
-        elif isinstance(custom_object, 'InfoPage'):
+        elif isinstance(custom_object, InfoPage):
             return DataOrigin.info_page_strategy()
-        elif isinstance(custom_object, 'StudyLine'):
+        elif isinstance(custom_object, StudyLine):
             return DataOrigin.study_line_strategy()
-        elif isinstance(custom_object, 'Teacher'):
+        elif isinstance(custom_object, Teacher):
             return DataOrigin.teacher_strategy()
         else:
             raise ValueError("Custom_object is of an unsupported type")
 
     @staticmethod
     @abstractmethod
-    def get_domain_name(cls) -> str:
-        return cls.__name__
+    def get_domain_name() -> str:
+        return DataOrigin.__name__
 
     @staticmethod
     @abstractmethod
@@ -611,9 +605,7 @@ class DataPoint(BaseDataObject):
     def cascade_build(self):
         strategy: DataStrategy = self.data_origin.get_data_strategy()
         data_object: BaseDataObject = strategy.access_data(self)
-        key: str = self.get_class_name()
-        item = strategy._generate_data_name(self)
-        self.add_dictionary_element(key, item, data_object)
+        self.data_point = data_object
 
 class School(AbstractContainer):
 
