@@ -438,22 +438,22 @@ class DtuYears:
             year_names.append(f"{str(year)}'-'{str(1+year)}")
         return year_names
 
-class DataDomain(ABC):
+class DataOrigin(ABC):
 
     @staticmethod
     def get_data_retrieval_strategy(custom_object: any) -> DataStrategy:
         if isinstance(custom_object, 'Course'):
-            return DataDomain.course_strategy()
+            return DataOrigin.course_strategy()
         elif isinstance(custom_object, 'Evaluation'):
-            return DataDomain.evaluation_strategy()
+            return DataOrigin.evaluation_strategy()
         elif isinstance(custom_object, 'GradeSheet'):
-            return DataDomain.grade_sheet_strategy()
+            return DataOrigin.grade_sheet_strategy()
         elif isinstance(custom_object, 'InfoPage'):
-            return DataDomain.info_page_strategy()
+            return DataOrigin.info_page_strategy()
         elif isinstance(custom_object, 'StudyLine'):
-            return DataDomain.study_line_strategy()
+            return DataOrigin.study_line_strategy()
         elif isinstance(custom_object, 'Teacher'):
-            return DataDomain.teacher_strategy()
+            return DataOrigin.teacher_strategy()
         else:
             raise ValueError("Custom_object is of an unsupported type")
 
@@ -498,7 +498,7 @@ class DataDomain(ABC):
         pass
 
 
-class DtuData(DataDomain):
+class DtuData(DataOrigin):
 
     @staticmethod
     def course_strategy():
@@ -538,12 +538,7 @@ class BaseDataObject(ABC):
     def __init__(self) -> None:
         self.name: str = ""
         self.parent: BaseDataObject | None = None
-        self.data_domain: DataDomain | None = None
-        self.data_container: Dict[str, Dict[str, BaseDataObject]] = {}
-
-    @staticmethod
-    def get_child_classes() -> list[type['BaseDataObject']]:
-        return []
+        self.data_origin: DataOrigin | None = None
 
     @staticmethod
     def get_data_strategy() -> DataStrategy | None:
@@ -562,10 +557,38 @@ class BaseDataObject(ABC):
     def set_parent(self, parent: 'BaseDataObject') -> None:
         self.parent = parent
 
-    def get_data_domain(self) -> DataDomain:
-        return self.data_domain
-    def set_data_domain(self, data_domain: DataDomain) -> None:
-        self.data_domain = data_domain
+    def get_data_origin(self) -> DataOrigin:
+        return self.data_origin
+    def set_data_origin(self, data_origin: DataOrigin) -> None:
+        self.data_origin = data_origin
+
+    @staticmethod
+    @abstractmethod
+    def get_child_classes() -> list[type['BaseDataObject']]:
+        pass
+
+    @abstractmethod
+    def cascade_build(self):
+        pass
+
+class AbstractContainer(BaseDataObject):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.data_container: Dict[str, Dict[str, BaseDataObject]] = {}
+
+    def cascade_build(self):
+        for child_class in self.get_child_classes():
+            key: str = child_class.get_class_name()
+            self.add_new_dictionary(key)
+            strategy: DataStrategy = child_class.data_origin.get_data_strategy()
+            for item in strategy.access_data(self):
+                child_object = child_class()
+                child_object.name = item
+                child_object.parent = self
+                child_object.data_origin = self.data_origin
+                child_object.cascade_build()
+                self.add_dictionary_element(key, item, child_object)
 
     def get_full_dictionary(self, dct_key: str) -> Dict[str, 'BaseDataObject']:
         return self.data_container[dct_key]
@@ -577,43 +600,22 @@ class BaseDataObject(ABC):
     def add_dictionary_element(self, outer_key: str, inner_key: str, element: 'BaseDataObject') -> None:
         self.data_container[outer_key][inner_key] = element
 
+
+class DataPoint(BaseDataObject):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.term: str = ""
+        self.data_point: DataPoint | None = None
+
     def cascade_build(self):
-        if self._has_children():
-            self._build_children()
-        else:
-            self._build_self()
-
-    def _has_children(self) -> bool:
-        if len(self.get_child_classes()) is not 0:
-            return True
-        return False
-
-    def _build_children(self) -> None:
-        for child_class in self.get_child_classes():
-            key: str = child_class.get_class_name()
-            self.add_new_dictionary(key)
-            strategy: DataStrategy = child_class.data_domain.get_data_strategy()
-            for item in strategy.access_data(self):
-                child_object = child_class()
-                child_object.name = item
-                child_object.parent = self
-                child_object.data_domain = self.data_domain
-                child_object.cascade_build()
-                self.add_dictionary_element(key, item, child_object)
-
-    def _build_self(self) -> None:
-        strategy: DataStrategy = self.data_domain.get_data_strategy()
+        strategy: DataStrategy = self.data_origin.get_data_strategy()
         data_object: BaseDataObject = strategy.access_data(self)
         key: str = self.get_class_name()
         item = strategy._generate_data_name(self)
         self.add_dictionary_element(key, item, data_object)
 
-    @staticmethod
-    @abstractmethod
-    def get_child_classes() -> list[type['BaseDataObject']]:
-        pass
-
-class School(BaseDataObject):
+class School(AbstractContainer):
 
     @staticmethod
     def get_child_classes() -> list[type['BaseDataObject']]:
@@ -622,62 +624,63 @@ class School(BaseDataObject):
     def initialize_data_strategy(self) -> DataStrategy:
         return None
 
-class Year(BaseDataObject):
+class Year(AbstractContainer):
 
     @staticmethod
     def get_child_classes() -> list[type['BaseDataObject']]:
         return [Course, StudyLine]
 
     def initialize_data_strategy(self) -> DataStrategy:
-        #TODO
-        return "TODO"
+        return self.data_origin.year_strategy()
 
-class Course(BaseDataObject):
+class Course(AbstractContainer):
 
     @staticmethod
     def get_child_classes() -> list[type['BaseDataObject']]:
         return [Term, InfoPage]
 
     def initialize_data_strategy(self) -> DataStrategy:
-        #TODO
-        return "TODO"
+        return self.data_origin.course_strategy()
 
-class Term(BaseDataObject):
+class Term(AbstractContainer):
 
     @staticmethod
     def get_child_classes() -> list[type['BaseDataObject']]:
         return [Evaluation, GradeSheet]
 
     def initialize_data_strategy(self) -> DataStrategy:
-        #TODO
-        return "TODO"
+        return self.data_origin.term_strategy()
 
+class Teacher(AbstractContainer):
 
-class Teacher(BaseDataObject):
-
-    def initialize_data_strategy(self) -> DataStrategy:
-        #TODO
-        return "TODO"
-
-class StudyLine(BaseDataObject):
+    @staticmethod
+    def get_child_classes() -> list[type['BaseDataObject']]:
+        return [Course]
 
     def initialize_data_strategy(self) -> DataStrategy:
-        #TODO
-        return "TODO"
-class Evaluation(BaseDataObject):
+        return self.data_origin.teacher_strategy()
+
+class StudyLine(AbstractContainer):
+
+    @staticmethod
+    def get_child_classes() -> list[type['BaseDataObject']]:
+        return [Course]
 
     def initialize_data_strategy(self) -> DataStrategy:
-        #TODO
-        return "TODO"
+        return self.data_origin.study_line_strategy()
 
-class GradeSheet(BaseDataObject):
-
-    def initialize_data_strategy(self) -> DataStrategy:
-        #TODO
-        return "TODO"
-
-class InfoPage(BaseDataObject):
+class Evaluation(DataPoint):
 
     def initialize_data_strategy(self) -> DataStrategy:
-        #TODO
-        return "TODO"
+        return self.data_origin.evaluation_strategy()
+
+
+class GradeSheet(DataPoint):
+
+    def initialize_data_strategy(self) -> DataStrategy:
+        return self.data_origin.grades_sheet_strategy()
+
+class InfoPage(DataPoint):
+
+    def initialize_data_strategy(self) -> DataStrategy:
+        return self.data_origin.info_page_strategy()
