@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Type
+from typing import Dict, List
 
 class DataDomain:
     def __init__(self, name: str) -> None:
@@ -19,45 +19,49 @@ class AbstractDataClass(ABC):
         self.name = ""
 
 
-class Component(ABC):
+class DataObject(ABC):
     def __init__(self) -> None:
-        self.name: Component
-
-    @abstractmethod
-    def generate_key(self) -> str:
-        pass
-
-
-class Leaf(Component):
+        self.name: DataObject
+        self.children: List[DataObject]
 
     def generate_key(self) -> str:
-        return ""
+        return "key"
 
 
-class Composite(Component):
-
-    def generate_key(self) -> str:
-        return ""
+class EndPoint(DataObject):
+    pass
 
 
-class Registry:
+class Container(DataObject):
     def __init__(self) -> None:
-        self.dct: Dict[str, Component] = {}
+        super().__init__()
+        self.children: List[DataObject]
+
+    def add(self, child: DataObject) -> None:
+        self.children.append(child)
+
+    def get_children(self) -> List[DataObject]:
+        return self.children
+
+class DAO(ABC):
 
     def exists(self, key: str) -> bool:
-        return key in self.dct
+        return self._is_accessible(key)
 
-    def get(self, key: str) -> 'Component':
+    def get(self, key: str) -> 'DataObject':
         self._raise_error_if_key_missing(key)
-        return self.dct[key]
+        return self._read(key)
 
-    def set_unique(self, key: str, value: 'Component') -> None:
+    def set_unique_key(self, key: str, value: 'DataObject') -> None:
         self._raise_error_if_key_exists(key)
-        self.set_dupe(key, value)
+        self._set(key, value)
 
-    def set_dupe(self, key: str, value: 'Component') -> None:
+    def set_if_key_missing(self, key: str, value: 'DataObject') -> None:
         if not self.exists(key):
-            self.dct[key] = value
+            self._set(key, value)
+
+    def _set(self, key: str, value: 'DataObject') -> None:
+        self._write(key, value)
 
     def _raise_error_if_key_exists(self, key: str) -> None:
         if not self.exists(key):
@@ -67,116 +71,68 @@ class Registry:
         if self.exists(key):
             raise KeyError(f"Key '{key}' already exists.")
 
-class LegacyRegistry:
-    def __init__(self, registry_class: Type[AbstractDataClass]) -> None:
-        self.registry_class: Type[AbstractDataClass] = registry_class
-        self.time_key_dct: Dict[str, Dict[str, AbstractDataClass]] = {}
 
-    def exists(self, key: str, time: TimePeriod) -> bool:
-        dct = self._get_nested_dct(time)
-        return key in dct
+    @abstractmethod
+    def _is_accessible(self, key: str) -> bool:
+        pass
 
-    def get(self, key: str, time: TimePeriod) -> AbstractDataClass:
-        dct = self._get_nested_dct(time)
-        if not key in dct:
-            raise KeyError(f"Key '{key}' doesn't exists in {self._get_class_name()}.")
-        return dct[key]
+    @abstractmethod
+    def _read(self, key: str) -> 'DataObject':
+        pass
 
-    def register_unique(self, key: str, time: TimePeriod) -> None:
-        data_object: AbstractDataClass = self.registry_class()
-        self._set(key, time, data_object)
+    @abstractmethod
+    def _write(self, key: str, value: 'DataObject') -> None:
+        pass
 
-    def register_dupe(self, key: str, time: TimePeriod) -> None:
-        data_object: AbstractDataClass = self.registry_class()
-        self._set_dupe(key, time, data_object)
+class Registry(DAO):
+    def __init__(self) -> None:
+        self.dct: Dict[str, DataObject] = {}
 
-    def register_and_return_unique(self, key: str, time: TimePeriod) -> AbstractDataClass:
-        self.register_unique(key, time)
-        return self.get(key, time)
+    def _is_accessible(self, key: str) -> bool:
+        return key in self.dct
 
-    def register_and_return_dupe(self, key: str, time: TimePeriod) -> AbstractDataClass:
-        data_object: AbstractDataClass = self.registry_class()
-        self._set_dupe(key, time, data_object)
-        return self.get(key, time)
+    def _read(self, key: str) -> 'DataObject':
+        return self.dct[key]
 
-    def _set(self, key: str, time: TimePeriod, value: AbstractDataClass) -> None:
-        if self.exists(key, time):
-            raise KeyError(f"Key '{key}' already exists in {self._get_class_name()}.")
-        self._set_dupe(key, time, value)
+    def _write(self, key: str, value: 'DataObject') -> None:
+        self.dct[key] = value
 
-    def _set_dupe(self, key: str, time: TimePeriod, value: AbstractDataClass) -> None:
-        dct = self._get_nested_dct(time)
-        if not self.exists(key, time):
-            dct[key] = value
 
-    def _get_nested_dct(self, time: TimePeriod) -> Dict[str, AbstractDataClass]:
-        time_key: str = time.get_string()
-        if not self._time_exists(time):
-            raise KeyError(f"Time '{time_key}' doesn't exists in {self._get_class_name()}.")
-        return self.time_key_dct[time_key]
+class FileAccess(DAO):
 
-    def _time_exists(self, time: TimePeriod) -> bool:
-        time_key: str = time.get_string()
-        return time_key in self.time_key_dct
+    def _is_accessible(self, key: str) -> bool:
+        if key == "str":
+            return True
+        return False
 
-    def _get_class_name(self) -> str:
-        return self.registry_class.__name__
+    def _read(self, key: str) -> 'DataObject':
+        assert key == "hey"
+        return DataObject()
+
+    def _write(self, key: str, value: 'DataObject') -> None:
+        pass
 
 class DataManager:
     def __init__(self) -> None:
-        self.registry: Registry = Registry()
+        self._data_access_objects: List[DAO] = []
+        self._initialize_dao_list()
 
-    # Cache methods
-    @staticmethod
-    def exists_in_external_resource(key: str) -> bool:
-        pass
+    def get(self, key: str) -> DataObject:
+        daos_with_missing_key: List[DAO] = []
+        for dao in self._data_access_objects:
+            if dao.exists(key):
+                data_object: DataObject = dao.get(key)
+            else:
+                daos_with_missing_key.insert(0, dao)
+        for dao in daos_with_missing_key:
+            dao.set_unique_key(key, data_object)
+        return data_object
 
-    @staticmethod
-    def read_from_external_resource(key: str) -> str:
-        pass
-
-    @staticmethod
-    def write_to_external_resource(key: str, data: str) -> None:
-        pass
-
-    # Cache methods
-    @staticmethod
-    def exists_in_webscrape_cache(key: str) -> bool:
-        pass
-
-    @staticmethod
-    def read_from_webscrape_cache(key: str) -> str:
-        pass
-
-    @staticmethod
-    def write_to_webscrape_cache(key: str, data: str) -> None:
-        pass
-
-    # Database methods
-    @staticmethod
-    def exists_in_local_database(key: str) -> bool:
-        pass
-
-    @staticmethod
-    def read_from_local_database(key: str) -> dict[str, str]:
-        pass
-
-    @staticmethod
-    def write_to_local_database(key: str, data: dict[str, str]) -> None:
-        pass
-
-    # Memory methods
-    @staticmethod
-    def exists_in_memory(key: str) -> bool:
-        pass
-
-    @staticmethod
-    def read_from_memory(key: str) -> 'BaseDataObject':
-        pass
-
-    @staticmethod
-    def write_to_memory(key: str, data: 'Component') -> None:
-        pass
+    def _initialize_dao_list(self) -> None:
+        self._data_access_objects.append(Registry())
+        self._data_access_objects.append(FileAccess())
+        if self._data_access_objects[-1].exists is not True:
+            raise ValueError("Data access must exist via last DAO in DAO-list")
 
 #School
 #Year
