@@ -1,18 +1,73 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Type
 
-class AbstractDataClass(ABC):
-    def __init__(self) -> None:
-        self.name = ""
+class DataDomain:
+    def __init__(self, name: str) -> None:
+        self.name = name
 
 class TimePeriod:
     def __init__(self, name: str) -> None:
         self.name = name
 
-    def get_string(self):
+    def get_string(self) -> str:
         return self.name
 
+class AbstractDataClass(ABC):
+    def __init__(self) -> None:
+        self.domain: DataDomain
+        self.time: TimePeriod
+        self.name = ""
+
+
+class Component(ABC):
+    def __init__(self) -> None:
+        self.name: Component
+
+    @abstractmethod
+    def generate_key(self) -> str:
+        pass
+
+
+class Leaf(Component):
+
+    def generate_key(self) -> str:
+        return ""
+
+
+class Composite(Component):
+
+    def generate_key(self) -> str:
+        return ""
+
+
 class Registry:
+    def __init__(self) -> None:
+        self.dct: Dict[str, Component] = {}
+
+    def exists(self, key: str) -> bool:
+        return key in self.dct
+
+    def get(self, key: str) -> 'Component':
+        self._raise_error_if_key_missing(key)
+        return self.dct[key]
+
+    def set_unique(self, key: str, value: 'Component') -> None:
+        self._raise_error_if_key_exists(key)
+        self.set_dupe(key, value)
+
+    def set_dupe(self, key: str, value: 'Component') -> None:
+        if not self.exists(key):
+            self.dct[key] = value
+
+    def _raise_error_if_key_exists(self, key: str) -> None:
+        if not self.exists(key):
+            raise KeyError(f"Key '{key}' doesn't exist.")
+
+    def _raise_error_if_key_missing(self, key: str) -> None:
+        if self.exists(key):
+            raise KeyError(f"Key '{key}' already exists.")
+
+class LegacyRegistry:
     def __init__(self, registry_class: Type[AbstractDataClass]) -> None:
         self.registry_class: Type[AbstractDataClass] = registry_class
         self.time_key_dct: Dict[str, Dict[str, AbstractDataClass]] = {}
@@ -67,9 +122,61 @@ class Registry:
     def _get_class_name(self) -> str:
         return self.registry_class.__name__
 
-class CourseContainer(ABC):
-    pass
+class DataManager:
+    def __init__(self) -> None:
+        self.registry: Registry = Registry()
 
+    # Cache methods
+    @staticmethod
+    def exists_in_external_resource(key: str) -> bool:
+        pass
+
+    @staticmethod
+    def read_from_external_resource(key: str) -> str:
+        pass
+
+    @staticmethod
+    def write_to_external_resource(key: str, data: str) -> None:
+        pass
+
+    # Cache methods
+    @staticmethod
+    def exists_in_webscrape_cache(key: str) -> bool:
+        pass
+
+    @staticmethod
+    def read_from_webscrape_cache(key: str) -> str:
+        pass
+
+    @staticmethod
+    def write_to_webscrape_cache(key: str, data: str) -> None:
+        pass
+
+    # Database methods
+    @staticmethod
+    def exists_in_local_database(key: str) -> bool:
+        pass
+
+    @staticmethod
+    def read_from_local_database(key: str) -> dict[str, str]:
+        pass
+
+    @staticmethod
+    def write_to_local_database(key: str, data: dict[str, str]) -> None:
+        pass
+
+    # Memory methods
+    @staticmethod
+    def exists_in_memory(key: str) -> bool:
+        pass
+
+    @staticmethod
+    def read_from_memory(key: str) -> 'BaseDataObject':
+        pass
+
+    @staticmethod
+    def write_to_memory(key: str, data: 'Component') -> None:
+        pass
 
 #School
 #Year
