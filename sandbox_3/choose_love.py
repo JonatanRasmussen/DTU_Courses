@@ -7,19 +7,19 @@ class DAO(ABC):
     def exists(self, key: str) -> bool:
         return self._is_accessible(key)
 
-    def get(self, key: str) -> 'RootObj':
+    def get(self, key: str) -> 'DataObject':
         self._raise_error_if_key_missing(key)
         return self._read(key)
 
-    def set_unique_key(self, key: str, value: 'RootObj') -> None:
+    def set_unique_key(self, key: str, value: 'DataObject') -> None:
         self._raise_error_if_key_exists(key)
         self._set(key, value)
 
-    def set_if_key_missing(self, key: str, value: 'RootObj') -> None:
+    def set_if_key_missing(self, key: str, value: 'DataObject') -> None:
         if not self.exists(key):
             self._set(key, value)
 
-    def _set(self, key: str, value: 'RootObj') -> None:
+    def _set(self, key: str, value: 'DataObject') -> None:
         self._write(key, value)
 
     def _raise_error_if_key_exists(self, key: str) -> None:
@@ -36,24 +36,24 @@ class DAO(ABC):
         pass
 
     @abstractmethod
-    def _read(self, key: str) -> 'RootObj':
+    def _read(self, key: str) -> 'DataObject':
         pass
 
     @abstractmethod
-    def _write(self, key: str, value: 'RootObj') -> None:
+    def _write(self, key: str, value: 'DataObject') -> None:
         pass
 
 class Registry(DAO):
     def __init__(self) -> None:
-        self.dct: Dict[str, RootObj] = {}
+        self.dct: Dict[str, DataObject] = {}
 
     def _is_accessible(self, key: str) -> bool:
         return key in self.dct
 
-    def _read(self, key: str) -> 'RootObj':
+    def _read(self, key: str) -> 'DataObject':
         return self.dct[key]
 
-    def _write(self, key: str, value: 'RootObj') -> None:
+    def _write(self, key: str, value: 'DataObject') -> None:
         self.dct[key] = value
 
 class FileAccess(DAO):
@@ -63,11 +63,11 @@ class FileAccess(DAO):
             return True
         return False
 
-    def _read(self, key: str) -> 'RootObj':
+    def _read(self, key: str) -> 'DataObject':
         assert key == "hey"
-        return School()
+        return School(key)
 
-    def _write(self, key: str, value: 'RootObj') -> None:
+    def _write(self, key: str, value: 'DataObject') -> None:
         pass
 
 class DataStrategy:
@@ -159,28 +159,43 @@ class DtuStrategySwitch(StrategySwitch):
     def year_strategy():
         return DataStrategy#DtuYear
 
-class RootObj(ABC):
+class DataObject(ABC):
 
-    _registry: 'Registry' = Registry()
+    KEY_SEPARATOR = "__"
+    ROOT_NAME: str = "root"
+    _registry: Registry = Registry()
 
-    def __init__(self) -> None:
-        self.name = ""
+    def __init__(self, key) -> None:
+        self.name = key
+        self.register()
 
     def get_name(self) -> str:
         return self.name
 
-    @staticmethod
-    def get(key: str) -> 'RootObj':
-        return RootObj._registry.get(key)
-    @classmethod
-    def set(cls, key: str) -> None:
-        RootObj._registry.set_unique_key(key, cls())
+    def _get_class_name(self) -> str:
+        return self.__class__.__name__
 
-class Attribute(RootObj):
-    pass
+    def register(self) -> None:
+        key = self.generate_general_key()
+        DataObject._registry.set_unique_key(key, self)
 
+    def generate_general_key(self) -> str:
+        separator: str = DataObject.KEY_SEPARATOR
+        class_and_separator: str = self._get_class_name() + separator
+        key_modifier: str = self._key_modifier()
+        name: str = self.name
+        if self._key_modifier() != "":
+            return class_and_separator + key_modifier + separator + name
+        else:
+            return class_and_separator + name
 
-class Domain(Attribute):
+    def _key_modifier(self) -> str:
+        return ""
+
+class Domain(DataObject):
+
+    def __init__(self, name: str) -> None:
+        self.domain: Domain
 
     def get_strategy_switch(self) -> Type[StrategySwitch]:
         if self.name != "":
@@ -188,30 +203,61 @@ class Domain(Attribute):
         return DtuStrategySwitch
 
     @staticmethod
-    def extract_domain_from_key(unparsed_domain: str) -> 'RootObj':
+    def extract_domain_from_key(unparsed_domain: str) -> 'DataObject':
         key: str = unparsed_domain
         if unparsed_domain != "":
             key = "dtu"
-        return Domain.get(key)
+        return DataObject._registry.get(key)
 
-class TimePeriod(Attribute):
-    pass
+class TimePeriod(DataObject):
 
-class DataObject(RootObj):
+    def __init__(self, name: str) -> None:
+        self.domain: Domain
+        super().__init__(name)
+
+    @staticmethod
+    def extract_year_from_key(unparsed_year: str) -> 'DataObject':
+        key: str = unparsed_year
+        if unparsed_year != "":
+            key = "2069"
+        return DataObject._registry.get(key)
+
+    @abstractmethod
+    def initialize_domain(self):
+        domain = DtuStrategySwitch
+
+class DtuAcademicYear(DtuTimePeriod):
+
+    @staticmethod
+    def extract_year_from_key(unparsed_year: str) -> 'DataObject':
+        key: str = unparsed_year
+        if unparsed_year != "":
+            key = "2069"
+        return DataObject._registry.get(key)
+
+class DtuAcademicTerm(DtuTimePeriod):
+
+    @staticmethod
+    def extract_year_from_key(unparsed_year: str) -> 'DataObject':
+        key: str = unparsed_year
+        if unparsed_year != "":
+            key = "2069"
+        return DataObject._registry.get(key)
+
+class Composite(DataObject):
 
     KEY_SEPARATOR = "__"
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, name: str) -> None:
         self.domain: Domain
         self.time: TimePeriod
-        self.name = ""
-        self.children: List[DataObject]
+        self.children: List[Composite]
+        super().__init__(name)
 
-    def add_child(self, child: 'DataObject') -> None:
+    def add_child(self, child: 'Composite') -> None:
         self.children.append(child)
 
-    def get_children(self) -> List['DataObject']:
+    def get_children(self) -> List['Composite']:
         return self.children
 
     def generate_key(self) -> str:
@@ -221,17 +267,14 @@ class DataObject(RootObj):
         key += self.KEY_SEPARATOR + self.name
         return key
 
-    def _get_class_name(self) -> str:
-        return self.__class__.__name__
-
     @abstractmethod
     def get_data_strategy(self) -> DataStrategy:
         pass
 
-class EndPoint(DataObject):
+class EndPoint(Composite):
     pass
 
-class Container(DataObject):
+class Container(Composite):
     pass
 class DataManager:
     def __init__(self) -> None:
@@ -239,8 +282,8 @@ class DataManager:
         self._disk: DAO = FileAccess()
         self._construction_strategy = ()
 
-    def get(self, key: str) -> RootObj:
-        data_object: RootObj
+    def get(self, key: str) -> DataObject:
+        data_object: DataObject
         if self._memory.exists(key):
             data_object = self._memory.get(key)
         elif self._disk.exists(key):
@@ -252,22 +295,22 @@ class DataManager:
     def set(self):
         pass
 
-class School(Container):
+class School(Composite):
     def get_data_strategy(self) -> DataStrategy:
         return self.domain.get_strategy_switch().school_strategy()
-class Year(Container):
+class Year(Composite):
     def get_data_strategy(self) -> DataStrategy:
         return self.domain.get_strategy_switch().year_strategy()
-class Course(Container):
+class Course(Composite):
     def get_data_strategy(self) -> DataStrategy:
         return self.domain.get_strategy_switch().course_strategy()
-class Term(Container):
+class Term(Composite):
     def get_data_strategy(self) -> DataStrategy:
         return self.domain.get_strategy_switch().term_strategy()
-class Teacher(Container):
+class Teacher(Composite):
     def get_data_strategy(self) -> DataStrategy:
         return self.domain.get_strategy_switch().teacher_strategy()
-class StudyLine(Container):
+class StudyLine(Composite):
     def get_data_strategy(self) -> DataStrategy:
         return self.domain.get_strategy_switch().study_line_strategy()
 class Evaluation(EndPoint):
