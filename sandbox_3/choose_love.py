@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Type
+from typing import Dict, List, Type, Callable
 
 
 class DAO(ABC):
@@ -213,6 +213,10 @@ class Composite(DataObject):
     def get_children(self) -> List['Composite']:
         return self.children
 
+    def perform_action(self, key: str, action: Callable[[str], str]) -> str:
+        result = action(key)
+        return result
+
 class Domain(Composite):
 
     def get_data_strategy(self) -> Type[DomainStrategy]:
@@ -279,7 +283,6 @@ class TimeSpecificObject(DomainSpecificObject):
         self.time_period: TimePeriod
         super().__init__(name)
 
-
     def get_time_period_name(self) -> str:
         return self.time_period.get_name()
 
@@ -305,10 +308,16 @@ class DataManager:
     def set(self):
         pass
 
+class DataPoint(TimeSpecificObject):
+
+    def __init__(self, name: str) -> None:
+        self.data_point: TimePeriod
+        super().__init__(name)
+
 class School(DomainSpecificObject):
     def get_data_strategy(self) -> DataStrategy:
         return self.domain.get_data_strategy().school_strategy()
-class Year(DomainSpecificObject):
+class Year(TimeSpecificObject):
     def get_data_strategy(self) -> DataStrategy:
         return self.domain.get_data_strategy().time_strategy()
 class Course(TimeSpecificObject):
