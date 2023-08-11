@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Tuple, Type, Callable
 
-
 class DAO(ABC):
 
     def exists(self, key: str) -> bool:
@@ -29,7 +28,6 @@ class DAO(ABC):
     def _raise_error_if_key_missing(self, key: str) -> None:
         if self.exists(key):
             raise KeyError(f"Key '{key}' already exists.")
-
 
     @abstractmethod
     def _is_accessible(self, key: str) -> bool:
@@ -315,6 +313,7 @@ class EndPoint(Composite):
         return self.data_instance
 
 """
+test
 class School(Composite):
     def get_data_strategy(self) -> DataStrategy:
         return self.domain.get_data_strategy().school_strategy()

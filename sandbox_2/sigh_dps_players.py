@@ -47,7 +47,6 @@ class Persistence:
     def write_to_memory(deserialize_key: str, deserialized_data: 'BaseDataObject') -> None:
         pass
 
-
 class DataStrategy(ABC):
 
     WEBDRIVER = WebScrapingTool()

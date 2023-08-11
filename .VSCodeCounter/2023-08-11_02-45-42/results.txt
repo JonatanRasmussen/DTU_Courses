@@ -1,0 +1,216 @@
+Date : 2023-08-11 02:45:42
+Directory : c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses
+Total : 152 files,  18801 codes, 1632 comments, 1292 blanks, all 21725 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| CSV        |          5 |      8,435 |          0 |          5 |      8,440 |
+| HTML       |         13 |      5,497 |        191 |        203 |      5,891 |
+| Python     |         72 |      4,662 |      1,425 |      1,076 |      7,163 |
+| CSS        |          4 |        116 |         10 |          2 |        128 |
+| JSON       |         50 |         50 |          0 |          0 |         50 |
+| XML        |          3 |         33 |          0 |          3 |         36 |
+| JavaScript |          3 |          6 |          6 |          2 |         14 |
+| Ini        |          1 |          2 |          0 |          0 |          2 |
+| Draw.io    |          1 |          0 |          0 |          1 |          1 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                  | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                     |        152 |     18,801 |      1,632 |      1,292 |     21,725 |
+| . (Files)                                                                                                                             |         13 |      1,583 |        945 |        396 |      2,924 |
+| sandbox                                                                                                                               |         17 |        604 |        153 |        131 |        888 |
+| sandbox (Files)                                                                                                                       |         16 |        543 |        148 |        120 |        811 |
+| sandbox\unused_files                                                                                                                  |          1 |         61 |          5 |         11 |         77 |
+| sandbox_2                                                                                                                             |         13 |        711 |         37 |        233 |        981 |
+| sandbox_3                                                                                                                             |          2 |        237 |         39 |         79 |        355 |
+| scraped_data                                                                                                                          |          5 |      5,063 |          0 |          3 |      5,066 |
+| test_stuff                                                                                                                            |         37 |        218 |         40 |         48 |        306 |
+| test_stuff (Files)                                                                                                                    |          6 |        155 |         40 |         39 |        234 |
+| test_stuff\folder_1                                                                                                                   |          2 |         11 |          0 |          2 |         13 |
+| test_stuff\folder_2                                                                                                                   |          2 |         25 |          0 |          7 |         32 |
+| test_stuff\folder_2 (Files)                                                                                                           |          1 |         23 |          0 |          6 |         29 |
+| test_stuff\folder_2\subfolder_1                                                                                                       |          1 |          2 |          0 |          1 |          3 |
+| test_stuff\infoDictTest                                                                                                               |         27 |         27 |          0 |          0 |         27 |
+| webscrape_files                                                                                                                       |          4 |         52 |          3 |         15 |         70 |
+| webscrape_files\business                                                                                                              |          4 |         52 |          3 |         15 |         70 |
+| webscrape_files\business\collect_data                                                                                                 |          4 |         52 |          3 |         15 |         70 |
+| webscrape_files\business\collect_data\get_url                                                                                         |          3 |         20 |          0 |          7 |         27 |
+| webscrape_files\business\collect_data\load_webpage                                                                                    |          1 |         32 |          3 |          8 |         43 |
+| website                                                                                                                               |         61 |     10,333 |        415 |        387 |     11,135 |
+| website (Files)                                                                                                                       |          7 |        337 |         38 |         93 |        468 |
+| website\global_constants                                                                                                              |          8 |        949 |        170 |         82 |      1,201 |
+| website\static                                                                                                                        |         33 |      3,550 |         16 |          9 |      3,575 |
+| website\static (Files)                                                                                                                |          2 |          6 |          0 |          3 |          9 |
+| website\static\assets                                                                                                                 |          8 |        149 |         16 |          4 |        169 |
+| website\static\assets\brand                                                                                                           |          3 |         33 |          0 |          3 |         36 |
+| website\static\assets\dist                                                                                                            |          5 |        116 |         16 |          1 |        133 |
+| website\static\assets\dist\css                                                                                                        |          3 |        110 |         10 |          0 |        120 |
+| website\static\assets\dist\js                                                                                                         |          2 |          6 |          6 |          1 |         13 |
+| website\static\csv_files                                                                                                              |          2 |      3,374 |          0 |          2 |      3,376 |
+| website\static\pandas_df                                                                                                              |         21 |         21 |          0 |          0 |         21 |
+| website\templates                                                                                                                     |         13 |      5,497 |        191 |        203 |      5,891 |
++---------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                                                              | language   | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\csv_creator.py                                                     | Python     |        242 |         39 |         51 |        332 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\filter_list_creator.py                                             | Python     |         56 |         44 |         23 |        123 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\format_evaluations.py                                              | Python     |        122 |         36 |         32 |        190 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\format_grades.py                                                   | Python     |        134 |         36 |         36 |        206 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\format_info.py                                                     | Python     |        285 |        568 |         56 |        909 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\format_study_lines.py                                              | Python     |        146 |         47 |         41 |        234 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\mypy.ini                                                           | Ini        |          2 |          0 |          0 |          2 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\course.py                                                  | Python     |          0 |          0 |          1 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\data_source.py                                             | Python     |          5 |          0 |          3 |          8 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\dtu.py                                                     | Python     |          6 |          1 |          2 |          9 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\dtu_grades.py                                              | Python     |         30 |          4 |          4 |         38 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\dtu_html.py                                                | Python     |         15 |          2 |          9 |         26 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\grade.py                                                   | Python     |         41 |         29 |         13 |         83 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\grade_sheet.py                                             | Python     |         39 |         13 |          9 |         61 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\html_locator.py                                            | Python     |         38 |         17 |          8 |         63 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\html_manager.py                                            | Python     |         63 |         19 |         13 |         95 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\html_parser.py                                             | Python     |         62 |         12 |          9 |         83 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\html_persistence.py                                        | Python     |         25 |          5 |          7 |         37 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\html_slicer.py                                             | Python     |         52 |         14 |          9 |         75 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\main.py                                                    | Python     |         26 |          7 |          5 |         38 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\school.py                                                  | Python     |          5 |          0 |          2 |          7 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\term.py                                                    | Python     |         72 |          9 |         13 |         94 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\unused_files\html_scraper.py                               | Python     |         61 |          5 |         11 |         77 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\web_scraping_tool_legacy.py                                | Python     |         64 |         16 |         13 |         93 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\academic_year.py                                         | Python     |          0 |          1 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\course2.py                                               | Python     |          0 |          1 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\department.py                                            | Python     |          0 |          1 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\evals.py                                                 | Python     |          0 |          1 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\grade2.py                                                | Python     |          0 |          1 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\info.py                                                  | Python     |          0 |          1 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\persistence.py                                           | Python     |          2 |          0 |          2 |          4 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\school2.py                                               | Python     |        106 |          1 |         53 |        160 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\sigh_dps_players.py                                      | Python     |        507 |         11 |        159 |        677 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\study_line.py                                            | Python     |          0 |          1 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\teacher.py                                               | Python     |          0 |          1 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\test.py                                                  | Python     |         32 |          1 |          6 |         39 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\web_scraping_tool.py                                     | Python     |         64 |         16 |         13 |         93 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_3\choose_love.py                                           | Python     |        237 |         39 |         78 |        354 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_3\test.drawio                                              | Draw.io    |          0 |          0 |          1 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scrape_course_numbers.py                                           | Python     |         25 |         18 |         15 |         58 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scrape_evaluations.py                                              | Python     |        138 |         61 |         36 |        235 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scrape_grades.py                                                   | Python     |         95 |         39 |         26 |        160 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scrape_info.py                                                     | Python     |        169 |         33 |         33 |        235 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scraped_data\course_numbers.json                                   | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scraped_data\scraped_data.json                                     | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scraped_data\scraped_evals.csv                                     | CSV        |      1,687 |          0 |          1 |      1,688 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scraped_data\scraped_grades.csv                                    | CSV        |      1,687 |          0 |          1 |      1,688 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scraped_data\scraped_info.csv                                      | CSV        |      1,687 |          0 |          1 |      1,688 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\__init__.py                                             | Python     |          0 |          0 |          1 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\folder_1\__init__.py                                    | Python     |          0 |          0 |          1 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\folder_1\folder_1_file.py                               | Python     |         11 |          0 |          1 |         12 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\folder_2\folder_2_file.py                               | Python     |         23 |          0 |          6 |         29 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\folder_2\subfolder_1\subfolder_file.py                  | Python     |          2 |          0 |          1 |          3 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\hola.py                                                 | Python     |          0 |          0 |          1 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Aid.json                                   | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Course co-responsible.json                 | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Course type.json                           | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Danish title.json                          | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Date of examination.json                   | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Department involved.json                   | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Department.json                            | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Duration of Course.json                    | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Evaluation.json                            | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Exam duration.json                         | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\External Institution.json                  | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Green challenge participation.json         | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Home page.json                             | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Language of instruction.json               | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Location.json                              | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Mandatory Prerequisites.json               | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Not applicable together with.json          | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Participants restrictions.json             | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Point( ECTS ).json                         | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Previous Course.json                       | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Recommended prerequisites.json             | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Registration Sign up.json                  | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Responsible.json                           | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Schedule.json                              | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Scope and form.json                        | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Type of assessment.json                    | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\superDictTest.json                         | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\remove_lowercase.py                                     | Python     |         81 |          0 |          5 |         86 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\test.py                                                 | Python     |         30 |         30 |         19 |         79 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\testnew.py                                              | Python     |         35 |         10 |          9 |         54 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\top_level.py                                            | Python     |          9 |          0 |          4 |         13 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\utils.py                                                           | Python     |        165 |         22 |         46 |        233 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\webscrape_files\business\collect_data\get_url\get_url.py           | Python     |          9 |          0 |          4 |         13 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\webscrape_files\business\collect_data\get_url\get_url_for_grade.py | Python     |         11 |          0 |          2 |         13 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\webscrape_files\business\collect_data\get_url\get_url_for_info.py  | Python     |          0 |          0 |          1 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\webscrape_files\business\collect_data\load_webpage\load_webpage.py | Python     |         32 |          3 |          8 |         43 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\__init__.py                                                | Python     |         14 |          2 |          9 |         25 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\browse.py                                                  | Python     |         19 |          5 |          9 |         33 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\context_dicts.py                                           | Python     |        236 |          9 |         45 |        290 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\course_database.py                                         | Python     |         32 |         11 |         14 |         57 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\__init__.py                               | Python     |          0 |          0 |          1 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\config.py                                 | Python     |          6 |          0 |          2 |          8 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\dtu_consts.py                             | Python     |        104 |          3 |          6 |        113 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\eval_consts.py                            | Python     |         38 |          1 |          2 |         41 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\file_name_consts.py                       | Python     |         21 |          3 |          5 |         29 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\grade_consts.py                           | Python     |         22 |          0 |          2 |         24 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\info_consts.py                            | Python     |        690 |        155 |         55 |        900 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\website_consts.py                         | Python     |         68 |          8 |          9 |         85 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\misc.py                                                    | Python     |         14 |          2 |          5 |         21 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\search.py                                                  | Python     |         10 |          3 |          3 |         16 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\brand\DTU_logo_white.svg                     | XML        |         31 |          0 |          2 |         33 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\brand\bootstrap-logo-white.svg               | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\brand\bootstrap-logo.svg                     | XML        |          1 |          0 |          1 |          2 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\dist\css\bootstrap.min.css                   | CSS        |          2 |          5 |          0 |          7 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\dist\css\bootstrap.rtl.min.css               | CSS        |          2 |          5 |          0 |          7 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\dist\css\gradegraph.css                      | CSS        |        106 |          0 |          0 |        106 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\dist\js\bootstrap.bundle.min.js              | JavaScript |          1 |          6 |          0 |          7 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\dist\js\gradegraph.js                        | JavaScript |          5 |          0 |          1 |          6 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\csv_files\course_df.csv                             | CSV        |      1,687 |          0 |          1 |      1,688 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\csv_files\extended_csv.csv                          | CSV        |      1,687 |          0 |          1 |      1,688 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\index.js                                            | JavaScript |          0 |          0 |          1 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\navbar.css                                          | CSS        |          6 |          0 |          2 |          8 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_ects.json                          | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_english_names.json                 | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_eval_feedback.json                 | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_eval_learning.json                 | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_eval_motivation.json               | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_exam.json                          | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_fail.json                          | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_grade.json                         | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_language.json                      | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_numbers.json                       | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_rating.json                        | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_rating_tier.json                   | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_responsible.json                   | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_schedule.json                      | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_season.json                        | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_signups.json                       | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_type.json                          | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_votes.json                         | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_workload.json                      | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_workload_tier.json                 | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\json_filter_dct.json                      | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\404_empty_search.html                            | HTML       |          6 |          2 |          1 |          9 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\404_invalid_course.html                          | HTML       |          9 |          2 |          2 |         13 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\404_not_found.html                               | HTML       |          6 |          2 |          1 |          9 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\base.html                                        | HTML       |         75 |         21 |         14 |        110 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\browse.html                                      | HTML       |        216 |         30 |         11 |        257 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\course.html                                      | HTML       |      1,186 |         52 |         19 |      1,257 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\home.html                                        | HTML       |      1,221 |         20 |         13 |      1,254 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\index.html                                       | HTML       |      1,649 |          2 |         95 |      1,746 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\login.html                                       | HTML       |         28 |          0 |          1 |         29 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\login_elif_test.html                             | HTML       |         11 |          0 |          2 |         13 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\sign_up.html                                     | HTML       |         48 |          0 |          0 |         48 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\test.html                                        | HTML       |        128 |         25 |         13 |        166 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\wip.html                                         | HTML       |        914 |         35 |         31 |        980 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\views.py                                                   | Python     |         12 |          6 |          8 |         26 |
+| c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website_launch.py                                                  | Python     |          4 |          2 |          1 |          7 |
+| Total                                                                                                                                 |            |     18,801 |      1,632 |      1,292 |     21,725 |
++---------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

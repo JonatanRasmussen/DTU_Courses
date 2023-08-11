@@ -1,0 +1,154 @@
+"filename", "language", "Python", "JSON", "CSV", "HTML", "JavaScript", "CSS", "Draw.io", "Ini", "XML", "comment", "blank", "total"
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\csv_creator.py", "Python", 242, 0, 0, 0, 0, 0, 0, 0, 0, 39, 51, 332
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\filter_list_creator.py", "Python", 56, 0, 0, 0, 0, 0, 0, 0, 0, 44, 23, 123
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\format_evaluations.py", "Python", 122, 0, 0, 0, 0, 0, 0, 0, 0, 36, 32, 190
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\format_grades.py", "Python", 134, 0, 0, 0, 0, 0, 0, 0, 0, 36, 36, 206
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\format_info.py", "Python", 285, 0, 0, 0, 0, 0, 0, 0, 0, 568, 56, 909
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\format_study_lines.py", "Python", 146, 0, 0, 0, 0, 0, 0, 0, 0, 47, 41, 234
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\mypy.ini", "Ini", 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\course.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\data_source.py", "Python", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 8
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\dtu.py", "Python", 6, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 9
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\dtu_grades.py", "Python", 30, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 38
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\dtu_html.py", "Python", 15, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9, 26
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\grade.py", "Python", 41, 0, 0, 0, 0, 0, 0, 0, 0, 29, 13, 83
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\grade_sheet.py", "Python", 39, 0, 0, 0, 0, 0, 0, 0, 0, 13, 9, 61
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\html_locator.py", "Python", 38, 0, 0, 0, 0, 0, 0, 0, 0, 17, 8, 63
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\html_manager.py", "Python", 63, 0, 0, 0, 0, 0, 0, 0, 0, 19, 13, 95
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\html_parser.py", "Python", 62, 0, 0, 0, 0, 0, 0, 0, 0, 12, 9, 83
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\html_persistence.py", "Python", 25, 0, 0, 0, 0, 0, 0, 0, 0, 5, 7, 37
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\html_slicer.py", "Python", 52, 0, 0, 0, 0, 0, 0, 0, 0, 14, 9, 75
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\main.py", "Python", 26, 0, 0, 0, 0, 0, 0, 0, 0, 7, 5, 38
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\school.py", "Python", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 7
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\term.py", "Python", 72, 0, 0, 0, 0, 0, 0, 0, 0, 9, 13, 94
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\unused_files\html_scraper.py", "Python", 61, 0, 0, 0, 0, 0, 0, 0, 0, 5, 11, 77
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox\web_scraping_tool_legacy.py", "Python", 64, 0, 0, 0, 0, 0, 0, 0, 0, 16, 13, 93
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\academic_year.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\course2.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\department.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\evals.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\grade2.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\info.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\persistence.py", "Python", 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\school2.py", "Python", 106, 0, 0, 0, 0, 0, 0, 0, 0, 1, 53, 160
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\sigh_dps_players.py", "Python", 507, 0, 0, 0, 0, 0, 0, 0, 0, 11, 159, 677
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\study_line.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\teacher.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\test.py", "Python", 32, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 39
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_2\web_scraping_tool.py", "Python", 64, 0, 0, 0, 0, 0, 0, 0, 0, 16, 13, 93
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_3\choose_love.py", "Python", 237, 0, 0, 0, 0, 0, 0, 0, 0, 39, 78, 354
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\sandbox_3\test.drawio", "Draw.io", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scrape_course_numbers.py", "Python", 25, 0, 0, 0, 0, 0, 0, 0, 0, 18, 15, 58
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scrape_evaluations.py", "Python", 138, 0, 0, 0, 0, 0, 0, 0, 0, 61, 36, 235
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scrape_grades.py", "Python", 95, 0, 0, 0, 0, 0, 0, 0, 0, 39, 26, 160
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scrape_info.py", "Python", 169, 0, 0, 0, 0, 0, 0, 0, 0, 33, 33, 235
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scraped_data\course_numbers.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scraped_data\scraped_data.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scraped_data\scraped_evals.csv", "CSV", 0, 0, 1687, 0, 0, 0, 0, 0, 0, 0, 1, 1688
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scraped_data\scraped_grades.csv", "CSV", 0, 0, 1687, 0, 0, 0, 0, 0, 0, 0, 1, 1688
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\scraped_data\scraped_info.csv", "CSV", 0, 0, 1687, 0, 0, 0, 0, 0, 0, 0, 1, 1688
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\folder_1\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\folder_1\folder_1_file.py", "Python", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 12
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\folder_2\folder_2_file.py", "Python", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 29
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\folder_2\subfolder_1\subfolder_file.py", "Python", 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\hola.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Aid.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Course co-responsible.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Course type.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Danish title.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Date of examination.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Department involved.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Department.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Duration of Course.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Evaluation.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Exam duration.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\External Institution.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Green challenge participation.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Home page.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Language of instruction.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Location.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Mandatory Prerequisites.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Not applicable together with.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Participants restrictions.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Point( ECTS ).json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Previous Course.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Recommended prerequisites.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Registration Sign up.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Responsible.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Schedule.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Scope and form.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\Type of assessment.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\infoDictTest\superDictTest.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\remove_lowercase.py", "Python", 81, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 86
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\test.py", "Python", 30, 0, 0, 0, 0, 0, 0, 0, 0, 30, 19, 79
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\testnew.py", "Python", 35, 0, 0, 0, 0, 0, 0, 0, 0, 10, 9, 54
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\test_stuff\top_level.py", "Python", 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 13
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\utils.py", "Python", 165, 0, 0, 0, 0, 0, 0, 0, 0, 22, 46, 233
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\webscrape_files\business\collect_data\get_url\get_url.py", "Python", 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 13
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\webscrape_files\business\collect_data\get_url\get_url_for_grade.py", "Python", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 13
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\webscrape_files\business\collect_data\get_url\get_url_for_info.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\webscrape_files\business\collect_data\load_webpage\load_webpage.py", "Python", 32, 0, 0, 0, 0, 0, 0, 0, 0, 3, 8, 43
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\__init__.py", "Python", 14, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9, 25
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\browse.py", "Python", 19, 0, 0, 0, 0, 0, 0, 0, 0, 5, 9, 33
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\context_dicts.py", "Python", 236, 0, 0, 0, 0, 0, 0, 0, 0, 9, 45, 290
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\course_database.py", "Python", 32, 0, 0, 0, 0, 0, 0, 0, 0, 11, 14, 57
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\config.py", "Python", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\dtu_consts.py", "Python", 104, 0, 0, 0, 0, 0, 0, 0, 0, 3, 6, 113
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\eval_consts.py", "Python", 38, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 41
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\file_name_consts.py", "Python", 21, 0, 0, 0, 0, 0, 0, 0, 0, 3, 5, 29
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\grade_consts.py", "Python", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 24
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\info_consts.py", "Python", 690, 0, 0, 0, 0, 0, 0, 0, 0, 155, 55, 900
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\global_constants\website_consts.py", "Python", 68, 0, 0, 0, 0, 0, 0, 0, 0, 8, 9, 85
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\misc.py", "Python", 14, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5, 21
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\search.py", "Python", 10, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 16
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\brand\DTU_logo_white.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 2, 33
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\brand\bootstrap-logo-white.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\brand\bootstrap-logo.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 2
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\dist\css\bootstrap.min.css", "CSS", 0, 0, 0, 0, 0, 2, 0, 0, 0, 5, 0, 7
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\dist\css\bootstrap.rtl.min.css", "CSS", 0, 0, 0, 0, 0, 2, 0, 0, 0, 5, 0, 7
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\dist\css\gradegraph.css", "CSS", 0, 0, 0, 0, 0, 106, 0, 0, 0, 0, 0, 106
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\dist\js\bootstrap.bundle.min.js", "JavaScript", 0, 0, 0, 0, 1, 0, 0, 0, 0, 6, 0, 7
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\assets\dist\js\gradegraph.js", "JavaScript", 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 1, 6
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\csv_files\course_df.csv", "CSV", 0, 0, 1687, 0, 0, 0, 0, 0, 0, 0, 1, 1688
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\csv_files\extended_csv.csv", "CSV", 0, 0, 1687, 0, 0, 0, 0, 0, 0, 0, 1, 1688
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\index.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\navbar.css", "CSS", 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 2, 8
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_ects.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_english_names.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_eval_feedback.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_eval_learning.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_eval_motivation.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_exam.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_fail.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_grade.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_language.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_numbers.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_rating.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_rating_tier.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_responsible.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_schedule.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_season.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_signups.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_type.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_votes.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_workload.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\course_workload_tier.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\static\pandas_df\json_filter_dct.json", "JSON", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\404_empty_search.html", "HTML", 0, 0, 0, 6, 0, 0, 0, 0, 0, 2, 1, 9
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\404_invalid_course.html", "HTML", 0, 0, 0, 9, 0, 0, 0, 0, 0, 2, 2, 13
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\404_not_found.html", "HTML", 0, 0, 0, 6, 0, 0, 0, 0, 0, 2, 1, 9
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\base.html", "HTML", 0, 0, 0, 75, 0, 0, 0, 0, 0, 21, 14, 110
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\browse.html", "HTML", 0, 0, 0, 216, 0, 0, 0, 0, 0, 30, 11, 257
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\course.html", "HTML", 0, 0, 0, 1186, 0, 0, 0, 0, 0, 52, 19, 1257
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\home.html", "HTML", 0, 0, 0, 1221, 0, 0, 0, 0, 0, 20, 13, 1254
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\index.html", "HTML", 0, 0, 0, 1649, 0, 0, 0, 0, 0, 2, 95, 1746
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\login.html", "HTML", 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 1, 29
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\login_elif_test.html", "HTML", 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 2, 13
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\sign_up.html", "HTML", 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 48
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\test.html", "HTML", 0, 0, 0, 128, 0, 0, 0, 0, 0, 25, 13, 166
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\templates\wip.html", "HTML", 0, 0, 0, 914, 0, 0, 0, 0, 0, 35, 31, 980
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website\views.py", "Python", 12, 0, 0, 0, 0, 0, 0, 0, 0, 6, 8, 26
+"c:\Users\BudoB\OneDrive\Dokumenter Tekst\Programmering\DTU_Courses\website_launch.py", "Python", 4, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 7
+"Total", "-", 4662, 50, 8435, 5497, 6, 116, 0, 2, 33, 1632, 1292, 21725
