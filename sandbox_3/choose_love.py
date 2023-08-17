@@ -6,19 +6,19 @@ class DAO(ABC):
     def exists(self, key: str) -> bool:
         return self._is_accessible(key)
 
-    def get(self, key: str) -> 'Composite':
+    def get(self, key: str) -> 'DataPoint':
         self._raise_error_if_key_missing(key)
         return self._read(key)
 
-    def set_unique_key(self, key: str, value: 'Composite') -> None:
+    def set_unique_key(self, key: str, value: 'DataPoint') -> None:
         self._raise_error_if_key_exists(key)
         self._set(key, value)
 
-    def set_if_key_missing(self, key: str, value: 'Composite') -> None:
+    def set_if_key_missing(self, key: str, value: 'DataPoint') -> None:
         if not self.exists(key):
             self._set(key, value)
 
-    def _set(self, key: str, value: 'Composite') -> None:
+    def _set(self, key: str, value: 'DataPoint') -> None:
         self._write(key, value)
 
     def _raise_error_if_key_exists(self, key: str) -> None:
@@ -34,24 +34,24 @@ class DAO(ABC):
         pass
 
     @abstractmethod
-    def _read(self, key: str) -> 'Composite':
+    def _read(self, key: str) -> 'DataPoint':
         pass
 
     @abstractmethod
-    def _write(self, key: str, value: 'Composite') -> None:
+    def _write(self, key: str, value: 'DataPoint') -> None:
         pass
 
 class Registry(DAO):
     def __init__(self) -> None:
-        self.dct: Dict[str, Composite] = {}
+        self.dct: Dict[str, DataPoint] = {}
 
     def _is_accessible(self, key: str) -> bool:
         return key in self.dct
 
-    def _read(self, key: str) -> 'Composite':
+    def _read(self, key: str) -> 'DataPoint':
         return self.dct[key]
 
-    def _write(self, key: str, value: 'Composite') -> None:
+    def _write(self, key: str, value: 'DataPoint') -> None:
         self.dct[key] = value
 
 class TimePeriod:
@@ -113,9 +113,7 @@ class DefaultTimeUnitChecker(TimeUnitChecker):
 
     @staticmethod
     def is_term_based(class_id: str) -> bool:
-        if class_id == Evaluation.get_class_id():
-            return True
-        elif class_id == GradeSheet.get_class_id():
+        if class_id == "TODO: REMOVE":
             return True
         else:
             return False
@@ -293,251 +291,136 @@ class TimeManager:
         return len(self.domain_config.ordered_terms())
 
 class DataStrategy(ABC):
-
     @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
+    def generate_child_list(time: str, name: str) -> List[str]:
+        return ["placeholder", time, name]
     @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class SchoolStrategy(DataStrategy):
+    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+        if time == name:
+            return {}
+        return {}
+class DtuSchoolStrategy(DataStrategy):
     @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
+    def generate_child_list(time: str, name: str) -> List[str]:
+        return ["placeholder", time, name]
     @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class YearStrategy(DataStrategy):
+    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+        if time == name:
+            return {}
+        return {}
+class DtuYearStrategy(DataStrategy):
     @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
+    def generate_child_list(time: str, name: str) -> List[str]:
+        return ["placeholder", time, name]
     @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class CourseStrategy(DataStrategy):
+    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+        if time == name:
+            return {}
+        return {}
+class DtuCourseStrategy(DataStrategy):
     @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
+    def generate_child_list(time: str, name: str) -> List[str]:
+        return ["placeholder", time, name]
     @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class TermStrategy(DataStrategy):
+    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+        if time == name:
+            return {}
+        return {}
+class DtuTermStrategy(DataStrategy):
     @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
+    def generate_child_list(time: str, name: str) -> List[str]:
+        return ["placeholder", time, name]
     @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class EvaluationStrategy(DataStrategy):
+    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+        if time == name:
+            return {}
+        return {}
+class DtuEvaluationStrategy(DataStrategy):
     @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
+    def generate_child_list(time: str, name: str) -> List[str]:
+        return ["placeholder", time, name]
     @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class GradeSheetStrategy(DataStrategy):
+    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+        if time == name:
+            return {}
+        return {}
+class DtuGradeSheetStrategy(DataStrategy):
     @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
+    def generate_child_list(time: str, name: str) -> List[str]:
+        return ["placeholder", time, name]
     @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class InfoPageStrategy(DataStrategy):
+    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+        if time == name:
+            return {}
+        return {}
+class DtuInfoPageStrategy(DataStrategy):
     @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
+    def generate_child_list(time: str, name: str) -> List[str]:
+        return ["placeholder", time, name]
     @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class TeacherStrategy(DataStrategy):
+    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+        if time == name:
+            return {}
+        return {}
+class DtuTeacherStrategy(DataStrategy):
     @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
+    def generate_child_list(time: str, name: str) -> List[str]:
+        return ["placeholder", time, name]
     @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class StudyLineStrategy(DataStrategy):
+    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+        if time == name:
+            return {}
+        return {}
+class DtuStudyLineStrategy(DataStrategy):
     @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
+    def generate_child_list(time: str, name: str) -> List[str]:
+        return ["placeholder", time, name]
     @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class DtuSchoolStrategy(SchoolStrategy):
-    @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
-    @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class DtuYearStrategy(YearStrategy):
-    @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
-    @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class DtuCourseStrategy(CourseStrategy):
-    @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
-    @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class DtuTermStrategy(TermStrategy):
-    @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
-    @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class DtuEvaluationStrategy(EvaluationStrategy):
-    @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
-    @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class DtuGradeSheetStrategy(GradeSheetStrategy):
-    @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
-    @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class DtuInfoPageStrategy(InfoPageStrategy):
-    @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
-    @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class DtuTeacherStrategy(TeacherStrategy):
-    @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
-    @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
-
-class DtuStudyLineStrategy(StudyLineStrategy):
-    @staticmethod
-    def generate_data_object(time_period: TimePeriod, name: str) -> 'Composite':
-        return School(name, Domain(DtuStrategyCollection()), time_period)
-
-    @staticmethod
-    def generate_children(time_period: TimePeriod, name: str) -> List[str]:
-        return [time_period.get_name(), name]
+    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+        if time == name:
+            return {}
+        return {}
 
 class StrategyCollection(ABC):
-
-    def __init__(self) -> None:
-        self.switch_dct: Dict[str,Type[DataStrategy]] = self._initialize_switch_dct()
-
-    def strategy_switch(self, class_id) -> Type[DataStrategy]:
-        if class_id in self.switch_dct:
-            return self.switch_dct[class_id]
-        else:
-            raise ValueError(f"Class id {class_id} does not exist in {self.__class__.__name__}")
-
-    def _initialize_switch_dct(self) -> Dict[str,Type[DataStrategy]]:
-        dct = {}
-        dct[School.get_class_id()] = self.school_strategy()
-        dct[Year.get_class_id()] = self.year_strategy()
-        dct[Course.get_class_id()] = self.course_strategy()
-        dct[Term.get_class_id()] = self.term_strategy()
-        dct[Evaluation.get_class_id()] = self.evaluation_strategy()
-        dct[GradeSheet.get_class_id()] = self.grade_sheet_strategy()
-        dct[InfoPage.get_class_id()] = self.info_page_strategy()
-        dct[Teacher.get_class_id()] = self.teacher_strategy()
-        dct[StudyLine.get_class_id()] = self.study_line_strategy()
-        return dct
-
     @abstractmethod
     def get_domain_name(self) -> str:
         pass
-
     @abstractmethod
     def get_time_manager(self) -> TimeManager:
         pass
-
     @abstractmethod
     def school_strategy(self) -> Type[DataStrategy]:
-        return SchoolStrategy
-
+        pass
     @abstractmethod
     def year_strategy(self) -> Type[DataStrategy]:
-        return YearStrategy
-
+        pass
     @abstractmethod
     def course_strategy(self) -> Type[DataStrategy]:
-        return CourseStrategy
-
+        pass
     @abstractmethod
     def term_strategy(self) -> Type[DataStrategy]:
-        return TermStrategy
-
+        pass
     @abstractmethod
     def evaluation_strategy(self) -> Type[DataStrategy]:
-        return EvaluationStrategy
-
+        pass
     @abstractmethod
     def grade_sheet_strategy(self) -> Type[DataStrategy]:
-        return GradeSheetStrategy
-
+        pass
     @abstractmethod
     def info_page_strategy(self) -> Type[DataStrategy]:
-        return InfoPageStrategy
-
+        pass
     @abstractmethod
     def study_line_strategy(self) -> Type[DataStrategy]:
-        return StudyLineStrategy
-
+        pass
     @abstractmethod
     def teacher_strategy(self) -> Type[DataStrategy]:
-        return TeacherStrategy
+        pass
 
 class DtuStrategyCollection(StrategyCollection):
 
     DOMAIN_NAME: str = "dtu"
 
     def __init__(self) -> None:
-        super().__init__()
         self.name: str = DtuStrategyCollection.DOMAIN_NAME
         self.time_manager: TimeManager = TimeManager(DtuTimeConfig)
 
@@ -549,40 +432,28 @@ class DtuStrategyCollection(StrategyCollection):
 
     def school_strategy(self) -> Type[DataStrategy]:
         return DtuSchoolStrategy
-
     def year_strategy(self) -> Type[DataStrategy]:
         return DtuYearStrategy
-
     def course_strategy(self) -> Type[DataStrategy]:
         return DtuCourseStrategy
-
     def term_strategy(self) -> Type[DataStrategy]:
         return DtuTermStrategy
-
     def evaluation_strategy(self) -> Type[DataStrategy]:
         return DtuEvaluationStrategy
-
     def grade_sheet_strategy(self) -> Type[DataStrategy]:
         return DtuGradeSheetStrategy
-
     def info_page_strategy(self) -> Type[DataStrategy]:
         return DtuInfoPageStrategy
-
     def study_line_strategy(self) -> Type[DataStrategy]:
         return DtuStudyLineStrategy
-
     def teacher_strategy(self) -> Type[DataStrategy]:
         return DtuTeacherStrategy
-
 class Domain:
 
     def __init__(self, strategy_collection: StrategyCollection) -> None:
         self.strategy_collection: StrategyCollection = strategy_collection
         self.time_manager: TimeManager = self.strategy_collection.get_time_manager()
         self.name: str = self.strategy_collection.get_domain_name()
-
-    def get_strategy(self, class_id: str) -> Type[DataStrategy]:
-        return self.strategy_collection.strategy_switch(class_id)
 
     def get_strategy_collection(self) -> StrategyCollection:
         return self.strategy_collection
@@ -592,6 +463,25 @@ class Domain:
 
     def get_name(self) -> str:
         return self.name
+
+    def get_school_strategy(self) -> Type[DataStrategy]:
+        return self.strategy_collection.school_strategy()
+    def get_year_strategy(self) -> Type[DataStrategy]:
+        return self.strategy_collection.year_strategy()
+    def get_course_strategy(self) -> Type[DataStrategy]:
+        return self.strategy_collection.course_strategy()
+    def get_term_strategy(self) -> Type[DataStrategy]:
+        return self.strategy_collection.term_strategy()
+    def get_evaluation_strategy(self) -> Type[DataStrategy]:
+        return self.strategy_collection.evaluation_strategy()
+    def get_grade_sheet_strategy(self) -> Type[DataStrategy]:
+        return self.strategy_collection.grade_sheet_strategy()
+    def get_info_page_strategy(self) -> Type[DataStrategy]:
+        return self.strategy_collection.info_page_strategy()
+    def get_study_line_strategy(self) -> Type[DataStrategy]:
+        return self.strategy_collection.study_line_strategy()
+    def get_teacher_strategy(self) -> Type[DataStrategy]:
+        return self.strategy_collection.teacher_strategy()
 
 class DomainManager:
 
@@ -620,19 +510,27 @@ class DomainManager:
             domain: Domain = Domain(strategy_collection)
             DomainManager.initialized_domains[dct_key] = domain
 
-
 class Serializer:
 
     KEY_SEPARATOR: str = "__"
 
     @staticmethod
-    def serialize_data(data: Tuple[Domain,TimePeriod,str,str]) -> str:
-        domain = data[0].get_name()
-        time = data[1].get_name()
-        class_id = data[2]
-        name = data[3]
+    def serialize_object(data_obj: 'DataPoint') -> str:
+        domain_name: str = data_obj.domain.get_name()
+        time_name: str = data_obj.time_period.get_name()
+        class_id: str = data_obj.get_class_id()
+        name: str = data_obj.get_name()
         sep: str = Serializer.KEY_SEPARATOR
-        return domain + sep + time + sep + class_id + sep + name
+        return domain_name + sep + time_name + sep + class_id + sep + name
+
+    @staticmethod
+    def serialize_object_data(data: Tuple[Domain,TimePeriod,str,str]) -> str:
+        domain_name: str  = data[0].get_name()
+        time_name: str  = data[1].get_name()
+        class_id: str  = data[2]
+        name: str  = data[3]
+        sep: str = Serializer.KEY_SEPARATOR
+        return domain_name + sep + time_name + sep + class_id + sep + name
 
     @staticmethod
     def deserialize_key(key: str) -> Tuple[Domain,TimePeriod,str,str]:
@@ -659,110 +557,92 @@ class Serializer:
     def deserialize_name(key: str) -> str:
         return Serializer.deserialize_key(key)[3]
 
+
 class DataManager:
+
+    DEFAULT_SERIALIZER: Serializer = Serializer()
+
     def __init__(self) -> None:
-        self.serializer: Serializer
-        self._memory: DAO = Registry()
-        self._lists: Dict[str,List[str]] = {}
+        self.serializer: Serializer = DataManager.DEFAULT_SERIALIZER
+        self._class_table: Type[ClassTable] = ClassTable
+        self._data_points: Dict[str, Dict[str,DataPoint]] = {}
+        self._containers: Dict[str, Container] = {}
+        self._child_lists: Dict[str,List[str]] = {}
 
-    def fabricate_object(self, key: str) -> 'Composite':
-        if self._memory.exists(key):
-            data_object: Composite = self._memory.get(key)
+    def build_data_points(self, data_obj: 'DataPoint') -> Dict[str,'DataPoint']:
+        key: str = self.serialize(data_obj)
+        if key in self._data_points:
+            dct: Dict[str,DataPoint] = self._data_points[key]
         else:
-            domain: Domain = self.serializer.deserialize_domain(key)
-            class_id: str = self.serializer.deserialize_class_id(key)
-            strategy: Type[DataStrategy] = domain.get_strategy(class_id)
-            time_period: TimePeriod = self.serializer.deserialize_time_period(key)
-            name: str = self.serializer.deserialize_name(key)
-            data_object = strategy.generate_data_object(time_period, name)
-            self.register(key, data_object)
-        return data_object
+            dct = data_obj.get_data_points()
+            self._register_data_point(key, dct)
+        return dct
 
-    def generate_list(self, key: str) -> List[str]:
-        if key in self._lists:
-            lst: List[str] = self._lists[key]
+    def cascade_build_children(self, data_obj: 'Container') -> None:
+        data_obj.data_points = self.build_data_points(data_obj)
+        child_names: List[str] = self.generate_child_list(data_obj)
+        for name in child_names:
+            child_cls = data_obj.get_child_class()
+            child: Container = child_cls(data_obj.domain, data_obj.time_period, name)
+            key: str = self.serialize(child)
+            if key in self._containers:
+                child = self._containers[key]
+            else:
+                self._register_container(key, child)
+            data_obj.add_child(child)
+            self.cascade_build_children(data_obj)
+
+    def generate_child_list(self, data_obj: 'DataPoint') -> List[str]:
+        key: str = self.serialize(data_obj)
+        if key in self._child_lists:
+            lst: List[str] = self._child_lists[key]
         else:
-            domain: Domain = self.serializer.deserialize_domain(key)
-            class_id: str = self.serializer.deserialize_class_id(key)
-            strategy: Type[DataStrategy] = domain.get_strategy(class_id)
-            time_period: TimePeriod = self.serializer.deserialize_time_period(key)
-            name: str = self.serializer.deserialize_name(key)
-            lst = strategy.generate_children(time_period, name)
-            self._lists[key] = lst
+            lst = data_obj.generate_child_list()
+            self._child_lists[key] = lst
         return lst
 
+    def _register_container(self, key: str, data_object: 'Container') -> None:
+        self._containers[key] = data_object
 
+    def _register_data_point(self, key: str, dct: Dict[str,'DataPoint']) -> None:
+        self._data_points[key] = dct
 
-    def register(self, key: str, data_object: 'Composite') -> None:
-        self._memory.set_unique_key(key, data_object)
+    def _register_child_list(self, key: str, lst: List[str]) -> None:
+        self._child_lists[key] = lst
 
     def serialize_data(self, data: Tuple[Domain,TimePeriod,str,str]):
-        return self.serializer.serialize_data(data)
+        return self.serializer.serialize_object_data(data)
 
-class Composite:
+    def serialize(self, data_obj: 'DataPoint') -> str:
+        return self.serializer.serialize_object(data_obj)
 
-    DEFAULT_DATA_MANAGER: DataManager = DataManager()
 
-    def __init__(self, name: str, domain: Domain, time_period: TimePeriod) -> None:
-        self.name: str = name
+class DataPoint(ABC):
+
+    def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
         self.domain: Domain = domain
         self.time_period: TimePeriod = time_period
         self.class_id: str = self.get_class_id()
-        self.data_manager: DataManager = Composite.DEFAULT_DATA_MANAGER
-
-    def serialize(self, name: str) -> str:
-        domain: Domain = self.domain
-        time: TimePeriod = self.time_period
-        class_id: str = self.class_id
-        return self.data_manager.serialize_data((domain, time, class_id, name))
+        self.name: str = name
+        self.strategy: Type[DataStrategy] = self.initialize_strategy()
+        self.data_points: Dict[str,DataPoint] = {}
 
     def get_name(self) -> str:
         return self.name
 
-    def get_strategy(self) -> Type[DataStrategy]:
-        return self.domain.get_strategy(self.class_id)
+    def get_data_points(self) -> Dict[str,'DataPoint']:
+        time: str = self.time_period.get_name()
+        name: str = self.name
+        return self.strategy.generate_data_points(time, name)
 
-    @staticmethod
-    @abstractmethod
-    def get_class_id() -> str:
-        pass
-
-    @abstractmethod
-    def perform_action(self, action: Callable[['Composite'], float]) -> float:
-        pass
+    def generate_child_list(self) -> List[str]:
+        time: str = self.time_period.get_name()
+        name: str = self.name
+        return self.strategy.generate_child_list(time, name)
 
     @abstractmethod
-    def cascade_build(self) -> None:
+    def initialize_strategy(self) -> Type[DataStrategy]:
         pass
-
-class Container(Composite):
-    def __init__(self, name: str, domain: Domain, time_period: TimePeriod) -> None:
-        self.children: List[Composite]
-        super().__init__(name, domain, time_period)
-
-    def perform_action(self, action: Callable[[Composite], float]) -> float:
-        child_sum: float = 0.0
-        for child in self._get_children():
-            child_sum += child.perform_action(action)
-        return child_sum / len(self._get_children())
-
-    def cascade_build(self) -> None:
-        child_names: List[str] = self._get_children_to_be_created()
-        for name in child_names:
-            key: str = self.serialize(name)
-            child: Composite = self.data_manager.fabricate_object(key)
-            child.cascade_build()
-            self._add_child(child)
-
-    def _add_child(self, child: 'Composite') -> None:
-        self.children.append(child)
-
-    def _get_children(self) -> List['Composite']:
-        return self.children
-
-    def _get_children_to_be_created(self) -> List[str]:
-        key: str = self.serialize(self.name)
-        return self.data_manager.generate_list(key)
 
     @staticmethod
     @abstractmethod
@@ -770,28 +650,42 @@ class Container(Composite):
         pass
 
 
-class EndPoint(Composite):
-    def __init__(self, name: str, domain: Domain, time_period: TimePeriod) -> None:
-        self.data_instance: Composite
-        super().__init__(name, domain, time_period)
+class Container(DataPoint):
 
-    def perform_action(self, action: Callable[[Composite], float]) -> float:
-        data_instance: Composite = self._get_data_instance()
-        average = action(data_instance)
+    def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
+        super().__init__(domain, time_period, name)
+        self.data_points: Dict[str,DataPoint] = {}
+        self.children: List[Container] = []
+
+    def cascade_perform_action(self, key: str, action: Callable[['DataPoint'], float]) -> float:
+        if key in self.data_points:
+            return self._perform_action_on_self(key, action)
+        elif len(self._get_children()) > 0:
+            return self._perform_action_on_children(key, action)
+        else:
+            raise ValueError(f"Key {key} not found in {self.time_period.get_name()} {self.name}")
+
+    def _perform_action_on_self(self, key: str, action: Callable[['DataPoint'], float]) -> float:
+        data_point: DataPoint = self.data_points[key]
+        average = action(data_point)
         return average
 
-    def cascade_build(self) -> None:
-        name: str = self.get_name()
-        key: str = self.serialize(name)
-        self.data_instance = self.data_manager.fabricate_object(key)
+    def _perform_action_on_children(self, key: str, action: Callable[['DataPoint'], float]) -> float:
+        child_sum: float = 0.0
+        for child in self._get_children():
+            child_sum += child.cascade_perform_action(key, action)
+        return child_sum / len(self._get_children())
 
-    def _get_data_instance(self) -> Composite:
-        return self.data_instance
+    def add_child(self, child: 'Container') -> None:
+        self.children.append(child)
 
     @staticmethod
-    @abstractmethod
-    def get_class_id() -> str:
-        pass
+    def get_child_class() -> Type['Container']:
+        raise ValueError(f"Error, {__name__} should have 0 children")
+
+    def _get_children(self) -> List['Container']:
+        return self.children
+
 
 class School(Container):
 
@@ -801,6 +695,13 @@ class School(Container):
     def get_class_id() -> str:
         return School.CLASS_ID
 
+    @staticmethod
+    def get_child_class() -> Type[Container]:
+        return Year
+
+    def initialize_strategy(self) -> Type[DataStrategy]:
+        return self.domain.get_school_strategy()
+
 class Year(Container):
 
     CLASS_ID: str = "year"
@@ -808,6 +709,13 @@ class Year(Container):
     @staticmethod
     def get_class_id() -> str:
         return School.CLASS_ID
+
+    @staticmethod
+    def get_child_class() -> Type[Container]:
+        return Course
+
+    def initialize_strategy(self) -> Type[DataStrategy]:
+        return self.domain.get_year_strategy()
 
 class Course(Container):
 
@@ -817,6 +725,13 @@ class Course(Container):
     def get_class_id() -> str:
         return School.CLASS_ID
 
+    @staticmethod
+    def get_child_class() -> Type[Container]:
+        return Term
+
+    def initialize_strategy(self) -> Type[DataStrategy]:
+        return self.domain.get_course_strategy()
+
 class Term(Container):
 
     CLASS_ID: str = "term"
@@ -824,6 +739,9 @@ class Term(Container):
     @staticmethod
     def get_class_id() -> str:
         return School.CLASS_ID
+
+    def initialize_strategy(self) -> Type[DataStrategy]:
+        return self.domain.get_term_strategy()
 
 class Teacher(Container):
 
@@ -833,6 +751,13 @@ class Teacher(Container):
     def get_class_id() -> str:
         return School.CLASS_ID
 
+    @staticmethod
+    def get_child_class() -> Type[Container]:
+        return Course
+
+    def initialize_strategy(self) -> Type[DataStrategy]:
+        return self.domain.get_teacher_strategy()
+
 class StudyLine(Container):
 
     CLASS_ID: str = "study_line"
@@ -841,27 +766,70 @@ class StudyLine(Container):
     def get_class_id() -> str:
         return School.CLASS_ID
 
-class Evaluation(EndPoint):
+    @staticmethod
+    def get_child_class() -> Type[Container]:
+        return Course
+
+    def initialize_strategy(self) -> Type[DataStrategy]:
+        return self.domain.get_study_line_strategy()
+
+class Evaluation(DataPoint):
 
     CLASS_ID: str = "evaluation"
 
     @staticmethod
     def get_class_id() -> str:
         return School.CLASS_ID
-class GradeSheet(EndPoint):
+
+    def initialize_strategy(self) -> Type[DataStrategy]:
+        return self.domain.get_evaluation_strategy()
+
+class GradeSheet(DataPoint):
 
     CLASS_ID: str = "grade_sheet"
 
     @staticmethod
     def get_class_id() -> str:
         return School.CLASS_ID
-class InfoPage(EndPoint):
+
+    def initialize_strategy(self) -> Type[DataStrategy]:
+        return self.domain.get_grade_sheet_strategy()
+
+class InfoPage(DataPoint):
 
     CLASS_ID: str = "info_page"
 
     @staticmethod
     def get_class_id() -> str:
         return School.CLASS_ID
+
+    def initialize_strategy(self) -> Type[DataStrategy]:
+        return self.domain.get_info_page_strategy()
+
+class ClassTable:
+
+    @staticmethod
+    def get_class_from_id(class_id: str) -> Type[DataPoint]:
+        class_dct: Dict[str,Type[DataPoint]] = ClassTable._get_class_dct()
+        if class_id in class_dct:
+            return class_dct[class_id]
+        else:
+            raise ValueError(f"Class '{class_id}' not found in {__name__}")
+
+    @staticmethod
+    def _get_class_dct() -> Dict[str,Type[DataPoint]]:
+        dct: Dict[str,Type[DataPoint]] = {
+            School.get_class_id(): School,
+            Year.get_class_id(): Year,
+            Course.get_class_id(): Course,
+            Term.get_class_id(): Term,
+            Evaluation.get_class_id(): Evaluation,
+            GradeSheet.get_class_id(): GradeSheet,
+            InfoPage.get_class_id(): InfoPage,
+            Teacher.get_class_id(): Teacher,
+            StudyLine.get_class_id(): StudyLine,
+        }
+        return dct
 
 #School
 #Year
@@ -880,7 +848,9 @@ def main() -> None:
         terms: List[TimePeriod] = time_manager.generate_all_time_periods()
         years: List[TimePeriod] = time_manager.generate_years()
         empty_time: TimePeriod = time_manager.generate_empty_time_period()
-
+        print(terms)
+        print(years)
+        print(empty_time)
 
 if __name__ == "__main__":
     main()
