@@ -1,59 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Tuple, Type, Callable
 
-class DAO(ABC):
-
-    def exists(self, key: str) -> bool:
-        return self._is_accessible(key)
-
-    def get(self, key: str) -> 'DataPoint':
-        self._raise_error_if_key_missing(key)
-        return self._read(key)
-
-    def set_unique_key(self, key: str, value: 'DataPoint') -> None:
-        self._raise_error_if_key_exists(key)
-        self._set(key, value)
-
-    def set_if_key_missing(self, key: str, value: 'DataPoint') -> None:
-        if not self.exists(key):
-            self._set(key, value)
-
-    def _set(self, key: str, value: 'DataPoint') -> None:
-        self._write(key, value)
-
-    def _raise_error_if_key_exists(self, key: str) -> None:
-        if not self.exists(key):
-            raise KeyError(f"Key '{key}' doesn't exist.")
-
-    def _raise_error_if_key_missing(self, key: str) -> None:
-        if self.exists(key):
-            raise KeyError(f"Key '{key}' already exists.")
-
-    @abstractmethod
-    def _is_accessible(self, key: str) -> bool:
-        pass
-
-    @abstractmethod
-    def _read(self, key: str) -> 'DataPoint':
-        pass
-
-    @abstractmethod
-    def _write(self, key: str, value: 'DataPoint') -> None:
-        pass
-
-class Registry(DAO):
-    def __init__(self) -> None:
-        self.dct: Dict[str, DataPoint] = {}
-
-    def _is_accessible(self, key: str) -> bool:
-        return key in self.dct
-
-    def _read(self, key: str) -> 'DataPoint':
-        return self.dct[key]
-
-    def _write(self, key: str, value: 'DataPoint') -> None:
-        self.dct[key] = value
-
 class TimePeriod:
 
     NAME_OF_EMPTY_TIME_PERIOD: str = "timeless"
@@ -292,94 +239,74 @@ class TimeManager:
 
 class DataStrategy(ABC):
     @staticmethod
-    def generate_child_list(time: str, name: str) -> List[str]:
-        return ["placeholder", time, name]
-    @staticmethod
-    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+    def assign_data(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
+
 class DtuSchoolStrategy(DataStrategy):
     @staticmethod
-    def generate_child_list(time: str, name: str) -> List[str]:
-        return ["placeholder", time, name]
-    @staticmethod
-    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+    def assign_data(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
+
 class DtuYearStrategy(DataStrategy):
     @staticmethod
-    def generate_child_list(time: str, name: str) -> List[str]:
-        return ["placeholder", time, name]
-    @staticmethod
-    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+    def assign_data(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
+
 class DtuCourseStrategy(DataStrategy):
     @staticmethod
-    def generate_child_list(time: str, name: str) -> List[str]:
-        return ["placeholder", time, name]
-    @staticmethod
-    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+    def assign_data(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
+
 class DtuTermStrategy(DataStrategy):
     @staticmethod
-    def generate_child_list(time: str, name: str) -> List[str]:
-        return ["placeholder", time, name]
-    @staticmethod
-    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+    def assign_data(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
+
 class DtuEvaluationStrategy(DataStrategy):
     @staticmethod
-    def generate_child_list(time: str, name: str) -> List[str]:
-        return ["placeholder", time, name]
-    @staticmethod
-    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+    def assign_data(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
+
 class DtuGradeSheetStrategy(DataStrategy):
     @staticmethod
-    def generate_child_list(time: str, name: str) -> List[str]:
-        return ["placeholder", time, name]
-    @staticmethod
-    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+    def assign_data(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
+
 class DtuInfoPageStrategy(DataStrategy):
     @staticmethod
-    def generate_child_list(time: str, name: str) -> List[str]:
-        return ["placeholder", time, name]
-    @staticmethod
-    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+    def assign_data(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
+
 class DtuTeacherStrategy(DataStrategy):
     @staticmethod
-    def generate_child_list(time: str, name: str) -> List[str]:
-        return ["placeholder", time, name]
-    @staticmethod
-    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+    def assign_data(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
+
 class DtuStudyLineStrategy(DataStrategy):
     @staticmethod
-    def generate_child_list(time: str, name: str) -> List[str]:
-        return ["placeholder", time, name]
-    @staticmethod
-    def generate_data_points(time: str, name: str) -> Dict[str, 'DataPoint']:
+    def assign_data(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
+
 
 class StrategyCollection(ABC):
     @abstractmethod
@@ -463,6 +390,10 @@ class Domain:
 
     def get_name(self) -> str:
         return self.name
+
+    def get_time_unit(self, key: str) -> TimePeriod:
+        print(key)
+        return self.time_manager.generate_empty_time_period()
 
     def get_school_strategy(self) -> Type[DataStrategy]:
         return self.strategy_collection.school_strategy()
@@ -565,47 +496,40 @@ class DataManager:
     def __init__(self) -> None:
         self.serializer: Serializer = DataManager.DEFAULT_SERIALIZER
         self._class_table: Type[ClassTable] = ClassTable
-        self._data_points: Dict[str, Dict[str,DataPoint]] = {}
-        self._containers: Dict[str, Container] = {}
+        self._data_points: Dict[str, DataPoint] = {}
         self._child_lists: Dict[str,List[str]] = {}
 
-    def build_data_points(self, data_obj: 'DataPoint') -> Dict[str,'DataPoint']:
-        key: str = self.serialize(data_obj)
-        if key in self._data_points:
-            dct: Dict[str,DataPoint] = self._data_points[key]
-        else:
-            dct = data_obj.get_data_points()
-            self._register_data_point(key, dct)
-        return dct
-
     def cascade_build_children(self, data_obj: 'Container') -> None:
-        data_obj.data_points = self.build_data_points(data_obj)
-        child_names: List[str] = self.generate_child_list(data_obj)
-        for name in child_names:
-            child_cls = data_obj.get_child_class()
-            child: Container = child_cls(data_obj.domain, data_obj.time_period, name)
-            key: str = self.serialize(child)
-            if key in self._containers:
-                child = self._containers[key]
+        child_classes: List[Type[DataPoint]] = data_obj.get_child_classes()
+        for child_class in child_classes:
+            strategy: Type[DataStrategy] = child_class.get_strategy(data_obj.domain)
+            time: str = data_obj.time_period.get_name()
+            name: str = data_obj.name
+            data: Dict[str,str] = strategy.assign_data(time, name)
+            time_period: TimePeriod = data_obj.domain.get_time_unit(child_class.get_class_id())
+            if issubclass(child_class, Container):
+                child_name = data["name"]
+                child_dp: DataPoint = child_class(data_obj.domain, time_period, child_name)
+                key: str = self.serialize(child_dp)
+                if key in self._data_points:
+                    child_dp = self._data_points[key]
+                else:
+                    data_obj.initialize_data(data)
+                    self._register_data_point(key, child_dp)
             else:
-                self._register_container(key, child)
-            data_obj.add_child(child)
-            self.cascade_build_children(data_obj)
+                child_names = list(data.keys())
+                for name in child_names:
+                    child_c: Container = child_class(data_obj.domain, time_period, name)
+                    data_obj.add_child(child_c)
+                    self.cascade_build_children(child_c)
+                key = self.serialize(child_c)
+                if key in self._data_points:
+                    child_c = self._data_points[key]
+                else:
+                    self._register_data_point(key, child_c)
 
-    def generate_child_list(self, data_obj: 'DataPoint') -> List[str]:
-        key: str = self.serialize(data_obj)
-        if key in self._child_lists:
-            lst: List[str] = self._child_lists[key]
-        else:
-            lst = data_obj.generate_child_list()
-            self._child_lists[key] = lst
-        return lst
-
-    def _register_container(self, key: str, data_object: 'Container') -> None:
-        self._containers[key] = data_object
-
-    def _register_data_point(self, key: str, dct: Dict[str,'DataPoint']) -> None:
-        self._data_points[key] = dct
+    def _register_data_point(self, key: str, data_object: 'DataPoint') -> None:
+        self._data_points[key] = data_object
 
     def _register_child_list(self, key: str, lst: List[str]) -> None:
         self._child_lists[key] = lst
@@ -624,24 +548,17 @@ class DataPoint(ABC):
         self.time_period: TimePeriod = time_period
         self.class_id: str = self.get_class_id()
         self.name: str = name
-        self.strategy: Type[DataStrategy] = self.initialize_strategy()
-        self.data_points: Dict[str,DataPoint] = {}
+        self.data: Dict[str,str] = {}
 
     def get_name(self) -> str:
         return self.name
 
-    def get_data_points(self) -> Dict[str,'DataPoint']:
-        time: str = self.time_period.get_name()
-        name: str = self.name
-        return self.strategy.generate_data_points(time, name)
+    def initialize_data(self, data: Dict[str,str]) -> None:
+        self.data = data
 
-    def generate_child_list(self) -> List[str]:
-        time: str = self.time_period.get_name()
-        name: str = self.name
-        return self.strategy.generate_child_list(time, name)
-
+    @staticmethod
     @abstractmethod
-    def initialize_strategy(self) -> Type[DataStrategy]:
+    def get_strategy(domain: Domain) -> Type[DataStrategy]:
         pass
 
     @staticmethod
@@ -654,38 +571,46 @@ class Container(DataPoint):
 
     def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
         super().__init__(domain, time_period, name)
-        self.data_points: Dict[str,DataPoint] = {}
-        self.children: List[Container] = []
+        self.children: Dict[str,List[DataPoint]] = {}
 
     def cascade_perform_action(self, key: str, action: Callable[['DataPoint'], float]) -> float:
-        if key in self.data_points:
-            return self._perform_action_on_self(key, action)
-        elif len(self._get_children()) > 0:
+        if key in self.children:
+            child_list: List[DataPoint] = self.children[key]
+            if len(child_list) != 1:
+                raise ValueError(f"There should be exactly 1 child in {self.time_period.get_name()} {self.name}, not {len(child_list)}")
+            else:
+                return action(child_list[0])
+        elif len(self._get_main_children()) > 0:
             return self._perform_action_on_children(key, action)
         else:
             raise ValueError(f"Key {key} not found in {self.time_period.get_name()} {self.name}")
 
-    def _perform_action_on_self(self, key: str, action: Callable[['DataPoint'], float]) -> float:
-        data_point: DataPoint = self.data_points[key]
-        average = action(data_point)
-        return average
-
     def _perform_action_on_children(self, key: str, action: Callable[['DataPoint'], float]) -> float:
         child_sum: float = 0.0
-        for child in self._get_children():
+        for child in self._get_main_children():
             child_sum += child.cascade_perform_action(key, action)
-        return child_sum / len(self._get_children())
+        return child_sum / len(self._get_main_children())
 
-    def add_child(self, child: 'Container') -> None:
-        self.children.append(child)
+    def add_child(self, child: 'DataPoint') -> None:
+        key: str = child.get_class_id()
+        self.children[key].append(child)
+
+    def _get_children(self, key) -> List['DataPoint']:
+        return self.children[key]
+
+    def _get_main_children(self) -> List['Container']:
+        key: str = self.get_class_id()
+        return self._get_children(key)
 
     @staticmethod
-    def get_child_class() -> Type['Container']:
-        raise ValueError(f"Error, {__name__} should have 0 children")
+    @abstractmethod
+    def get_child_classes() -> List[Type[DataPoint]]:
+        pass
 
-    def _get_children(self) -> List['Container']:
-        return self.children
-
+    @staticmethod
+    @abstractmethod
+    def get_main_child_classes() -> List['Container']:
+        pass
 
 class School(Container):
 
@@ -699,8 +624,9 @@ class School(Container):
     def get_child_class() -> Type[Container]:
         return Year
 
-    def initialize_strategy(self) -> Type[DataStrategy]:
-        return self.domain.get_school_strategy()
+    @staticmethod
+    def get_strategy(domain: Domain) -> Type[DataStrategy]:
+        return domain.get_school_strategy()
 
 class Year(Container):
 
@@ -714,8 +640,9 @@ class Year(Container):
     def get_child_class() -> Type[Container]:
         return Course
 
-    def initialize_strategy(self) -> Type[DataStrategy]:
-        return self.domain.get_year_strategy()
+    @staticmethod
+    def get_strategy(domain: Domain) -> Type[DataStrategy]:
+        return domain.get_year_strategy()
 
 class Course(Container):
 
@@ -729,8 +656,9 @@ class Course(Container):
     def get_child_class() -> Type[Container]:
         return Term
 
-    def initialize_strategy(self) -> Type[DataStrategy]:
-        return self.domain.get_course_strategy()
+    @staticmethod
+    def get_strategy(domain: Domain) -> Type[DataStrategy]:
+        return domain.get_course_strategy()
 
 class Term(Container):
 
@@ -740,8 +668,9 @@ class Term(Container):
     def get_class_id() -> str:
         return School.CLASS_ID
 
-    def initialize_strategy(self) -> Type[DataStrategy]:
-        return self.domain.get_term_strategy()
+    @staticmethod
+    def get_strategy(domain: Domain) -> Type[DataStrategy]:
+        return domain.get_term_strategy()
 
 class Teacher(Container):
 
@@ -755,8 +684,9 @@ class Teacher(Container):
     def get_child_class() -> Type[Container]:
         return Course
 
-    def initialize_strategy(self) -> Type[DataStrategy]:
-        return self.domain.get_teacher_strategy()
+    @staticmethod
+    def get_strategy(domain: Domain) -> Type[DataStrategy]:
+        return domain.get_teacher_strategy()
 
 class StudyLine(Container):
 
@@ -770,8 +700,9 @@ class StudyLine(Container):
     def get_child_class() -> Type[Container]:
         return Course
 
-    def initialize_strategy(self) -> Type[DataStrategy]:
-        return self.domain.get_study_line_strategy()
+    @staticmethod
+    def get_strategy(domain: Domain) -> Type[DataStrategy]:
+        return domain.get_study_line_strategy()
 
 class Evaluation(DataPoint):
 
@@ -781,8 +712,9 @@ class Evaluation(DataPoint):
     def get_class_id() -> str:
         return School.CLASS_ID
 
-    def initialize_strategy(self) -> Type[DataStrategy]:
-        return self.domain.get_evaluation_strategy()
+    @staticmethod
+    def get_strategy(domain: Domain) -> Type[DataStrategy]:
+        return domain.get_evaluation_strategy()
 
 class GradeSheet(DataPoint):
 
@@ -792,8 +724,9 @@ class GradeSheet(DataPoint):
     def get_class_id() -> str:
         return School.CLASS_ID
 
-    def initialize_strategy(self) -> Type[DataStrategy]:
-        return self.domain.get_grade_sheet_strategy()
+    @staticmethod
+    def get_strategy(domain: Domain) -> Type[DataStrategy]:
+        return domain.get_grade_sheet_strategy()
 
 class InfoPage(DataPoint):
 
@@ -803,8 +736,9 @@ class InfoPage(DataPoint):
     def get_class_id() -> str:
         return School.CLASS_ID
 
-    def initialize_strategy(self) -> Type[DataStrategy]:
-        return self.domain.get_info_page_strategy()
+    @staticmethod
+    def get_strategy(domain: Domain) -> Type[DataStrategy]:
+        return domain.get_info_page_strategy()
 
 class ClassTable:
 
