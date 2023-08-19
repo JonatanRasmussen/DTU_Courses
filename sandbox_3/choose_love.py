@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Tuple, Type, Callable
+import json
 
 class TimePeriod:
 
@@ -237,190 +238,140 @@ class TimeManager:
     def number_of_terms(self) -> int:
         return len(self.domain_config.ordered_terms())
 
-class DataStrategy(ABC):
+class DataObjectStrategy(ABC):
+    pass
+
+class ContainerStrategy(DataObjectStrategy):
+
     @staticmethod
-    def assign_data(time: str, name: str) -> Dict[str,str]:
+    def get_child_list(time: str, name: str) -> List[str]:
+        if time == name:
+            return []
+        return []
+
+class DataPointStrategy(DataObjectStrategy):
+    @staticmethod
+    def get_data_dictionary(time: str, name: str) -> Dict[str,str]:
         if time == name:
             return {}
         return {}
 
-class DtuSchoolStrategy(DataStrategy):
+class StrategyManager(ABC):
+
     @staticmethod
-    def assign_data(time: str, name: str) -> Dict[str,str]:
-        if time == name:
-            return {}
-        return {}
+    def get_child_list(container: 'Container', child_id: str) -> List[str]:
+        container_strategy: Type[ContainerStrategy] = StrategyManager.get_container_strategy(container, child_id)
+        time: str = container.time_period.get_name()
+        name: str = container.get_name()
+        return container_strategy.get_child_list(time, name)
 
-class DtuYearStrategy(DataStrategy):
     @staticmethod
-    def assign_data(time: str, name: str) -> Dict[str,str]:
-        if time == name:
-            return {}
-        return {}
+    def get_data_dictionary(data_point: 'DataPoint') -> Dict[str,str]:
+        data_point_strategy: Type[DataPointStrategy] = StrategyManager.get_data_point_strategy(data_point)
+        time: str = data_point.time_period.get_name()
+        name: str = data_point.get_name()
+        return data_point_strategy.get_data_dictionary(time, name)
 
-class DtuCourseStrategy(DataStrategy):
     @staticmethod
-    def assign_data(time: str, name: str) -> Dict[str,str]:
-        if time == name:
-            return {}
-        return {}
-
-class DtuTermStrategy(DataStrategy):
+    @abstractmethod
+    def get_container_strategy(container: 'Container', child_id: str) -> Type[ContainerStrategy]:
+        pass
     @staticmethod
-    def assign_data(time: str, name: str) -> Dict[str,str]:
-        if time == name:
-            return {}
-        return {}
+    @abstractmethod
+    def get_data_point_strategy(data_point: 'DataPoint') -> Type[DataPointStrategy]:
+        pass
 
-class DtuEvaluationStrategy(DataStrategy):
+class DtuStrategyManager(StrategyManager):
     @staticmethod
-    def assign_data(time: str, name: str) -> Dict[str,str]:
-        if time == name:
-            return {}
-        return {}
-
-class DtuGradeSheetStrategy(DataStrategy):
+    def get_container_strategy(container: 'Container', child_id: str) -> Type[ContainerStrategy]:
+        if container.get_class_id() == child_id:
+            return ContainerStrategy
+        return ContainerStrategy
     @staticmethod
-    def assign_data(time: str, name: str) -> Dict[str,str]:
-        if time == name:
-            return {}
-        return {}
+    def get_data_point_strategy(data_point: 'DataPoint') -> Type[DataPointStrategy]:
+        if data_point.get_class_id() == "0":
+            return DataPointStrategy
+        return DataPointStrategy
 
-class DtuInfoPageStrategy(DataStrategy):
+class DomainConfig(ABC):
     @staticmethod
-    def assign_data(time: str, name: str) -> Dict[str,str]:
-        if time == name:
-            return {}
-        return {}
-
-class DtuTeacherStrategy(DataStrategy):
+    @abstractmethod
+    def get_domain_name() -> str:
+        pass
     @staticmethod
-    def assign_data(time: str, name: str) -> Dict[str,str]:
-        if time == name:
-            return {}
-        return {}
-
-class DtuStudyLineStrategy(DataStrategy):
+    @abstractmethod
+    def get_time_manager() -> TimeManager:
+        pass
     @staticmethod
-    def assign_data(time: str, name: str) -> Dict[str,str]:
-        if time == name:
-            return {}
-        return {}
-
-
-class StrategyCollection(ABC):
     @abstractmethod
-    def get_domain_name(self) -> str:
-        pass
-    @abstractmethod
-    def get_time_manager(self) -> TimeManager:
-        pass
-    @abstractmethod
-    def school_strategy(self) -> Type[DataStrategy]:
-        pass
-    @abstractmethod
-    def year_strategy(self) -> Type[DataStrategy]:
-        pass
-    @abstractmethod
-    def course_strategy(self) -> Type[DataStrategy]:
-        pass
-    @abstractmethod
-    def term_strategy(self) -> Type[DataStrategy]:
-        pass
-    @abstractmethod
-    def evaluation_strategy(self) -> Type[DataStrategy]:
-        pass
-    @abstractmethod
-    def grade_sheet_strategy(self) -> Type[DataStrategy]:
-        pass
-    @abstractmethod
-    def info_page_strategy(self) -> Type[DataStrategy]:
-        pass
-    @abstractmethod
-    def study_line_strategy(self) -> Type[DataStrategy]:
-        pass
-    @abstractmethod
-    def teacher_strategy(self) -> Type[DataStrategy]:
+    def get_strategy_manager() -> Type[StrategyManager]:
         pass
 
-class DtuStrategyCollection(StrategyCollection):
+class DtuDomainConfig(DomainConfig):
 
     DOMAIN_NAME: str = "dtu"
+    TIME_MANAGER: TimeManager = TimeManager(DtuTimeConfig)
+    STRATEGY_MANAGER: Type[StrategyManager] = DtuStrategyManager
 
-    def __init__(self) -> None:
-        self.name: str = DtuStrategyCollection.DOMAIN_NAME
-        self.time_manager: TimeManager = TimeManager(DtuTimeConfig)
+    @staticmethod
+    def get_domain_name() -> str:
+        return DtuDomainConfig.DOMAIN_NAME
 
-    def get_domain_name(self) -> str:
-        return self.name
+    @staticmethod
+    def get_time_manager() -> TimeManager:
+        return DtuDomainConfig.TIME_MANAGER
 
-    def get_time_manager(self) -> TimeManager:
-        return self.time_manager
+    @staticmethod
+    def get_strategy_manager() -> Type[StrategyManager]:
+        return DtuDomainConfig.STRATEGY_MANAGER
 
-    def school_strategy(self) -> Type[DataStrategy]:
-        return DtuSchoolStrategy
-    def year_strategy(self) -> Type[DataStrategy]:
-        return DtuYearStrategy
-    def course_strategy(self) -> Type[DataStrategy]:
-        return DtuCourseStrategy
-    def term_strategy(self) -> Type[DataStrategy]:
-        return DtuTermStrategy
-    def evaluation_strategy(self) -> Type[DataStrategy]:
-        return DtuEvaluationStrategy
-    def grade_sheet_strategy(self) -> Type[DataStrategy]:
-        return DtuGradeSheetStrategy
-    def info_page_strategy(self) -> Type[DataStrategy]:
-        return DtuInfoPageStrategy
-    def study_line_strategy(self) -> Type[DataStrategy]:
-        return DtuStudyLineStrategy
-    def teacher_strategy(self) -> Type[DataStrategy]:
-        return DtuTeacherStrategy
 class Domain:
 
-    def __init__(self, strategy_collection: StrategyCollection) -> None:
-        self.strategy_collection: StrategyCollection = strategy_collection
-        self.time_manager: TimeManager = self.strategy_collection.get_time_manager()
-        self.name: str = self.strategy_collection.get_domain_name()
+    def __init__(self, domain_config: Type[DomainConfig], data_manager: 'DataManager') -> None:
+        self.name: str = domain_config.get_domain_name()
+        self.data_manager: DataManager = data_manager
+        self.time_manager: TimeManager = domain_config.get_time_manager()
+        self.strategy_manager: Type[StrategyManager] = domain_config.get_strategy_manager()
 
-    def get_strategy_collection(self) -> StrategyCollection:
-        return self.strategy_collection
-
-    def get_time_manager(self) -> TimeManager:
-        return self.time_manager
+    def get_strategy_collection(self) -> Type[StrategyManager]:
+        return self.strategy_manager
 
     def get_name(self) -> str:
         return self.name
 
-    def get_time_unit(self, key: str) -> TimePeriod:
-        print(key)
-        return self.time_manager.generate_empty_time_period()
+    def fabricate_data_object(self, child_class: Type['DataObject'], name: str) -> 'DataObject':
+        time_period = self.time_manager.generate_empty_time_period()
+        child: DataObject = child_class(self, time_period, name)
+        #key: str = self.data_manager.serialize(child)
+        return child
 
-    def get_school_strategy(self) -> Type[DataStrategy]:
-        return self.strategy_collection.school_strategy()
-    def get_year_strategy(self) -> Type[DataStrategy]:
-        return self.strategy_collection.year_strategy()
-    def get_course_strategy(self) -> Type[DataStrategy]:
-        return self.strategy_collection.course_strategy()
-    def get_term_strategy(self) -> Type[DataStrategy]:
-        return self.strategy_collection.term_strategy()
-    def get_evaluation_strategy(self) -> Type[DataStrategy]:
-        return self.strategy_collection.evaluation_strategy()
-    def get_grade_sheet_strategy(self) -> Type[DataStrategy]:
-        return self.strategy_collection.grade_sheet_strategy()
-    def get_info_page_strategy(self) -> Type[DataStrategy]:
-        return self.strategy_collection.info_page_strategy()
-    def get_study_line_strategy(self) -> Type[DataStrategy]:
-        return self.strategy_collection.study_line_strategy()
-    def get_teacher_strategy(self) -> Type[DataStrategy]:
-        return self.strategy_collection.teacher_strategy()
+    def get_child_list(self, container: 'Container', child_id: str) -> List[str]:
+        return self.strategy_manager.get_child_list(container, child_id)
+
+    def get_data_dictionary(self, data_point: 'DataPoint') -> Dict[str,str]:
+        return self.strategy_manager.get_data_dictionary(data_point)
 
 class DomainManager:
 
-    STRATEGY_COLLECTIONS: List[StrategyCollection] = [
-        DtuStrategyCollection()
+    DOMAIN_CONFIGS: List[Type[DomainConfig]] = [
+        DtuDomainConfig
     ]
 
+    def __init__(self) -> None:
+        self.data_manager = DataManager()
+        self.domains: Dict[str, Domain] = {}
+        self._initialize_domains()
+
     initialized_domains: Dict[str, Domain] = {}
+
+    def get_all_domains(self) -> List[Domain]:
+        return list(self.domains.values())
+
+    def _initialize_domains(self) -> None:
+        for domain_config in DomainManager.DOMAIN_CONFIGS:
+            dct_key = domain_config.get_domain_name()
+            domain: Domain = Domain(domain_config, self.data_manager)
+            self.domains[dct_key] = domain
 
     @staticmethod
     def read_domain_from_keyname(key_name: str) -> Domain:
@@ -428,25 +379,12 @@ class DomainManager:
             raise KeyError(f"No domain with name '{key_name}' in domain dict")
         return DomainManager.initialized_domains[key_name]
 
-    @staticmethod
-    def get_all_domains() -> List[Domain]:
-        if len(DomainManager.initialized_domains) == 0:
-            DomainManager._initialize_domains()
-        return list(DomainManager.initialized_domains.values())
-
-    @staticmethod
-    def _initialize_domains() -> None:
-        for strategy_collection in DomainManager.STRATEGY_COLLECTIONS:
-            dct_key = strategy_collection.get_domain_name()
-            domain: Domain = Domain(strategy_collection)
-            DomainManager.initialized_domains[dct_key] = domain
-
 class Serializer:
 
     KEY_SEPARATOR: str = "__"
 
     @staticmethod
-    def serialize_object(data_obj: 'DataPoint') -> str:
+    def serialize_object(data_obj: 'DataObject') -> str:
         domain_name: str = data_obj.domain.get_name()
         time_name: str = data_obj.time_period.get_name()
         class_id: str = data_obj.get_class_id()
@@ -467,7 +405,7 @@ class Serializer:
     def deserialize_key(key: str) -> Tuple[Domain,TimePeriod,str,str]:
         data_list: List[str] = key.split(Serializer.KEY_SEPARATOR)
         domain: Domain = DomainManager.read_domain_from_keyname(data_list[0])
-        time: TimePeriod = domain.get_time_manager().read_time_from_keyname(data_list[1])
+        time: TimePeriod = domain.time_manager.read_time_from_keyname(data_list[1])
         class_id: str = data_list[2]
         name: str = data_list[3]
         return (domain, time, class_id, name)
@@ -496,39 +434,10 @@ class DataManager:
     def __init__(self) -> None:
         self.serializer: Serializer = DataManager.DEFAULT_SERIALIZER
         self._class_table: Type[ClassTable] = ClassTable
-        self._data_points: Dict[str, DataPoint] = {}
+        self._data_points: Dict[str, DataObject] = {}
         self._child_lists: Dict[str,List[str]] = {}
 
-    def cascade_build_children(self, data_obj: 'Container') -> None:
-        child_classes: List[Type[DataPoint]] = data_obj.get_child_classes()
-        for child_class in child_classes:
-            strategy: Type[DataStrategy] = child_class.get_strategy(data_obj.domain)
-            time: str = data_obj.time_period.get_name()
-            name: str = data_obj.name
-            data: Dict[str,str] = strategy.assign_data(time, name)
-            time_period: TimePeriod = data_obj.domain.get_time_unit(child_class.get_class_id())
-            if issubclass(child_class, Container):
-                child_name = data["name"]
-                child_dp: DataPoint = child_class(data_obj.domain, time_period, child_name)
-                key: str = self.serialize(child_dp)
-                if key in self._data_points:
-                    child_dp = self._data_points[key]
-                else:
-                    data_obj.initialize_data(data)
-                    self._register_data_point(key, child_dp)
-            else:
-                child_names = list(data.keys())
-                for name in child_names:
-                    child_c: Container = child_class(data_obj.domain, time_period, name)
-                    data_obj.add_child(child_c)
-                    self.cascade_build_children(child_c)
-                key = self.serialize(child_c)
-                if key in self._data_points:
-                    child_c = self._data_points[key]
-                else:
-                    self._register_data_point(key, child_c)
-
-    def _register_data_point(self, key: str, data_object: 'DataPoint') -> None:
+    def _register_data_point(self, key: str, data_object: 'DataObject') -> None:
         self._data_points[key] = data_object
 
     def _register_child_list(self, key: str, lst: List[str]) -> None:
@@ -537,80 +446,121 @@ class DataManager:
     def serialize_data(self, data: Tuple[Domain,TimePeriod,str,str]):
         return self.serializer.serialize_object_data(data)
 
-    def serialize(self, data_obj: 'DataPoint') -> str:
+    def serialize(self, data_obj: 'DataObject') -> str:
         return self.serializer.serialize_object(data_obj)
 
 
-class DataPoint(ABC):
+class DataObject(ABC):
 
     def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
         self.domain: Domain = domain
         self.time_period: TimePeriod = time_period
-        self.class_id: str = self.get_class_id()
         self.name: str = name
-        self.data: Dict[str,str] = {}
 
     def get_name(self) -> str:
         return self.name
-
-    def initialize_data(self, data: Dict[str,str]) -> None:
-        self.data = data
-
-    @staticmethod
-    @abstractmethod
-    def get_strategy(domain: Domain) -> Type[DataStrategy]:
-        pass
 
     @staticmethod
     @abstractmethod
     def get_class_id() -> str:
         pass
 
+    @abstractmethod
+    def cascade_build(self) -> None:
+        pass
 
-class Container(DataPoint):
+class DataPoint(DataObject):
 
     def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
         super().__init__(domain, time_period, name)
-        self.children: Dict[str,List[DataPoint]] = {}
+        self.data: Dict[str,str] = {}
 
-    def cascade_perform_action(self, key: str, action: Callable[['DataPoint'], float]) -> float:
+    def cascade_build(self) -> None:
+        self.data = self.domain.get_data_dictionary(self)
+
+class Container(DataObject):
+
+    def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
+        super().__init__(domain, time_period, name)
+        self.children: Dict[str,List[DataObject]] = {}
+
+    def cascade_build(self) -> None:
+        child_classes: List[Type[DataObject]] = self._get_all_child_classes()
+        for child_class in child_classes:
+            child_id: str = child_class.get_class_id()
+            child_names: List[str] = self.domain.get_child_list(self, child_id)
+            for name in child_names:
+                child: DataObject = self.domain.fabricate_data_object(child_class, name)
+                self._add_child(child)
+                child.cascade_build()
+
+    def cascade_perform_action(self, key: str, action: Callable[['DataObject'], float]) -> float:
         if key in self.children:
-            child_list: List[DataPoint] = self.children[key]
-            if len(child_list) != 1:
-                raise ValueError(f"There should be exactly 1 child in {self.time_period.get_name()} {self.name}, not {len(child_list)}")
-            else:
-                return action(child_list[0])
-        elif len(self._get_main_children()) > 0:
-            return self._perform_action_on_children(key, action)
+            return self._perform_action(key, action)
+        elif len(self._get_primary_children()) > 0:
+            return self._continue_action_cascade(key, action)
         else:
             raise ValueError(f"Key {key} not found in {self.time_period.get_name()} {self.name}")
 
-    def _perform_action_on_children(self, key: str, action: Callable[['DataPoint'], float]) -> float:
-        child_sum: float = 0.0
-        for child in self._get_main_children():
-            child_sum += child.cascade_perform_action(key, action)
-        return child_sum / len(self._get_main_children())
+    def _perform_action(self, key: str, action: Callable[['DataObject'], float]) -> float:
+        child_list: List[DataObject] = self.children[key]
+        if len(child_list) != 1:
+            raise ValueError(f"There should be exactly 1 child in {self.time_period.get_name()} {self.name}, not {len(child_list)}")
+        else:
+            return action(child_list[0])
 
-    def add_child(self, child: 'DataPoint') -> None:
+    def _continue_action_cascade(self, key: str, action: Callable[['DataObject'], float]) -> float:
+        child_sum: float = 0.0
+        for child in self._get_primary_children():
+            child_sum += child.cascade_perform_action(key, action)
+        return child_sum / len(self._get_primary_children())
+
+    def _add_child(self, child: 'DataObject') -> None:
         key: str = child.get_class_id()
         self.children[key].append(child)
 
-    def _get_children(self, key) -> List['DataPoint']:
+    def _get_children(self, key) -> List['DataObject']:
         return self.children[key]
 
-    def _get_main_children(self) -> List['Container']:
-        key: str = self.get_class_id()
-        return self._get_children(key)
+    def _get_primary_children(self) -> List['Container']:
+        lst_of_children: List['Container'] = []
+        lst_of_keys = self._get_primary_child_class_keys()
+        for key in lst_of_keys:
+            if key in self.children:
+                lst_of_children.extend(self._ensure_children_is_containers(self.children[key]))
+        return lst_of_children
+
+    def _get_primary_child_class_keys(self) -> List[str]:
+        main_child_classes: List[Type[Container]] = self.get_primary_child_classes()
+        lst_of_keys: List[str] = []
+        for main_child_class in main_child_classes:
+            lst_of_keys.append(main_child_class.get_class_id())
+        return lst_of_keys
+
+    def _error_unsupported_child_class(self, child_id: str) -> KeyError:
+        return KeyError(f"Error, {child_id} is not a child of {self.get_class_id()}")
+
+    def _ensure_children_is_containers(self, containers: List[DataObject]) -> List['Container']:
+        container_list: List['Container'] = []
+        for container in containers:
+            if isinstance(container, Container):
+                container_list.append(container)
+            else:
+                raise ValueError(f"Error: {self.time_period.get_name()} {self.name} has {container.time_period.get_name()} {container.name} as main child, even though {container.time_period.get_name()} {container.name} is not a container")
+        return container_list
 
     @staticmethod
-    @abstractmethod
-    def get_child_classes() -> List[Type[DataPoint]]:
-        pass
+    def _get_all_child_classes() -> List[Type[DataObject]]:
+        return Container.get_primary_child_classes() + Container.get_secondary_child_classes()
 
     @staticmethod
-    @abstractmethod
-    def get_main_child_classes() -> List['Container']:
-        pass
+    def get_primary_child_classes() -> List[Type['Container']]:
+        return []
+
+    @staticmethod
+    def get_secondary_child_classes() -> List[Type[DataObject]]:
+        return []
+
 
 class School(Container):
 
@@ -621,12 +571,8 @@ class School(Container):
         return School.CLASS_ID
 
     @staticmethod
-    def get_child_class() -> Type[Container]:
-        return Year
-
-    @staticmethod
-    def get_strategy(domain: Domain) -> Type[DataStrategy]:
-        return domain.get_school_strategy()
+    def get_primary_child_classes() -> List[Type['Container']]:
+        return [Year]
 
 class Year(Container):
 
@@ -637,12 +583,12 @@ class Year(Container):
         return School.CLASS_ID
 
     @staticmethod
-    def get_child_class() -> Type[Container]:
-        return Course
+    def get_primary_child_classes() -> List[Type['Container']]:
+        return [Course]
 
     @staticmethod
-    def get_strategy(domain: Domain) -> Type[DataStrategy]:
-        return domain.get_year_strategy()
+    def get_secondary_child_classes() -> List[Type[DataObject]]:
+        return [StudyLine, Teacher]
 
 class Course(Container):
 
@@ -653,12 +599,12 @@ class Course(Container):
         return School.CLASS_ID
 
     @staticmethod
-    def get_child_class() -> Type[Container]:
-        return Term
+    def get_primary_child_classes() -> List[Type['Container']]:
+        return [Term]
 
     @staticmethod
-    def get_strategy(domain: Domain) -> Type[DataStrategy]:
-        return domain.get_course_strategy()
+    def get_secondary_child_classes() -> List[Type[DataObject]]:
+        return [InfoPage]
 
 class Term(Container):
 
@@ -669,8 +615,8 @@ class Term(Container):
         return School.CLASS_ID
 
     @staticmethod
-    def get_strategy(domain: Domain) -> Type[DataStrategy]:
-        return domain.get_term_strategy()
+    def get_secondary_child_classes() -> List[Type[DataObject]]:
+        return [Evaluation, GradeSheet]
 
 class Teacher(Container):
 
@@ -681,12 +627,8 @@ class Teacher(Container):
         return School.CLASS_ID
 
     @staticmethod
-    def get_child_class() -> Type[Container]:
-        return Course
-
-    @staticmethod
-    def get_strategy(domain: Domain) -> Type[DataStrategy]:
-        return domain.get_teacher_strategy()
+    def get_primary_child_classes() -> List[Type['Container']]:
+        return [Course]
 
 class StudyLine(Container):
 
@@ -697,12 +639,8 @@ class StudyLine(Container):
         return School.CLASS_ID
 
     @staticmethod
-    def get_child_class() -> Type[Container]:
-        return Course
-
-    @staticmethod
-    def get_strategy(domain: Domain) -> Type[DataStrategy]:
-        return domain.get_study_line_strategy()
+    def get_primary_child_classes() -> List[Type['Container']]:
+        return [Course]
 
 class Evaluation(DataPoint):
 
@@ -712,10 +650,6 @@ class Evaluation(DataPoint):
     def get_class_id() -> str:
         return School.CLASS_ID
 
-    @staticmethod
-    def get_strategy(domain: Domain) -> Type[DataStrategy]:
-        return domain.get_evaluation_strategy()
-
 class GradeSheet(DataPoint):
 
     CLASS_ID: str = "grade_sheet"
@@ -723,10 +657,6 @@ class GradeSheet(DataPoint):
     @staticmethod
     def get_class_id() -> str:
         return School.CLASS_ID
-
-    @staticmethod
-    def get_strategy(domain: Domain) -> Type[DataStrategy]:
-        return domain.get_grade_sheet_strategy()
 
 class InfoPage(DataPoint):
 
@@ -736,23 +666,19 @@ class InfoPage(DataPoint):
     def get_class_id() -> str:
         return School.CLASS_ID
 
-    @staticmethod
-    def get_strategy(domain: Domain) -> Type[DataStrategy]:
-        return domain.get_info_page_strategy()
-
 class ClassTable:
 
     @staticmethod
-    def get_class_from_id(class_id: str) -> Type[DataPoint]:
-        class_dct: Dict[str,Type[DataPoint]] = ClassTable._get_class_dct()
+    def get_class_from_id(class_id: str) -> Type[DataObject]:
+        class_dct: Dict[str,Type[DataObject]] = ClassTable._get_class_dct()
         if class_id in class_dct:
             return class_dct[class_id]
         else:
             raise ValueError(f"Class '{class_id}' not found in {__name__}")
 
     @staticmethod
-    def _get_class_dct() -> Dict[str,Type[DataPoint]]:
-        dct: Dict[str,Type[DataPoint]] = {
+    def _get_class_dct() -> Dict[str,Type[DataObject]]:
+        dct: Dict[str,Type[DataObject]] = {
             School.get_class_id(): School,
             Year.get_class_id(): Year,
             Course.get_class_id(): Course,
@@ -776,12 +702,12 @@ class ClassTable:
 #InfoPage
 
 def main() -> None:
-    domain_list: List[Domain] = DomainManager.get_all_domains()
+    domain_manager: DomainManager = DomainManager()
+    domain_list: List[Domain] = domain_manager.get_all_domains()
     for domain in domain_list:
-        time_manager: TimeManager = domain.get_time_manager()
-        terms: List[TimePeriod] = time_manager.generate_all_time_periods()
-        years: List[TimePeriod] = time_manager.generate_years()
-        empty_time: TimePeriod = time_manager.generate_empty_time_period()
+        terms: List[TimePeriod] = domain.time_manager.generate_all_time_periods()
+        years: List[TimePeriod] = domain.time_manager.generate_years()
+        empty_time: TimePeriod = domain.time_manager.generate_empty_time_period()
         print(terms)
         print(years)
         print(empty_time)
