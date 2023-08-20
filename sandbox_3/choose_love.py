@@ -1,6 +1,64 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Tuple, Type, Callable
+from typing import Dict, List, Tuple, Type, Callable, TypeVar, Generic
 import json
+
+T = TypeVar('T')
+
+class DAO(Generic[T]):
+
+    def __init__(self) -> None:
+        self.dct: Dict[str, T] = {}
+
+    def exists(self, key: str) -> bool:
+        return key in self.dct
+
+    def read(self, key: str) -> T:
+        self._raise_error_if_key_missing(key)
+        return self.dct[key]
+
+    def write_unique_key(self, key: str, value: T) -> None:
+        self._raise_error_if_key_exists(key)
+        self._write(key, value)
+
+    def write_if_key_missing(self, key: str, value: T) -> None:
+        if not self.exists(key):
+            self._write(key, value)
+
+    def _write(self, key: str, value: T) -> None:
+        self.dct[key] = value
+
+    def _raise_error_if_key_exists(self, key: str) -> None:
+        if not self.exists(key):
+            raise KeyError(f"Key '{key}' doesn't exist.")
+
+    def _raise_error_if_key_missing(self, key: str) -> None:
+        if self.exists(key):
+            raise KeyError(f"Key '{key}' already exists.")
+
+class DiskAccess(DAO,Generic[T]):
+
+    FILE_PATH: str = "json_files/"
+    FILE_NAME: str = "parsed_data"
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.file_path: str = f"{DiskAccess.FILE_PATH}{DiskAccess.FILE_NAME}.json"
+        self._load_from_disk()
+
+    def _write(self, key: str, value: T) -> None:
+        self.dct[key] = value
+        self._save_to_disk()
+
+    def _load_from_disk(self) -> None:
+        try:
+            with open(self.file_path, 'r', encoding='utf-8') as json_file:
+                self.dct = json.load(json_file)
+        except FileNotFoundError:
+            self.dct = {}
+
+    def _save_to_disk(self) -> None:
+        with open(self.file_path, 'w', encoding='utf-8') as json_file:
+            json.dump(self.dct, json_file, indent=4)
 
 class TimePeriod:
 
@@ -276,6 +334,7 @@ class StrategyManager(ABC):
     @abstractmethod
     def get_container_strategy(container: 'Container', child_id: str) -> Type[ContainerStrategy]:
         pass
+
     @staticmethod
     @abstractmethod
     def get_data_point_strategy(data_point: 'DataPoint') -> Type[DataPointStrategy]:
@@ -287,6 +346,7 @@ class DtuStrategyManager(StrategyManager):
         if container.get_class_id() == child_id:
             return ContainerStrategy
         return ContainerStrategy
+
     @staticmethod
     def get_data_point_strategy(data_point: 'DataPoint') -> Type[DataPointStrategy]:
         if data_point.get_class_id() == "0":
@@ -339,11 +399,11 @@ class Domain:
     def get_name(self) -> str:
         return self.name
 
-    def fabricate_data_object(self, child_class: Type['DataObject'], name: str) -> 'DataObject':
+    def fabricate_data_object(self, data_class: Type['DataObject'], name: str) -> 'DataObject':
         time_period = self.time_manager.generate_empty_time_period()
-        child: DataObject = child_class(self, time_period, name)
+        fabricated_obj: DataObject = data_class(self, time_period, name)
         #key: str = self.data_manager.serialize(child)
-        return child
+        return fabricated_obj
 
     def get_child_list(self, container: 'Container', child_id: str) -> List[str]:
         return self.strategy_manager.get_child_list(container, child_id)
@@ -433,15 +493,28 @@ class DataManager:
 
     def __init__(self) -> None:
         self.serializer: Serializer = DataManager.DEFAULT_SERIALIZER
-        self._class_table: Type[ClassTable] = ClassTable
-        self._data_points: Dict[str, DataObject] = {}
-        self._child_lists: Dict[str,List[str]] = {}
+        self._data_objects: DAO = DAO[DataObject]()
+        self._data_dicts: DiskAccess = DiskAccess[Dict[str,str]]()
+        self._child_lists: DiskAccess = DiskAccess[List[str]]()
 
-    def _register_data_point(self, key: str, data_object: 'DataObject') -> None:
-        self._data_points[key] = data_object
+    def data_object_exists(self, key: str) -> bool:
+        return self._data_objects.exists(key)
 
-    def _register_child_list(self, key: str, lst: List[str]) -> None:
-        self._child_lists[key] = lst
+    def data_dict_exists(self, key: str) -> bool:
+        return self._data_dicts.exists(key)
+
+    def child_list_exists(self, key: str) -> bool:
+        return self._child_lists.exists(key)
+
+    def get_data_object(self, data_obj: 'DataObject') -> 'DataObject':
+        key: str = self.serialize(data_obj)
+        return self._data_objects.read(key)
+
+    def get_data_dict(self, key: str) -> Dict[str,str]:
+        return self._data_dicts.read(key)
+
+    def child_list_object(self, key: str) -> List[str]:
+        return self._child_lists.read(key)
 
     def serialize_data(self, data: Tuple[Domain,TimePeriod,str,str]):
         return self.serializer.serialize_object_data(data)

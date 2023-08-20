@@ -1,28 +1,33 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Tuple, Type, Callable
-
+from typing import Dict, List, Tuple, Type, Callable, TypeVar, Generic
 import json
+
 from choose_love import DataObject
 
-class DAO(ABC):
+T = TypeVar('T')
+
+class DAO(Generic[T]):
+
+    def __init__(self) -> None:
+        self.dct: Dict[str, T] = {}
 
     def exists(self, key: str) -> bool:
-        return self._is_accessible(key)
+        return key in self.dct
 
-    def get(self, key: str) -> 'DataObject':
+    def read(self, key: str) -> T:
         self._raise_error_if_key_missing(key)
-        return self._read(key)
+        return self.dct[key]
 
-    def set_unique_key(self, key: str, value: 'DataObject') -> None:
+    def write_unique_key(self, key: str, value: T) -> None:
         self._raise_error_if_key_exists(key)
-        self._set(key, value)
-
-    def set_if_key_missing(self, key: str, value: 'DataObject') -> None:
-        if not self.exists(key):
-            self._set(key, value)
-
-    def _set(self, key: str, value: 'DataObject') -> None:
         self._write(key, value)
+
+    def write_if_key_missing(self, key: str, value: T) -> None:
+        if not self.exists(key):
+            self._write(key, value)
+
+    def _write(self, key: str, value: T) -> None:
+        self.dct[key] = value
 
     def _raise_error_if_key_exists(self, key: str) -> None:
         if not self.exists(key):
@@ -32,58 +37,31 @@ class DAO(ABC):
         if self.exists(key):
             raise KeyError(f"Key '{key}' already exists.")
 
-    @abstractmethod
-    def _is_accessible(self, key: str) -> bool:
-        pass
-
-    @abstractmethod
-    def _read(self, key: str) -> 'DataObject':
-        pass
-
-    @abstractmethod
-    def _write(self, key: str, value: 'DataObject') -> None:
-        pass
-
-class Registry(DAO):
-    def __init__(self) -> None:
-        self.dct: Dict[str, DataObject] = {}
-
-    def _is_accessible(self, key: str) -> bool:
-        return key in self.dct
-
-    def _read(self, key: str) -> 'DataObject':
-        return self.dct[key]
-
-    def _write(self, key: str, value: 'DataObject') -> None:
-        self.dct[key] = value
-
-class DiskAccess(DAO):
+class DiskAccess(DAO,Generic[T]):
 
     FILE_PATH: str = "json_files/"
     FILE_NAME: str = "parsed_data"
 
     def __init__(self) -> None:
+        super().__init__()
         self.file_path: str = f"{DiskAccess.FILE_PATH}{DiskAccess.FILE_NAME}.json"
-        self.dct: Dict[str, DataObject] = {}
-        self._load_data()
+        self._load_from_disk()
 
-    def _is_accessible(self, key: str) -> bool:
-        return key in self.dct
-
-    def _read(self, key: str) -> 'DataObject':
-        return self.dct[key]
-
-    def _write(self, key: str, value: 'DataObject') -> None:
+    def _write(self, key: str, value: T) -> None:
         self.dct[key] = value
-        self._save_data()
+        self._save_to_disk()
 
-    def _load_data(self) -> None:
+    def _load_from_disk(self) -> None:
         try:
             with open(self.file_path, 'r', encoding='utf-8') as json_file:
                 self.dct = json.load(json_file)
         except FileNotFoundError:
             self.dct = {}
 
-    def _save_data(self) -> None:
+    def _save_to_disk(self) -> None:
         with open(self.file_path, 'w', encoding='utf-8') as json_file:
             json.dump(self.dct, json_file, indent=4)
+
+dao: DAO = DAO[DataObject]()
+child_lists: DiskAccess = DiskAccess[List[str]]()
+data_dicts: DiskAccess = DiskAccess[Dict[str,str]]()
