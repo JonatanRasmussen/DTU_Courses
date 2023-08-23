@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Tuple, Type, Callable, TypeVar, Generic
+from typing import Dict, List, Union, Tuple, Type, Callable, TypeVar, Generic, cast
 import json
 
 T = TypeVar('T')
@@ -15,6 +15,9 @@ class DAO(Generic[T]):
     def read(self, key: str) -> T:
         self._raise_error_if_key_missing(key)
         return self.dct[key]
+
+    def read_all(self) -> List[T]:
+        return List(self.dct.values())
 
     def write_unique_key(self, key: str, value: T) -> None:
         self._raise_error_if_key_exists(key)
@@ -59,6 +62,23 @@ class DiskAccess(DAO,Generic[T]):
     def _save_to_disk(self) -> None:
         with open(self.file_path, 'w', encoding='utf-8') as json_file:
             json.dump(self.dct, json_file, indent=4)
+
+class DomainAccess(DAO,Generic[T]):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._initialize_domains()
+
+    def _get_domain_configs(self) -> List[Type['DomainConfig']]:
+        domain_lst: List[Type[DomainConfig]] = []
+        domain_lst.append(DtuDomainConfig)
+        return domain_lst
+
+    def _initialize_domains(self) -> None:
+        for domain_config in self._get_domain_configs():
+            dct_key = domain_config.get_domain_name()
+            domain: Domain = Domain(domain_config)
+            self.dct[dct_key] = domain
 
 class TimePeriod:
 
@@ -296,82 +316,162 @@ class TimeManager:
     def number_of_terms(self) -> int:
         return len(self.domain_config.ordered_terms())
 
-class DataObjectStrategy(ABC):
-    pass
-
-class ContainerStrategy(DataObjectStrategy):
+class StrategyCollection(ABC):
 
     @staticmethod
-    def get_child_list(time: str, name: str) -> List[str]:
-        if time == name:
-            return []
-        return []
-
-class DataPointStrategy(DataObjectStrategy):
+    @abstractmethod
+    def get_evaluation(time: str, name: str) -> Dict[str,str]:
+        pass
     @staticmethod
-    def get_data_dictionary(time: str, name: str) -> Dict[str,str]:
-        if time == name:
-            return {}
+    @abstractmethod
+    def get_grade_sheet(time: str, name: str) -> Dict[str,str]:
+        pass
+    @staticmethod
+    @abstractmethod
+    def get_info_page(time: str, name: str) -> Dict[str,str]:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def from_school_get_years(time: str, name: str) -> List[str]:
+        pass
+    @staticmethod
+    @abstractmethod
+    def from_year_get_study_lines(time: str, name: str) -> List[str]:
+        pass
+    @staticmethod
+    @abstractmethod
+    def from_year_get_teachers(time: str, name: str) -> List[str]:
+        pass
+    @staticmethod
+    @abstractmethod
+    def from_year_get_courses(time: str, name: str) -> List[str]:
+        pass
+    @staticmethod
+    @abstractmethod
+    def from_course_get_terms(time: str, name: str) -> List[str]:
+        pass
+
+class DtuStrategyCollection(StrategyCollection):
+
+    @staticmethod
+    def get_evaluation(time: str, name: str) -> Dict[str,str]:
+        return {}
+    @staticmethod
+    def get_grade_sheet(time: str, name: str) -> Dict[str,str]:
+        return {}
+    @staticmethod
+    def get_info_page(time: str, name: str) -> Dict[str,str]:
         return {}
 
-class StrategyManager(ABC):
+    @staticmethod
+    def from_school_get_years(time: str, name: str) -> List[str]:
+        return []
+    @staticmethod
+    def from_year_get_study_lines(time: str, name: str) -> List[str]:
+        return []
+    @staticmethod
+    def from_year_get_teachers(time: str, name: str) -> List[str]:
+        return []
+    @staticmethod
+    def from_year_get_courses(time: str, name: str) -> List[str]:
+        return []
+    @staticmethod
+    def from_course_get_terms(time: str, name: str) -> List[str]:
+        return []
+
+class StrategySwitch:
+
+    @staticmethod
+    def get_data_dict(data_point: 'DataPoint') -> Dict[str,str]:
+        domain: Domain = data_point.domain
+        time: str = data_point.time_period.get_name()
+        name: str = data_point.get_name()
+        if isinstance(data_point, Evaluation):
+            return domain.strategy_collection.get_evaluation(time, name)
+        elif isinstance(data_point, GradeSheet):
+            return domain.strategy_collection.get_grade_sheet(time, name)
+        elif isinstance(data_point, InfoPage):
+            return domain.strategy_collection.get_info_page(time, name)
+        else:
+            raise ValueError(f"Strategy switch error at {data_point.get_class_id()}")
 
     @staticmethod
     def get_child_list(container: 'Container', child_id: str) -> List[str]:
-        container_strategy: Type[ContainerStrategy] = StrategyManager.get_container_strategy(container, child_id)
+        domain: Domain = container.domain
         time: str = container.time_period.get_name()
         name: str = container.get_name()
-        return container_strategy.get_child_list(time, name)
+        if isinstance(container, School) and child_id == Year.get_class_id():
+            return domain.strategy_collection.from_school_get_years(time, name)
+        elif isinstance(container, Year) and child_id == StudyLine.get_class_id():
+            return domain.strategy_collection.from_year_get_study_lines(time, name)
+        elif isinstance(container, Year) and child_id == Teacher.get_class_id():
+            return domain.strategy_collection.from_year_get_teachers(time, name)
+        elif isinstance(container, Year) and child_id == Course.get_class_id():
+            return domain.strategy_collection.from_year_get_courses(time, name)
+        elif isinstance(container, Course) and child_id == Term.get_class_id():
+            return domain.strategy_collection.from_course_get_terms(time, name)
+        else:
+            raise ValueError(f"Strategy switch error at {container.get_class_id()}+{child_id}")
 
-    @staticmethod
-    def get_data_dictionary(data_point: 'DataPoint') -> Dict[str,str]:
-        data_point_strategy: Type[DataPointStrategy] = StrategyManager.get_data_point_strategy(data_point)
-        time: str = data_point.time_period.get_name()
-        name: str = data_point.get_name()
-        return data_point_strategy.get_data_dictionary(time, name)
+class DataFetcher:
 
-    @staticmethod
-    @abstractmethod
-    def get_container_strategy(container: 'Container', child_id: str) -> Type[ContainerStrategy]:
-        pass
+    def __init__(self) -> None:
+        self._strategy_switch: Type[StrategySwitch] = StrategySwitch
+        self._data_objects: DAO = DAO[DataObject]()
+        self._data_dicts: DiskAccess = DiskAccess[Dict[str,str]]()
+        self._child_lists: DiskAccess = DiskAccess[List[str]]()
 
-    @staticmethod
-    @abstractmethod
-    def get_data_point_strategy(data_point: 'DataPoint') -> Type[DataPointStrategy]:
-        pass
+    def get_data_object(self, data_obj: 'DataObject') -> 'DataObject':
+        key: str = data_obj.serialize()
+        if self._data_objects.exists(key):
+            return self._data_objects.read(key)
+        else:
+            return data_obj
 
-class DtuStrategyManager(StrategyManager):
-    @staticmethod
-    def get_container_strategy(container: 'Container', child_id: str) -> Type[ContainerStrategy]:
-        if container.get_class_id() == child_id:
-            return ContainerStrategy
-        return ContainerStrategy
+    def get_data_dict(self, data_point: 'DataPoint') -> Dict[str,str]:
+        key: str = data_point.serialize()
+        if self._data_dicts.exists(key):
+            return self._data_dicts.read(key)
+        else:
+            data_dct: Dict[str,str] = self._strategy_switch.get_data_dict(data_point)
+            self._data_dicts.write_unique_key(key, data_dct)
+            return data_dct
 
-    @staticmethod
-    def get_data_point_strategy(data_point: 'DataPoint') -> Type[DataPointStrategy]:
-        if data_point.get_class_id() == "0":
-            return DataPointStrategy
-        return DataPointStrategy
+    def get_child_list(self, container: 'Container', child_id: str) -> List[str]:
+        key: str = container.serialize() + DataObject.KEY_SEPARATOR + child_id
+        if self._child_lists.exists(key):
+            return self._child_lists.read(key)
+        else:
+            child_list: List[str] = self._strategy_switch.get_child_list(container, child_id)
+            self._child_lists.write_unique_key(key, child_list)
+            return child_list
 
 class DomainConfig(ABC):
+    @staticmethod
+    def get_data_fetcher() -> DataFetcher:
+        return DataFetcher()
+
     @staticmethod
     @abstractmethod
     def get_domain_name() -> str:
         pass
+
     @staticmethod
     @abstractmethod
     def get_time_manager() -> TimeManager:
         pass
+
     @staticmethod
     @abstractmethod
-    def get_strategy_manager() -> Type[StrategyManager]:
+    def get_strategy_collection() -> StrategyCollection:
         pass
 
 class DtuDomainConfig(DomainConfig):
 
     DOMAIN_NAME: str = "dtu"
     TIME_MANAGER: TimeManager = TimeManager(DtuTimeConfig)
-    STRATEGY_MANAGER: Type[StrategyManager] = DtuStrategyManager
+    STRATEGY_COLLECTION: DtuStrategyCollection
 
     @staticmethod
     def get_domain_name() -> str:
@@ -382,148 +482,35 @@ class DtuDomainConfig(DomainConfig):
         return DtuDomainConfig.TIME_MANAGER
 
     @staticmethod
-    def get_strategy_manager() -> Type[StrategyManager]:
-        return DtuDomainConfig.STRATEGY_MANAGER
+    def get_strategy_collection() -> StrategyCollection:
+        return DtuDomainConfig.STRATEGY_COLLECTION
 
 class Domain:
 
-    def __init__(self, domain_config: Type[DomainConfig], data_manager: 'DataManager') -> None:
+    def __init__(self, domain_config: Type[DomainConfig]) -> None:
         self.name: str = domain_config.get_domain_name()
-        self.data_manager: DataManager = data_manager
+        self.data_fetcher: DataFetcher = domain_config.get_data_fetcher()
         self.time_manager: TimeManager = domain_config.get_time_manager()
-        self.strategy_manager: Type[StrategyManager] = domain_config.get_strategy_manager()
-
-    def get_strategy_collection(self) -> Type[StrategyManager]:
-        return self.strategy_manager
+        self.strategy_collection: StrategyCollection = domain_config.get_strategy_collection()
 
     def get_name(self) -> str:
         return self.name
 
-    def fabricate_data_object(self, data_class: Type['DataObject'], name: str) -> 'DataObject':
+    def get_data_object(self, data_class: Type['DataObject'], name: str) -> 'DataObject':
         time_period = self.time_manager.generate_empty_time_period()
         fabricated_obj: DataObject = data_class(self, time_period, name)
-        #key: str = self.data_manager.serialize(child)
-        return fabricated_obj
+        return self.data_fetcher.get_data_object(fabricated_obj)
 
     def get_child_list(self, container: 'Container', child_id: str) -> List[str]:
-        return self.strategy_manager.get_child_list(container, child_id)
+        return self.data_fetcher.get_child_list(container, child_id)
 
     def get_data_dictionary(self, data_point: 'DataPoint') -> Dict[str,str]:
-        return self.strategy_manager.get_data_dictionary(data_point)
-
-class DomainManager:
-
-    DOMAIN_CONFIGS: List[Type[DomainConfig]] = [
-        DtuDomainConfig
-    ]
-
-    def __init__(self) -> None:
-        self.data_manager = DataManager()
-        self.domains: Dict[str, Domain] = {}
-        self._initialize_domains()
-
-    initialized_domains: Dict[str, Domain] = {}
-
-    def get_all_domains(self) -> List[Domain]:
-        return list(self.domains.values())
-
-    def _initialize_domains(self) -> None:
-        for domain_config in DomainManager.DOMAIN_CONFIGS:
-            dct_key = domain_config.get_domain_name()
-            domain: Domain = Domain(domain_config, self.data_manager)
-            self.domains[dct_key] = domain
-
-    @staticmethod
-    def read_domain_from_keyname(key_name: str) -> Domain:
-        if key_name not in DomainManager.initialized_domains:
-            raise KeyError(f"No domain with name '{key_name}' in domain dict")
-        return DomainManager.initialized_domains[key_name]
-
-class Serializer:
-
-    KEY_SEPARATOR: str = "__"
-
-    @staticmethod
-    def serialize_object(data_obj: 'DataObject') -> str:
-        domain_name: str = data_obj.domain.get_name()
-        time_name: str = data_obj.time_period.get_name()
-        class_id: str = data_obj.get_class_id()
-        name: str = data_obj.get_name()
-        sep: str = Serializer.KEY_SEPARATOR
-        return domain_name + sep + time_name + sep + class_id + sep + name
-
-    @staticmethod
-    def serialize_object_data(data: Tuple[Domain,TimePeriod,str,str]) -> str:
-        domain_name: str  = data[0].get_name()
-        time_name: str  = data[1].get_name()
-        class_id: str  = data[2]
-        name: str  = data[3]
-        sep: str = Serializer.KEY_SEPARATOR
-        return domain_name + sep + time_name + sep + class_id + sep + name
-
-    @staticmethod
-    def deserialize_key(key: str) -> Tuple[Domain,TimePeriod,str,str]:
-        data_list: List[str] = key.split(Serializer.KEY_SEPARATOR)
-        domain: Domain = DomainManager.read_domain_from_keyname(data_list[0])
-        time: TimePeriod = domain.time_manager.read_time_from_keyname(data_list[1])
-        class_id: str = data_list[2]
-        name: str = data_list[3]
-        return (domain, time, class_id, name)
-
-    @staticmethod
-    def deserialize_domain(key: str) -> Domain:
-        return Serializer.deserialize_key(key)[0]
-
-    @staticmethod
-    def deserialize_time_period(key: str) -> TimePeriod:
-        return Serializer.deserialize_key(key)[1]
-
-    @staticmethod
-    def deserialize_class_id(key: str) -> str:
-        return Serializer.deserialize_key(key)[2]
-
-    @staticmethod
-    def deserialize_name(key: str) -> str:
-        return Serializer.deserialize_key(key)[3]
-
-
-class DataManager:
-
-    DEFAULT_SERIALIZER: Serializer = Serializer()
-
-    def __init__(self) -> None:
-        self.serializer: Serializer = DataManager.DEFAULT_SERIALIZER
-        self._data_objects: DAO = DAO[DataObject]()
-        self._data_dicts: DiskAccess = DiskAccess[Dict[str,str]]()
-        self._child_lists: DiskAccess = DiskAccess[List[str]]()
-
-    def data_object_exists(self, key: str) -> bool:
-        return self._data_objects.exists(key)
-
-    def data_dict_exists(self, key: str) -> bool:
-        return self._data_dicts.exists(key)
-
-    def child_list_exists(self, key: str) -> bool:
-        return self._child_lists.exists(key)
-
-    def get_data_object(self, data_obj: 'DataObject') -> 'DataObject':
-        key: str = self.serialize(data_obj)
-        return self._data_objects.read(key)
-
-    def get_data_dict(self, key: str) -> Dict[str,str]:
-        return self._data_dicts.read(key)
-
-    def child_list_object(self, key: str) -> List[str]:
-        return self._child_lists.read(key)
-
-    def serialize_data(self, data: Tuple[Domain,TimePeriod,str,str]):
-        return self.serializer.serialize_object_data(data)
-
-    def serialize(self, data_obj: 'DataObject') -> str:
-        return self.serializer.serialize_object(data_obj)
+        return self.data_fetcher.get_data_dict(data_point)
 
 
 class DataObject(ABC):
+
+    KEY_SEPARATOR: str = "__"
 
     def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
         self.domain: Domain = domain
@@ -532,6 +519,14 @@ class DataObject(ABC):
 
     def get_name(self) -> str:
         return self.name
+
+    def serialize(self) -> str:
+        domain_name: str = self.domain.get_name()
+        time_name: str = self.time_period.get_name()
+        class_id: str = self.get_class_id()
+        name: str = self.get_name()
+        sep: str = DataObject.KEY_SEPARATOR
+        return domain_name + sep + time_name + sep + class_id + sep + name
 
     @staticmethod
     @abstractmethod
@@ -542,20 +537,12 @@ class DataObject(ABC):
     def cascade_build(self) -> None:
         pass
 
-class DataPoint(DataObject):
-
-    def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
-        super().__init__(domain, time_period, name)
-        self.data: Dict[str,str] = {}
-
-    def cascade_build(self) -> None:
-        self.data = self.domain.get_data_dictionary(self)
-
 class Container(DataObject):
 
     def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
         super().__init__(domain, time_period, name)
         self.children: Dict[str,List[DataObject]] = {}
+        self.data_operations: DataOperations = DataOperations(self)
 
     def cascade_build(self) -> None:
         child_classes: List[Type[DataObject]] = self._get_all_child_classes()
@@ -563,44 +550,23 @@ class Container(DataObject):
             child_id: str = child_class.get_class_id()
             child_names: List[str] = self.domain.get_child_list(self, child_id)
             for name in child_names:
-                child: DataObject = self.domain.fabricate_data_object(child_class, name)
+                child: DataObject = self.domain.get_data_object(child_class, name)
                 self._add_child(child)
                 child.cascade_build()
-
-    def cascade_perform_action(self, key: str, action: Callable[['DataObject'], float]) -> float:
-        if key in self.children:
-            return self._perform_action(key, action)
-        elif len(self._get_primary_children()) > 0:
-            return self._continue_action_cascade(key, action)
-        else:
-            raise ValueError(f"Key {key} not found in {self.time_period.get_name()} {self.name}")
-
-    def _perform_action(self, key: str, action: Callable[['DataObject'], float]) -> float:
-        child_list: List[DataObject] = self.children[key]
-        if len(child_list) != 1:
-            raise ValueError(f"There should be exactly 1 child in {self.time_period.get_name()} {self.name}, not {len(child_list)}")
-        else:
-            return action(child_list[0])
-
-    def _continue_action_cascade(self, key: str, action: Callable[['DataObject'], float]) -> float:
-        child_sum: float = 0.0
-        for child in self._get_primary_children():
-            child_sum += child.cascade_perform_action(key, action)
-        return child_sum / len(self._get_primary_children())
 
     def _add_child(self, child: 'DataObject') -> None:
         key: str = child.get_class_id()
         self.children[key].append(child)
 
-    def _get_children(self, key) -> List['DataObject']:
+    def get_children(self, key) -> List['DataObject']:
         return self.children[key]
 
-    def _get_primary_children(self) -> List['Container']:
-        lst_of_children: List['Container'] = []
+    def get_primary_children(self) -> List[DataObject]:
+        lst_of_children: List[DataObject] = []
         lst_of_keys = self._get_primary_child_class_keys()
         for key in lst_of_keys:
             if key in self.children:
-                lst_of_children.extend(self._ensure_children_is_containers(self.children[key]))
+                lst_of_children.extend(self.children[key])
         return lst_of_children
 
     def _get_primary_child_class_keys(self) -> List[str]:
@@ -609,18 +575,6 @@ class Container(DataObject):
         for main_child_class in main_child_classes:
             lst_of_keys.append(main_child_class.get_class_id())
         return lst_of_keys
-
-    def _error_unsupported_child_class(self, child_id: str) -> KeyError:
-        return KeyError(f"Error, {child_id} is not a child of {self.get_class_id()}")
-
-    def _ensure_children_is_containers(self, containers: List[DataObject]) -> List['Container']:
-        container_list: List['Container'] = []
-        for container in containers:
-            if isinstance(container, Container):
-                container_list.append(container)
-            else:
-                raise ValueError(f"Error: {self.time_period.get_name()} {self.name} has {container.time_period.get_name()} {container.name} as main child, even though {container.time_period.get_name()} {container.name} is not a container")
-        return container_list
 
     @staticmethod
     def _get_all_child_classes() -> List[Type[DataObject]]:
@@ -634,6 +588,14 @@ class Container(DataObject):
     def get_secondary_child_classes() -> List[Type[DataObject]]:
         return []
 
+class DataPoint(DataObject):
+
+    def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
+        super().__init__(domain, time_period, name)
+        self.data: Dict[str,str] = {}
+
+    def cascade_build(self) -> None:
+        self.data = self.domain.get_data_dictionary(self)
 
 class School(Container):
 
@@ -719,6 +681,13 @@ class Evaluation(DataPoint):
 
     CLASS_ID: str = "evaluation"
 
+    def __init__(self, domain: Domain, time_period: TimePeriod, name: str) -> None:
+        super().__init__(domain, time_period, name)
+        self.num: float = 1.0
+
+    def get_float(self) -> float:
+        return self.num
+
     @staticmethod
     def get_class_id() -> str:
         return School.CLASS_ID
@@ -739,30 +708,63 @@ class InfoPage(DataPoint):
     def get_class_id() -> str:
         return School.CLASS_ID
 
-class ClassTable:
+S = TypeVar('S', bound=DataPoint)
+class ActionCascader(Generic[S]):
 
-    @staticmethod
-    def get_class_from_id(class_id: str) -> Type[DataObject]:
-        class_dct: Dict[str,Type[DataObject]] = ClassTable._get_class_dct()
-        if class_id in class_dct:
-            return class_dct[class_id]
+    def __init__(self, class_type: Type[DataPoint], action: Callable[[S], float]) -> None:
+        self.key = class_type.get_class_id()
+        self.action: Callable[[S], float] = action
+
+    def cascade_perform_action(self, container: Container) -> float:
+        if self.key in container.children:
+            return self._perform_action(container)
+        elif len(container.get_primary_children()) > 0:
+            return self._continue_action_cascade(container)
         else:
-            raise ValueError(f"Class '{class_id}' not found in {__name__}")
+            raise ValueError(f"Key {self.key} not found in {container.serialize()}")
 
-    @staticmethod
-    def _get_class_dct() -> Dict[str,Type[DataObject]]:
-        dct: Dict[str,Type[DataObject]] = {
-            School.get_class_id(): School,
-            Year.get_class_id(): Year,
-            Course.get_class_id(): Course,
-            Term.get_class_id(): Term,
-            Evaluation.get_class_id(): Evaluation,
-            GradeSheet.get_class_id(): GradeSheet,
-            InfoPage.get_class_id(): InfoPage,
-            Teacher.get_class_id(): Teacher,
-            StudyLine.get_class_id(): StudyLine,
-        }
-        return dct
+    def _perform_action(self, container: Container) -> float:
+        child_list: List[DataObject] = container.get_children(self.key)
+        if len(child_list) != 1:
+            raise ValueError(f"There should be exactly 1 child in {container.serialize()}")
+        return self.action(cast(S,child_list[0]))
+
+    def _continue_action_cascade(self, container: Container) -> float:
+        child_sum: float = 0.0
+        for child in container.get_primary_children():
+            child_sum += self.cascade_perform_action(cast(Container, child))
+        return child_sum / len(container.get_primary_children())
+
+class DataOperations:
+
+    _ACTION_CASCADER: Type[ActionCascader] = ActionCascader
+
+    def __init__(self, container: Container) -> None:
+        self.container: Container = container
+
+    def do_thing_a(self) -> float:
+        action: Callable[[Evaluation], float] = Evaluation.get_float
+        action_cascader: ActionCascader = ActionCascader[Evaluation](Evaluation, action)
+        return action_cascader.cascade_perform_action(self.container)
+
+class Main:
+    def __init__(self) -> None:
+        self._domains: DAO = DomainAccess[Domain]()
+
+    def get_domain(self, key: str) -> Domain:
+        return self._domains.read(key)
+
+    def get_all_domains(self) -> List[Domain]:
+        return self._domains.read_all()
+
+    def do_stuff(self) -> None:
+        for domain in self.get_all_domains():
+            terms: List[TimePeriod] = domain.time_manager.generate_all_time_periods()
+            years: List[TimePeriod] = domain.time_manager.generate_years()
+            empty_time: TimePeriod = domain.time_manager.generate_empty_time_period()
+            print(terms)
+            print(years)
+            print(empty_time)
 
 #School
 #Year
@@ -774,16 +776,5 @@ class ClassTable:
 #GradeSheet
 #InfoPage
 
-def main() -> None:
-    domain_manager: DomainManager = DomainManager()
-    domain_list: List[Domain] = domain_manager.get_all_domains()
-    for domain in domain_list:
-        terms: List[TimePeriod] = domain.time_manager.generate_all_time_periods()
-        years: List[TimePeriod] = domain.time_manager.generate_years()
-        empty_time: TimePeriod = domain.time_manager.generate_empty_time_period()
-        print(terms)
-        print(years)
-        print(empty_time)
-
 if __name__ == "__main__":
-    main()
+    Main().do_stuff()

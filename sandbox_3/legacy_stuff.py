@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Tuple, Type, Callable, TypeVar, Generic
 import json
 
-from choose_love import DataObject
+from choose_love import DataPoint
 
 T = TypeVar('T')
 
@@ -62,6 +62,6 @@ class DiskAccess(DAO,Generic[T]):
         with open(self.file_path, 'w', encoding='utf-8') as json_file:
             json.dump(self.dct, json_file, indent=4)
 
-dao: DAO = DAO[DataObject]()
+dao: DAO = DAO[DataPoint]()
 child_lists: DiskAccess = DiskAccess[List[str]]()
 data_dicts: DiskAccess = DiskAccess[Dict[str,str]]()
