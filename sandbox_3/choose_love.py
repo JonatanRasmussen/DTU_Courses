@@ -4,7 +4,7 @@ import json
 
 T = TypeVar('T')
 
-class DAO(Generic[T]):
+class Registry(Generic[T]):
 
     def __init__(self) -> None:
         self.dct: Dict[str, T] = {}
@@ -38,14 +38,14 @@ class DAO(Generic[T]):
         if self.exists(key):
             raise KeyError(f"Key '{key}' already exists.")
 
-class DiskAccess(DAO,Generic[T]):
+class FileAccess(Registry,Generic[T]):
 
     FILE_PATH: str = "json_files/"
     FILE_NAME: str = "parsed_data"
 
     def __init__(self) -> None:
         super().__init__()
-        self.file_path: str = f"{DiskAccess.FILE_PATH}{DiskAccess.FILE_NAME}.json"
+        self.file_path: str = f"{FileAccess.FILE_PATH}{FileAccess.FILE_NAME}.json"
         self._load_from_disk()
 
     def _write(self, key: str, value: T) -> None:
@@ -63,7 +63,7 @@ class DiskAccess(DAO,Generic[T]):
         with open(self.file_path, 'w', encoding='utf-8') as json_file:
             json.dump(self.dct, json_file, indent=4)
 
-class DomainAccess(DAO,Generic[T]):
+class DomainAccess(Registry,Generic[T]):
 
     def __init__(self) -> None:
         super().__init__()
@@ -418,9 +418,9 @@ class DataFetcher:
 
     def __init__(self) -> None:
         self._strategy_switch: Type[StrategySwitch] = StrategySwitch
-        self._data_objects: DAO = DAO[DataObject]()
-        self._data_dicts: DiskAccess = DiskAccess[Dict[str,str]]()
-        self._child_lists: DiskAccess = DiskAccess[List[str]]()
+        self._data_objects: Registry = Registry[DataObject]()
+        self._data_dicts: FileAccess = FileAccess[Dict[str,str]]()
+        self._child_lists: FileAccess = FileAccess[List[str]]()
 
     def get_data_object(self, data_obj: 'DataObject') -> 'DataObject':
         key: str = data_obj.serialize()
@@ -749,7 +749,7 @@ class DataOperations:
 
 class Main:
     def __init__(self) -> None:
-        self._domains: DAO = DomainAccess[Domain]()
+        self._domains: Registry = DomainAccess[Domain]()
 
     def get_domain(self, key: str) -> Domain:
         return self._domains.read(key)
